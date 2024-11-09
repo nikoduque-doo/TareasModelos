@@ -409,6 +409,7 @@ md"""
 [10] Veritrade. (n.d.). Importaciones y exportaciones de lápices. Retrieved November 8, 2024, from https://www.veritradecorp.com/es/Colombia/importaciones-y-exportaciones/lapices/960910 \
 [11] Hernández Trujillo, J., & Restrepo Ospina, K. (2021). Propuesta de un plan de factibilidad para la creación de una empresa dedicada a la producción y comercialización de lápices ecológicos en el municipio de Cartago, Valle del Cauca. Universidad del Valle. Retrieved November 8, 2024, from https://bibliotecadigital.univalle.edu.co/server/api/core/bitstreams/dbce24ee-de8c-4cd7-9d89-996d1211214f/content \
 [12] N. Chalmpes, G. Asimakopoulos, M. Baikousi, C. E. Salmas, D. Moschovas, A. Avgeropoulos, A. B. Bourlinos, I. Tantis, A. Bakandritsos, D. Gournis, et al., "Microwave Synthesis, Characterization and Perspectives of Wood Pencil-Derived Carbon," Appl. Sci., vol. 12, no. 1, p. 410, 2022, doi: 10.3390/app12010410.
+[13] Bleistift, "Sharpeners," Bleistift Blog, [Online]. Available: https://bleistift.blog/sharpeners/. [Accessed: Nov. 8, 2024].
 
 """
 
