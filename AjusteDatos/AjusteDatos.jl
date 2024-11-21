@@ -41,6 +41,7 @@ begin
 
 	dias = Datos[:,1];
 	camas = Datos[:,2];
+	Datos;
 	#Dates.value()
 end
 
