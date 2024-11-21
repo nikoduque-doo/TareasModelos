@@ -42,24 +42,30 @@ begin
 	fechas = Datos[:,1];
 	dias = collect(1:size(fechas, 1));
 	camas = Datos[:,2];
-	Datos;
+	Datos
+	Dates.value(fechas[1])
 end
 
 # ╔═╡ f88abf94-d802-4760-9d94-135f3550af16
 scatter(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
 
+# ╔═╡ 294d3337-5bc9-4e47-a168-c1f1cc988581
+md"""
+# Modelos no basados en Ecuaciones Diferenciales
+"""
+
 # ╔═╡ 89de066c-2866-4202-9b22-1075ea94066a
 md"""
-# Modelo Lineal
+## Modelo Lineal
 $V(t) \approx a+bt$
 """
 
 # ╔═╡ 4481dd92-82aa-40e8-89b7-762d5f0e1783
-function residuoL(tuplaC, valorD, tiempo)
+function residuoL(tuplaC, vDatos, tiempo)
 	a,b = tuplaC;
 	arrAux = fill(1, size(tiempo));
 	vModelo = a * arrAux + b * tiempo;
-	res=valorD-vModelo
+	res=vDatos-vModelo
 	nRes=norm(res)
 
 	return nRes
@@ -70,6 +76,71 @@ rL(tuplaC) = residuoL(tuplaC, camas, dias)
 
 # ╔═╡ 038d95ef-5d51-44d8-a721-cd85d4e34234
 oL =Optim.optimize(rL, [3.0, 5.0], LBFGS())
+
+# ╔═╡ be1f5f32-bdfc-46fa-99b6-775206424c6d
+oL.minimizer
+
+# ╔═╡ c1b67505-7bf7-4be8-beae-12794fdc2a7e
+oL.minimum
+
+# ╔═╡ b3732f0b-26a1-4577-984f-1cd5411104fe
+begin
+	arrAux = fill(1, size(fechas));
+	
+	vModelo = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
+	plot(fechas, vModelo, lw=5, label="Modelo lineal óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
+end
+
+# ╔═╡ 44d043ce-c2e8-4ba2-8278-e4ab571ee244
+md"""
+# Modelos basados en Ecuaciones Diferenciales
+"""
+
+# ╔═╡ d4703198-4f45-49b7-ab5a-06ec61da41fc
+md"""
+$$V' = aV\left(1 - \frac{V}{b}\right),$$
+"""
+
+# ╔═╡ 5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
+modeloCL(vDatos, tupla, tiempo) = tupla[1] * vDatos * (1 - (vDatos / tupla[2]))
+
+# ╔═╡ a4fa1201-9189-45b2-be4b-fa92a76c8930
+function residuoCL(tupla,vDatos,tiempo)
+   	dominioTiempo = (0,30);
+  	V0 = 222;
+ 	EDO = ODEProblem(modeloCL, V0, dominioTiempo, tupla);
+  	Sol = solve(EDO);
+  	vModelo = [Sol(t) for t in tiempo];
+  	res = vDatos - vModelo;
+  	nRes = norm(res);
+	return nRes;
+end
+
+# ╔═╡ b50cf6c5-07bb-4a9a-8c33-28b37d5ced42
+residuoCL([1 1],camas,dias)
+
+# ╔═╡ d802b272-cbf4-41e6-ab4e-ae786246c86c
+rCL(tupla) = residuoCL(tupla, camas, dias)
+
+# ╔═╡ 26432f87-c19e-4110-94a1-54d153b8bf7e
+# ╠═╡ show_logs = false
+oCL = Optim.optimize(rCL, [.01,.01], NelderMead())
+
+# ╔═╡ ee04760f-e861-4f52-87ea-09b9155199fd
+oCL.minimizer
+
+# ╔═╡ 61f70619-ecef-4d5a-9135-45bcad412e01
+begin
+	dominioTiempo=(Dates.value(Date("31/12/2021", df)), Dates.value(Date("30/01/2022", df)))
+	V0=222
+	oCLtupla=oCL.minimizer
+	EDOoptima=ODEProblem(modeloCL,V0,dominioTiempo,oCLtupla)
+	VEDOoptima=solve(EDOoptima)
+	plot(VEDOoptima,lw=5,label="EDO optima")
+	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2809,9 +2880,22 @@ version = "1.4.1+1"
 # ╠═f03955a0-a5f3-11ef-1c1b-3ffc12415778
 # ╠═1775cf34-9368-4b4a-9827-f430305b3ca6
 # ╠═f88abf94-d802-4760-9d94-135f3550af16
+# ╠═294d3337-5bc9-4e47-a168-c1f1cc988581
 # ╠═89de066c-2866-4202-9b22-1075ea94066a
 # ╠═4481dd92-82aa-40e8-89b7-762d5f0e1783
 # ╠═4947173b-fc52-40ad-8dd5-0ede7e2a5d6b
 # ╠═038d95ef-5d51-44d8-a721-cd85d4e34234
+# ╠═be1f5f32-bdfc-46fa-99b6-775206424c6d
+# ╠═c1b67505-7bf7-4be8-beae-12794fdc2a7e
+# ╠═b3732f0b-26a1-4577-984f-1cd5411104fe
+# ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
+# ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
+# ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
+# ╠═a4fa1201-9189-45b2-be4b-fa92a76c8930
+# ╠═b50cf6c5-07bb-4a9a-8c33-28b37d5ced42
+# ╠═d802b272-cbf4-41e6-ab4e-ae786246c86c
+# ╠═26432f87-c19e-4110-94a1-54d153b8bf7e
+# ╠═ee04760f-e861-4f52-87ea-09b9155199fd
+# ╠═61f70619-ecef-4d5a-9135-45bcad412e01
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
