@@ -10,6 +10,11 @@ using Plots, Dates, LinearAlgebra, Optim, DifferentialEquations;
 # ╔═╡ f03955a0-a5f3-11ef-1c1b-3ffc12415778
 md"""
 # Actividad Ajuste de Datos
+En esta actividad de ajuste de datos, vamos a analizar la ocupación de las camas UCI en Bogotá durante el inicio de 2022, relacionándola también con el uso por el COVID-19. El objetivo de este trabajo es hacer uso de esa información para explorar y aprender acerca de distintos enfoques para el ajuste de datos. Tomaremos, entonces, diversas funciones con varias variables para el ajuste de los datos.
+
+El ajuste de datos, también llamado ajuste de curvas, hace referencia a, dado un conjunto de datos, buscar alguna correlación entre ellos; es decir, intentar encontrar una relación que describa de manera cercana cómo se comportan los datos en relación entre sí.
+
+Para este tipo de problemas, lo que se hace es usar un algoritmo de optimización y elegir las variables que nos den un mínimo residuo al usar este algoritmo. El algoritmo será implementado por la librería Optim, y nuestra función a minimizar será la de residuo, que en nuestro caso será mínimos cuadrados (con la norma euclidiana o la norma base 2).
 """
 
 # ╔═╡ 1775cf34-9368-4b4a-9827-f430305b3ca6
@@ -39,11 +44,11 @@ begin
 		Date("20/01/2022", df) 	431
 	];
 
-	fechas = Datos[:,1];
+	 fechas = Datos[:,1];
 	dias = collect(1:size(fechas, 1));
 	camas = Datos[:,2];
 	Datos
-	Dates.value(fechas[1])
+	# Dates.value(fechas[1])
 end
 
 # ╔═╡ f88abf94-d802-4760-9d94-135f3550af16
@@ -57,11 +62,17 @@ md"""
 # ╔═╡ 89de066c-2866-4202-9b22-1075ea94066a
 md"""
 ## Modelo Lineal
-$V(t) \approx a+bt$
+
+Empezaremos con el modelo lineal, que asumiremos tiene la siguiente forma: 
+
+$V(t) \approx a + bt$
+
+Y entonces buscamos encontrar los parámetros $a, b \in \mathbb{R}$ tal que minimicen nuestro residuo. Para calcular el residuo, creamos la siguiente función, donde nuestra entrada será *tuplaC*, una tupla que representa nuestro valor inicial para la optimización, *vDatos*, que será el vector de datos de las camas, y *tiempo*, que corresponderá a nuestros días.
+
 """
 
 # ╔═╡ 4481dd92-82aa-40e8-89b7-762d5f0e1783
-function residuoL(tuplaC, vDatos, tiempo)
+function residuoLineal(tuplaC, vDatos, tiempo)
 	a,b = tuplaC;
 	arrAux = fill(1, size(tiempo));
 	vModelo = a * arrAux + b * tiempo;
@@ -72,7 +83,7 @@ function residuoL(tuplaC, vDatos, tiempo)
 end
 
 # ╔═╡ 4947173b-fc52-40ad-8dd5-0ede7e2a5d6b
-rL(tuplaC) = residuoL(tuplaC, camas, dias)
+rL(tuplaC) = residuoLineal(tuplaC, camas, dias)
 
 # ╔═╡ 038d95ef-5d51-44d8-a721-cd85d4e34234
 oL =Optim.optimize(rL, [3.0, 5.0], LBFGS())
@@ -91,6 +102,52 @@ begin
 	plot(fechas, vModelo, lw=5, label="Modelo lineal óptimo");
 	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
 	
+end
+
+# ╔═╡ 2b4b2fe4-ffe2-4ece-acda-73f1e00873ee
+md"""
+## Modelo Cubico
+
+Para el modelo cubico, estaremos buscando los parametros $a,b,c,d \in\mathbb{R}$ 
+
+$V(t) \approx a+bt+ct^2+dt^3$
+
+A continuación entonces formulamos nuestra función de residuo con norma euclideana
+
+"""
+
+# ╔═╡ bc72517b-bf1c-419f-a303-2b993a0d0eed
+function residuoCubico(tuplaC, vDatos, tiempo)
+	a,b,c,d = tuplaC;
+	arrAux = fill(1, size(tiempo));
+	vModelo = a * arrAux + b * tiempo + c * tiempo .^ 2 + d * tiempo .^ 3;
+	res=vDatos-vModelo
+	nRes=norm(res)
+
+	return nRes
+end
+
+# ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
+md"""
+## Modelo de redes neuronales artificiales
+
+Empezaremos con el modelo lineal, que asumiremos tiene la siguiente forma: 
+
+$V(t) \approx a + bt$
+
+Y entonces buscamos encontrar los parámetros $a, b \in \mathbb{R}$ tal que minimicen nuestro residuo. Para calcular el residuo, creamos la siguiente función, donde nuestra entrada será *tuplaC*, una tupla que representa nuestro valor inicial para la optimización, *vDatos*, que será el vector de datos de las camas, y *tiempo*, que corresponderá a nuestros días.
+
+"""
+
+# ╔═╡ d3001ce5-5d33-45b1-ab73-90c340d80fb3
+function residuoRedesNeuronalesArtificiales(tuplaC, vDatos, tiempo)
+	a,b = tuplaC;
+	arrAux = fill(1, size(tiempo));
+	vModelo = a * arrAux + b * tiempo;
+	res=vDatos-vModelo
+	nRes=norm(res)
+
+	return nRes
 end
 
 # ╔═╡ 44d043ce-c2e8-4ba2-8278-e4ab571ee244
@@ -2888,6 +2945,10 @@ version = "1.4.1+1"
 # ╠═be1f5f32-bdfc-46fa-99b6-775206424c6d
 # ╠═c1b67505-7bf7-4be8-beae-12794fdc2a7e
 # ╠═b3732f0b-26a1-4577-984f-1cd5411104fe
+# ╠═2b4b2fe4-ffe2-4ece-acda-73f1e00873ee
+# ╠═bc72517b-bf1c-419f-a303-2b993a0d0eed
+# ╠═7dfb1224-530c-4c51-bc28-196c000e907a
+# ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
 # ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
 # ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
