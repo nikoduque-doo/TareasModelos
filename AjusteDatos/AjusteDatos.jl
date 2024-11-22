@@ -98,21 +98,23 @@ oL.minimum
 begin
 	arrAux = fill(1, size(fechas));
 	
-	vModelo = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
-	plot(fechas, vModelo, lw=5, label="Modelo lineal óptimo");
+	vModeloL = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
+	plot(fechas, vModeloL, lw=5, label="Modelo lineal óptimo");
 	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
 	
 end
 
 # ╔═╡ 2b4b2fe4-ffe2-4ece-acda-73f1e00873ee
 md"""
-## Modelo Cubico
 
-Para el modelo cubico, estaremos buscando los parametros $a,b,c,d \in\mathbb{R}$ 
+## Modelo Cúbico
 
-$V(t) \approx a+bt+ct^2+dt^3$
+Para el modelo cúbico, buscaremos los parámetros $a$, $b$, $c$, $d \in \mathbb{R}$ que ajusten el siguiente modelo:
 
-A continuación entonces formulamos nuestra función de residuo con norma euclideana
+$V(t) \approx a + bt + ct^2 + dt^3$
+
+A continuación, programamos la función de residuo utilizando la norma euclidiana.
+
 
 """
 
@@ -125,6 +127,27 @@ function residuoCubico(tuplaC, vDatos, tiempo)
 	nRes=norm(res)
 
 	return nRes
+end
+
+# ╔═╡ 6d587ada-59e7-4eba-806a-9af4c4642378
+rCub(tuplaC) = residuoCubico(tuplaC, camas, dias)
+
+# ╔═╡ 97d224a5-09f0-4414-89c2-b5400bce79f4
+oCub =Optim.optimize(rCub, [0.1, 0.1, 0.1, 0.1], LBFGS())
+
+# ╔═╡ 1f4e3c04-7515-4203-9414-a8860243cf2f
+oCub.minimizer
+
+# ╔═╡ 537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
+oCub.minimum
+
+# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
+begin
+	# arrAux2 = fill(1, size(fechas));
+	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
+	plot(fechas, vModeloCub, lw=5, label="Modelo lineal óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
 end
 
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
@@ -2947,6 +2970,11 @@ version = "1.4.1+1"
 # ╠═b3732f0b-26a1-4577-984f-1cd5411104fe
 # ╠═2b4b2fe4-ffe2-4ece-acda-73f1e00873ee
 # ╠═bc72517b-bf1c-419f-a303-2b993a0d0eed
+# ╠═6d587ada-59e7-4eba-806a-9af4c4642378
+# ╠═97d224a5-09f0-4414-89c2-b5400bce79f4
+# ╠═1f4e3c04-7515-4203-9414-a8860243cf2f
+# ╠═537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
+# ╠═a3359ad2-b267-43c9-a685-50b20cce0621
 # ╠═7dfb1224-530c-4c51-bc28-196c000e907a
 # ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
 # ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
