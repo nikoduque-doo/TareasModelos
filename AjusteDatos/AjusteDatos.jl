@@ -54,6 +54,16 @@ end
 # ╔═╡ f88abf94-d802-4760-9d94-135f3550af16
 scatter(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
 
+# ╔═╡ 51ac93bd-913c-4975-bfe8-f9aee033b70e
+
+md"""Para ilustrar el procedimiento, ajustaremos los datos a los siguientes modelos:
+1. Un modelo polinomial de grado uno.
+2. Un modelo polinomial cúbico.
+3. Un modelo de redes neuronales artificiales.
+4. Algunos modelos no lineales.
+4. Un modelo de ecuaciones diferenciales."""
+
+
 # ╔═╡ 294d3337-5bc9-4e47-a168-c1f1cc988581
 md"""
 # Modelos no basados en Ecuaciones Diferenciales
@@ -94,16 +104,6 @@ oL.minimizer
 # ╔═╡ c1b67505-7bf7-4be8-beae-12794fdc2a7e
 oL.minimum
 
-# ╔═╡ b3732f0b-26a1-4577-984f-1cd5411104fe
-begin
-	arrAux = fill(1, size(fechas));
-	
-	vModeloL = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
-	plot(fechas, vModeloL, lw=5, label="Modelo lineal óptimo");
-	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-	
-end
-
 # ╔═╡ 2b4b2fe4-ffe2-4ece-acda-73f1e00873ee
 md"""
 
@@ -141,15 +141,6 @@ oCub.minimizer
 # ╔═╡ 537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
 oCub.minimum
 
-# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
-begin
-	# arrAux2 = fill(1, size(fechas));
-	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
-	plot(fechas, vModeloCub, lw=5, label="Modelo lineal óptimo");
-	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-	
-end
-
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
 md"""
 ## Modelo de redes neuronales artificiales
@@ -179,20 +170,162 @@ md"""
 
 Con el fin de analizar modelos no polinómicos y ver la aproximación que tendrá, tomaremos los siguientes modelos no lineales: 
 
-$V(t) \approx A\frac{1}{x}+B$
+### 1. Hiperbólico
+Sean $a, b\in \mathbb{R}$ los parámetros a ser optimizados:
 
-#
-
-, que asumiremos tiene la siguiente forma: 
-
-$V(t) \approx a + bt$
-
-Y entonces buscamos encontrar los parámetros $a, b \in \mathbb{R}$ tal que minimicen nuestro residuo. Para calcular el residuo, creamos la siguiente función, donde nuestra entrada será *tuplaC*, una tupla que representa nuestro valor inicial para la optimización, *vDatos*, que será el vector de datos de las camas, y *tiempo*, que corresponderá a nuestros días.
+$V(t) \approx \frac{a}{t}+b$
 
 """
 
 # ╔═╡ 2319d25e-e453-402e-87da-d31084cd274c
+function residuoNoLinealOne(tuplaC, vDatos, tiempo)
+	a,b = tuplaC
+	arrAux = fill(1, size(tiempo))
+	vModelo = a*(arrAux./(tiempo))+b*arrAux
+	res = vDatos-vModelo
+	nRes = norm(res)
 
+	return nRes
+end;
+	
+
+# ╔═╡ 8400776b-0ff4-460b-a484-2e51a45cb27b
+rNLO(tuplaC) = residuoNoLinealOne(tuplaC,camas,dias);
+
+# ╔═╡ 422fd143-979f-4c16-9cc9-efe3ba006d86
+oNLO = Optim.optimize(rNLO, [.0, 1.0], LBFGS())
+
+# ╔═╡ 13bf26e4-3be7-4030-aa93-84ab7b8d2e52
+oNLO.minimizer
+
+# ╔═╡ e31acf4e-0934-44e0-bff1-cd9afa3c864b
+oNLO.minimum
+
+# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
+begin
+	# arrAux2 = fill(1, size(fechas));
+	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
+	plot(fechas, vModeloCub, lw=5, label="Modelo lineal óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
+end
+
+# ╔═╡ 520b5819-bca1-42f9-b209-5bbaad2faf0f
+md"""
+### 2. Hiperbólico con desplazacmiento
+Sean $d, c \in \mathbb{R}$ los parámetros a ser optmizados:
+
+$V(t) \approx \frac{d}{t+c}$
+"""
+
+# ╔═╡ e8851a41-ef58-46fa-aec8-644389a4d451
+function residuoNoLinealTwo(tuplaC, vDatos, tiempo)
+	d,c = tuplaC
+	arrAux = fill(1, size(dias))
+	vModelo = d*(arrAux./(tiempo+(arrAux*c)))
+	res = vDatos-vModelo
+	nRes = norm(res)
+
+	return nRes
+end;
+
+# ╔═╡ 19d68e50-019e-4d11-b6a2-a42dc5b793f5
+rNLT(tuplaC) = residuoNoLinealTwo(tuplaC,camas,dias);
+
+# ╔═╡ a4c87462-5b30-4bdd-8fe1-1a2c788cd5bf
+oNLT = Optim.optimize(rNLT, [.01, 100.], LBFGS())
+
+# ╔═╡ ffbd8964-71e2-4550-8d7f-3906ba6194ac
+oNLT.minimizer
+
+# ╔═╡ b3bb9bf2-0e70-4eb6-a3f2-f4b0fc52a8b3
+oNLT.minimum
+
+# ╔═╡ faee0e7a-837b-4fe4-a4ab-f463d33f65a3
+begin
+	oNLTm = oNLT.minimizer
+	vModeloNLT = oNLTm[1] * (arrAux./ (dias+arrAux*oNLTm[2]))
+	plot(fechas, vModeloNLT,lw=5, label = "Segundo Modelo no lineal óptimo");
+	scatter!(fechas, camas, ls =:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+end
+
+# ╔═╡ faf8809b-2564-4533-a6cb-223841ef51f0
+md"""
+### 3. Exponencial
+Sean $a, b \in \mathbb{R}$ los parámetros a ser optmizados:
+
+$V(t) \approx ae^{bt}$
+"""
+
+# ╔═╡ ac562837-5d8c-4267-8da0-feba868c5ccb
+function residuoNoLinealThree(tuplaC, vDatos, tiempo)
+	a,b = tuplaC
+	arrAux = fill(1, size(dias))
+	vModelo = a*(exp.(b*tiempo))
+	res = vDatos-vModelo
+	nRes = norm(res)
+
+	return nRes
+end;
+
+# ╔═╡ 7bac2553-65a8-4959-a21a-cde925a301d6
+rNLTh(tuplaC) = residuoNoLinealThree(tuplaC,camas,dias);
+
+# ╔═╡ 79d13bb9-973d-4369-8b87-1cab27c431cc
+oNLTh = Optim.optimize(rNLTh, [.1, .01], BFGS())
+
+# ╔═╡ 659d81ea-f490-4a5e-930e-87490bda132e
+oNLTh.minimizer
+
+# ╔═╡ 9b7a0198-0f50-4725-8038-8e7ed7d1fd5f
+oNLTh.minimum
+
+# ╔═╡ 5dac5ba8-aa77-4f1d-b0be-83e4a6f51ff7
+begin
+	oNLThm = oNLTh.minimizer
+	vModeloNLTh = oNLThm[1] * (exp.(oNLThm[2]*dias))
+	plot(fechas, vModeloNLTh,lw=5, label = "Tercer Modelo no lineal óptimo");
+	scatter!(fechas, camas, ls =:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+end
+
+# ╔═╡ 37066bba-1995-4487-a1c1-d7201317fe76
+md"""
+### 4. Logístico
+Sean $a, b \in \mathbb{R}$ los parámetros a ser optmizados:
+
+$V(t) \approx \frac{a}{1+be^{cx}}$
+"""
+
+# ╔═╡ 8a499b8e-c705-454d-a4fa-58e67ef6e16f
+function residuoNoLinealFour(tuplaC, vDatos, tiempo)
+	a,b,c = tuplaC
+	arrAux = fill(1, size(dias))
+	vModelo = (a*arrAux)./(arrAux+b*exp.(c*tiempo))
+	res = vDatos-vModelo
+	nRes = norm(res)
+
+	return nRes
+end;
+
+# ╔═╡ c8725392-9527-4e23-a407-1f26cb9d2d6c
+rNLF(tuplaC) = residuoNoLinealFour(tuplaC,camas,dias);
+
+# ╔═╡ 567b1693-bac3-4dc0-9287-d4dd81350bee
+oNLF = Optim.optimize(rNLF, [.01,.01,.01], BFGS())
+
+# ╔═╡ 4dd33dcf-d48d-41d9-b245-bb18f538206c
+oNLF.minimizer
+
+# ╔═╡ 70443317-e15e-46ba-b98b-38e7e639cc4e
+oNLF.minimum
+
+# ╔═╡ 74011f7b-4aec-4e37-8206-9679ada6f685
+begin
+	oNLFm = oNLF.minimizer
+	vModeloNLF = (oNLFm[1] * arrAux)./(arrAux + oNLFm[2]*exp.(oNLFm[3]*dias))
+	plot(fechas, vModeloNLF,lw=5, label = "Cuarto Modelo no lineal óptimo");
+	scatter!(fechas, camas, ls =:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+end
 
 # ╔═╡ 44d043ce-c2e8-4ba2-8278-e4ab571ee244
 md"""
@@ -243,11 +376,31 @@ begin
 	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
 end
 
+# ╔═╡ 2b59c2da-b9f8-43ea-826a-9133f1f790b1
+begin
+	arrAux = fill(1, size(dias));
+	oNLOm = oNLO.minimizer
+	vModeloNLO = oNLOm[1] * (arrAux./ (dias)) + oNLOm[2] * arrAux
+	plot(fechas, vModeloNLO,lw=5, label = "Primer Modelo no lineal óptimo");
+	scatter!(fechas, camas, ls =:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+end
+
+# ╔═╡ b3732f0b-26a1-4577-984f-1cd5411104fe
+begin
+	arrAux = fill(1, size(fechas));
+	
+	vModeloL = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
+	plot(fechas, vModeloL, lw=5, label="Modelo lineal óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
+end
+
 # ╔═╡ Cell order:
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
 # ╠═f03955a0-a5f3-11ef-1c1b-3ffc12415778
 # ╠═1775cf34-9368-4b4a-9827-f430305b3ca6
 # ╠═f88abf94-d802-4760-9d94-135f3550af16
+# ╠═51ac93bd-913c-4975-bfe8-f9aee033b70e
 # ╠═294d3337-5bc9-4e47-a168-c1f1cc988581
 # ╠═89de066c-2866-4202-9b22-1075ea94066a
 # ╠═4481dd92-82aa-40e8-89b7-762d5f0e1783
@@ -267,6 +420,32 @@ end
 # ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
 # ╠═3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
 # ╠═2319d25e-e453-402e-87da-d31084cd274c
+# ╠═8400776b-0ff4-460b-a484-2e51a45cb27b
+# ╠═422fd143-979f-4c16-9cc9-efe3ba006d86
+# ╠═13bf26e4-3be7-4030-aa93-84ab7b8d2e52
+# ╠═e31acf4e-0934-44e0-bff1-cd9afa3c864b
+# ╠═2b59c2da-b9f8-43ea-826a-9133f1f790b1
+# ╠═520b5819-bca1-42f9-b209-5bbaad2faf0f
+# ╠═e8851a41-ef58-46fa-aec8-644389a4d451
+# ╠═19d68e50-019e-4d11-b6a2-a42dc5b793f5
+# ╠═a4c87462-5b30-4bdd-8fe1-1a2c788cd5bf
+# ╠═ffbd8964-71e2-4550-8d7f-3906ba6194ac
+# ╠═b3bb9bf2-0e70-4eb6-a3f2-f4b0fc52a8b3
+# ╠═faee0e7a-837b-4fe4-a4ab-f463d33f65a3
+# ╠═faf8809b-2564-4533-a6cb-223841ef51f0
+# ╠═ac562837-5d8c-4267-8da0-feba868c5ccb
+# ╠═7bac2553-65a8-4959-a21a-cde925a301d6
+# ╠═79d13bb9-973d-4369-8b87-1cab27c431cc
+# ╠═659d81ea-f490-4a5e-930e-87490bda132e
+# ╠═9b7a0198-0f50-4725-8038-8e7ed7d1fd5f
+# ╠═5dac5ba8-aa77-4f1d-b0be-83e4a6f51ff7
+# ╠═37066bba-1995-4487-a1c1-d7201317fe76
+# ╠═8a499b8e-c705-454d-a4fa-58e67ef6e16f
+# ╠═c8725392-9527-4e23-a407-1f26cb9d2d6c
+# ╠═567b1693-bac3-4dc0-9287-d4dd81350bee
+# ╠═4dd33dcf-d48d-41d9-b245-bb18f538206c
+# ╠═70443317-e15e-46ba-b98b-38e7e639cc4e
+# ╠═74011f7b-4aec-4e37-8206-9679ada6f685
 # ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
 # ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
