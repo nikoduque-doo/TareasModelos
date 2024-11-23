@@ -14,7 +14,7 @@ En esta actividad de ajuste de datos, vamos a analizar la ocupación de las cama
 
 El ajuste de datos, también llamado ajuste de curvas, hace referencia a, dado un conjunto de datos, buscar alguna correlación entre ellos; es decir, intentar encontrar una relación que describa de manera cercana cómo se comportan los datos en relación entre sí.
 
-Para este tipo de problemas, lo que se hace es usar un algoritmo de optimización y elegir las variables que nos den un mínimo residuo al usar este algoritmo. El algoritmo será implementado por la librería Optim, y nuestra función a minimizar será la de residuo, que en nuestro caso será mínimos cuadrados (con la norma euclidiana o la norma base 2).
+Para este tipo de problemas, lo que se hace es usar un algoritmo de optimización y elegir las variables que nos den un mínimo residuo al usar este algoritmo. El algoritmo será implementado por la librería *Optim*, y nuestra función a minimizar será la de residuo, que en nuestro caso será mínimos cuadrados (con la norma euclidiana o la norma base 2).
 """
 
 # ╔═╡ 1775cf34-9368-4b4a-9827-f430305b3ca6
@@ -194,14 +194,14 @@ end;
 # ╔═╡ ffa7d0a1-5b82-4430-9075-4ee681a4a7db
 md"""A partir de nuestra función residuo, podremos aproximar los mejores valores que puedan tener a y b para obtener un gran ajuste.
 
-Sin embargo, es importante destacar que este modelo nos genera un desajuste significativo. Por ejemplo, si $a = 5$ y $b=10$, esto es $V(t) \approx \frac{5}{t}+10$, este es aproximadamente $1371.037$"""
+Sin embargo, es importante destacar que este modelo nos genera un desajuste significativo. Por ejemplo, si $a = 5$ y $b=10$, esto es $V(t) \approx \frac{5}{t}+10$, este es aproximadamente $1371.037$."""
 
 # ╔═╡ 65390740-8720-4a68-80fb-fea00a8b68d4
 residuoNoLinealOne([5,10],camas,dias)
 
 # ╔═╡ f0d95245-d853-4238-9d81-a481d9ad2b24
-md """
-
+md"""
+De la misma forma, definimos una función que depende exclusivamente de la variable de decisión de la optimización.
 """
 
 # ╔═╡ 8400776b-0ff4-460b-a484-2e51a45cb27b
@@ -210,11 +210,20 @@ rNLO(tuplaC) = residuoNoLinealOne(tuplaC,camas,dias);
 # ╔═╡ 422fd143-979f-4c16-9cc9-efe3ba006d86
 oNLO = Optim.optimize(rNLO, [3.0, 5.0], LBFGS())
 
+# ╔═╡ f38f04b6-89aa-4063-b58a-dbd7b288b907
+md"""Finalmente, optimizando los parámetros:"""
+
 # ╔═╡ 13bf26e4-3be7-4030-aa93-84ab7b8d2e52
 oNLO.minimizer
 
 # ╔═╡ e31acf4e-0934-44e0-bff1-cd9afa3c864b
 oNLO.minimum
+
+# ╔═╡ 68edb892-1538-44ef-be5a-d9d2ed3264bb
+md"""Lo que nos permite saber que el mejor modelo sería:
+
+$V(t) \approx \frac{-193.225}{t}+345.609$
+Al igual, visualizar nuestra función aproximada con los datos obtenidos:"""
 
 # ╔═╡ 2b59c2da-b9f8-43ea-826a-9133f1f790b1
 begin
@@ -242,12 +251,17 @@ begin
 	
 end
 
+# ╔═╡ 867cafd7-5166-4b78-83fe-19e2620f340e
+md"""Notemos que los valores que fueron asignados a los parámetros $a$ y $b$ no contienen ningún valor cualitativo, por lo que no nos permiten predecir ni estimar."""
+
 # ╔═╡ 520b5819-bca1-42f9-b209-5bbaad2faf0f
 md"""
-### 2. Hiperbólico con desplazacmiento
-Sean $d, c \in \mathbb{R}$ los parámetros a ser optmizados:
+### 2. Hiperbólico con desplazamiento
+Sean $d, c \in \mathbb{R}$ los parámetros a ser optimizados en nuestro modelo:
 
 $V(t) \approx \frac{d}{t+c}$
+
+Ahora, formemos nuestra función residuo que nos permitirá estimar los mejores valores para los parámetros $c$ y $d$.
 """
 
 # ╔═╡ e8851a41-ef58-46fa-aec8-644389a4d451
@@ -261,6 +275,9 @@ function residuoNoLinealTwo(tuplaC, vDatos, tiempo)
 	return nRes
 end;
 
+# ╔═╡ 84e3f6b3-3965-4bd9-b2c5-ad1576925c67
+
+
 # ╔═╡ 19d68e50-019e-4d11-b6a2-a42dc5b793f5
 rNLT(tuplaC) = residuoNoLinealTwo(tuplaC,camas,dias);
 
@@ -273,6 +290,13 @@ oNLT.minimizer
 # ╔═╡ b3bb9bf2-0e70-4eb6-a3f2-f4b0fc52a8b3
 oNLT.minimum
 
+# ╔═╡ 3a8a8d6c-0153-4c62-9c8e-2dd9db26dca3
+md"""De igual manera que nuestro método hiperbólico ajustado, encontramos que este método tiene un desajuste grande, hasta más que el anterior. Por lo tanto, tenemos 
+
+$V(t) \approx \frac{60340.8}{t+184.948}$
+
+con su respectiva gráfica:"""
+
 # ╔═╡ faee0e7a-837b-4fe4-a4ab-f463d33f65a3
 begin
 	oNLTm = oNLT.minimizer
@@ -284,10 +308,16 @@ end
 # ╔═╡ faf8809b-2564-4533-a6cb-223841ef51f0
 md"""
 ### 3. Exponencial
-Sean $a, b \in \mathbb{R}$ los parámetros a ser optmizados:
+Asumamos que nuestro método tiene siguiente forma: 
 
 $V(t) \approx ae^{bt}$
+con $a, b \in \mathbb{R}$ los parámetros que deben ser optimizados.
+
+Un aspecto interesante de este enfoque es su relación con las ecuaciones diferenciales. En particular, cuando resolvemos una ecuación diferencial lineal homogénea de segundo orden, es común suponer que la solución adopta esta forma exponencial.
 """
+
+# ╔═╡ 8fb76862-6a94-4476-95fe-7d164a0843ee
+
 
 # ╔═╡ ac562837-5d8c-4267-8da0-feba868c5ccb
 function residuoNoLinealThree(tuplaC, vDatos, tiempo)
@@ -299,6 +329,9 @@ function residuoNoLinealThree(tuplaC, vDatos, tiempo)
 
 	return nRes
 end;
+
+# ╔═╡ c2a52be1-0899-4eca-b245-04eb5df55cb7
+md"""Ahora, formamos una función que solo dependa de los parámetros a optimizar y nos ayudamos de la libreria *Optim*:"""
 
 # ╔═╡ 7bac2553-65a8-4959-a21a-cde925a301d6
 rNLTh(tuplaC) = residuoNoLinealThree(tuplaC,camas,dias);
@@ -312,6 +345,12 @@ oNLTh.minimizer
 # ╔═╡ 9b7a0198-0f50-4725-8038-8e7ed7d1fd5f
 oNLTh.minimum
 
+# ╔═╡ 51b44545-8f04-48aa-b7a2-0f3762a7fb88
+md"""De modo similar, obtenemos los valores de nuestros parametros con un residuo muchísimo menor a los anteriores métodos y con una ilustración más cercana a los datos obtenidos. Esto es
+
+$V(t) \approx 212.45 e ^{0.034}$ 
+con su respectiva gráfica."""
+
 # ╔═╡ 5dac5ba8-aa77-4f1d-b0be-83e4a6f51ff7
 begin
 	oNLThm = oNLTh.minimizer
@@ -319,6 +358,15 @@ begin
 	plot(fechas, vModeloNLTh,lw=5, label = "Tercer Modelo no lineal óptimo");
 	scatter!(fechas, camas, ls =:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
 end
+
+# ╔═╡ ef6e48bc-d3ac-47a9-8e42-6466a267bbaf
+md"""Es importante destacar cómo el mejoramiento en la aproximación de nuestro método exponencial no solo optimiza el ajuste, sino que también aporta un significado cualitativo a los parámetros $a$ y $b$. Esto permite obtener estimaciones y predicciones más precisas, ofreciendo herramientas útiles para profesionales de la salud. En este contexto:
+
+1. Donde $a$ representa el valor inicial del estudio.
+
+2. Donde $b$ describe la tasa de crecimiento relativo, indicando la rapidez con la que cambia la variable en función del tiempo.
+
+Estos parámetros no solo mejoran el ajuste del modelo, sino que también contribuyen a una interpretación más intuitiva y práctica en aplicaciones del mundo real."""
 
 # ╔═╡ 37066bba-1995-4487-a1c1-d7201317fe76
 md"""
@@ -3164,30 +3212,39 @@ version = "1.4.1+1"
 # ╠═a3359ad2-b267-43c9-a685-50b20cce0621
 # ╠═7dfb1224-530c-4c51-bc28-196c000e907a
 # ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
-# ╠═3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
+# ╟─3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
 # ╠═2319d25e-e453-402e-87da-d31084cd274c
-# ╠═ffa7d0a1-5b82-4430-9075-4ee681a4a7db
+# ╟─ffa7d0a1-5b82-4430-9075-4ee681a4a7db
 # ╠═65390740-8720-4a68-80fb-fea00a8b68d4
-# ╠═f0d95245-d853-4238-9d81-a481d9ad2b24
+# ╟─f0d95245-d853-4238-9d81-a481d9ad2b24
 # ╠═8400776b-0ff4-460b-a484-2e51a45cb27b
 # ╠═422fd143-979f-4c16-9cc9-efe3ba006d86
+# ╟─f38f04b6-89aa-4063-b58a-dbd7b288b907
 # ╠═13bf26e4-3be7-4030-aa93-84ab7b8d2e52
 # ╠═e31acf4e-0934-44e0-bff1-cd9afa3c864b
+# ╟─68edb892-1538-44ef-be5a-d9d2ed3264bb
 # ╠═2b59c2da-b9f8-43ea-826a-9133f1f790b1
-# ╠═520b5819-bca1-42f9-b209-5bbaad2faf0f
+# ╟─867cafd7-5166-4b78-83fe-19e2620f340e
+# ╟─520b5819-bca1-42f9-b209-5bbaad2faf0f
 # ╠═e8851a41-ef58-46fa-aec8-644389a4d451
+# ╠═84e3f6b3-3965-4bd9-b2c5-ad1576925c67
 # ╠═19d68e50-019e-4d11-b6a2-a42dc5b793f5
 # ╠═a4c87462-5b30-4bdd-8fe1-1a2c788cd5bf
 # ╠═ffbd8964-71e2-4550-8d7f-3906ba6194ac
 # ╠═b3bb9bf2-0e70-4eb6-a3f2-f4b0fc52a8b3
+# ╟─3a8a8d6c-0153-4c62-9c8e-2dd9db26dca3
 # ╠═faee0e7a-837b-4fe4-a4ab-f463d33f65a3
-# ╠═faf8809b-2564-4533-a6cb-223841ef51f0
+# ╟─faf8809b-2564-4533-a6cb-223841ef51f0
+# ╠═8fb76862-6a94-4476-95fe-7d164a0843ee
 # ╠═ac562837-5d8c-4267-8da0-feba868c5ccb
+# ╟─c2a52be1-0899-4eca-b245-04eb5df55cb7
 # ╠═7bac2553-65a8-4959-a21a-cde925a301d6
 # ╠═79d13bb9-973d-4369-8b87-1cab27c431cc
 # ╠═659d81ea-f490-4a5e-930e-87490bda132e
 # ╠═9b7a0198-0f50-4725-8038-8e7ed7d1fd5f
+# ╟─51b44545-8f04-48aa-b7a2-0f3762a7fb88
 # ╠═5dac5ba8-aa77-4f1d-b0be-83e4a6f51ff7
+# ╟─ef6e48bc-d3ac-47a9-8e42-6466a267bbaf
 # ╠═37066bba-1995-4487-a1c1-d7201317fe76
 # ╠═8a499b8e-c705-454d-a4fa-58e67ef6e16f
 # ╠═c8725392-9527-4e23-a407-1f26cb9d2d6c
