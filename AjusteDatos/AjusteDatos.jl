@@ -61,7 +61,7 @@ md"""Para ilustrar el procedimiento, ajustaremos los datos a los siguientes mode
 2. Un modelo polinomial cúbico.
 3. Un modelo de redes neuronales artificiales.
 4. Algunos modelos no lineales.
-4. Un modelo de ecuaciones diferenciales."""
+5. Un modelo de ecuaciones diferenciales."""
 
 
 # ╔═╡ 294d3337-5bc9-4e47-a168-c1f1cc988581
@@ -276,7 +276,7 @@ function residuoNoLinealTwo(tuplaC, vDatos, tiempo)
 end;
 
 # ╔═╡ 84e3f6b3-3965-4bd9-b2c5-ad1576925c67
-
+md"""Luego, procedemos con la mismas ideas anteriores:"""
 
 # ╔═╡ 19d68e50-019e-4d11-b6a2-a42dc5b793f5
 rNLT(tuplaC) = residuoNoLinealTwo(tuplaC,camas,dias);
@@ -317,7 +317,7 @@ Un aspecto interesante de este enfoque es su relación con las ecuaciones difere
 """
 
 # ╔═╡ 8fb76862-6a94-4476-95fe-7d164a0843ee
-
+md"""Creamos nuestra función residuo:"""
 
 # ╔═╡ ac562837-5d8c-4267-8da0-feba868c5ccb
 function residuoNoLinealThree(tuplaC, vDatos, tiempo)
