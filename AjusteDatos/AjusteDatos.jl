@@ -44,9 +44,10 @@ begin
 		Date("20/01/2022", df) 	431
 	];
 
-	 fechas = Datos[:,1];
+	fechas = Datos[:,1];
 	dias = collect(1:size(fechas, 1));
 	camas = Datos[:,2];
+	arrAux = fill(1, size(dias));
 	Datos
 	# Dates.value(fechas[1])
 end
@@ -104,6 +105,13 @@ oL.minimizer
 # ╔═╡ c1b67505-7bf7-4be8-beae-12794fdc2a7e
 oL.minimum
 
+# ╔═╡ b3732f0b-26a1-4577-984f-1cd5411104fe
+begin
+	vModeloL = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
+	plot(fechas, vModeloL, lw=5, label="Modelo lineal óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+end
+
 # ╔═╡ 2b4b2fe4-ffe2-4ece-acda-73f1e00873ee
 md"""
 
@@ -141,6 +149,26 @@ oCub.minimizer
 # ╔═╡ 537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
 oCub.minimum
 
+# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
+begin
+	# arrAux2 = fill(1, size(fechas));
+	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
+	plot(fechas, vModeloCub, lw=5, label="Modelo lineal óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
+end
+
+<<<<<<< Updated upstream
+=======
+# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
+begin
+	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
+	plot(fechas, vModeloCub, lw=5, label="Modelo Cúbico óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
+end
+
+>>>>>>> Stashed changes
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
 md"""
 ## Modelo de redes neuronales artificiales
@@ -242,13 +270,12 @@ begin
 	
 end
 
-# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
+# ╔═╡ 2b59c2da-b9f8-43ea-826a-9133f1f790b1
 begin
-	# arrAux2 = fill(1, size(fechas));
-	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
-	plot(fechas, vModeloCub, lw=5, label="Modelo lineal óptimo");
-	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-	
+	oNLOm = oNLO.minimizer
+	vModeloNLO = oNLOm[1] * (arrAux./ (dias)) + oNLOm[2] * arrAux
+	plot(fechas, vModeloNLO,lw=5, label = "Primer Modelo no lineal óptimo");
+	scatter!(fechas, camas, ls =:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
 end
 
 # ╔═╡ 867cafd7-5166-4b78-83fe-19e2620f340e
@@ -256,6 +283,8 @@ md"""Notemos que los valores que fueron asignados a los parámetros $a$ y $b$ no
 
 # ╔═╡ 520b5819-bca1-42f9-b209-5bbaad2faf0f
 md"""
+### 2. Hiperbólico con desplazamiento
+Sean $d, c \in \mathbb{R}$ los parámetros a ser optmizados:
 ### 2. Hiperbólico con desplazamiento
 Sean $d, c \in \mathbb{R}$ los parámetros a ser optimizados en nuestro modelo:
 
@@ -412,6 +441,58 @@ md"""
 # Modelos basados en Ecuaciones Diferenciales
 """
 
+# ╔═╡ aa7176a0-48d0-4cc7-983c-38929282f3cb
+md"""
+### Modelo de von Bertalanffy
+$V'=aV^{\frac{2}{3}}-bV$
+"""
+
+# ╔═╡ 72aa94d7-2d7b-46a3-9da9-081ae7137ac6
+modeloVB(vDatos, tupla, tiempo) = tupla[1] * (vDatos ^ (2/3)) - tupla[2] * vDatos
+
+# ╔═╡ 41c5ff90-6a29-4b46-a145-c3dfc26c234e
+function residuoVB(tupla,vDatos,tiempo)
+   	dominioTiempo = (0,30);
+  	V0 = 222;
+ 	EDO = ODEProblem(modeloVB, V0, dominioTiempo, tupla);
+  	Sol = solve(EDO);
+  	vModelo = [Sol(t) for t in tiempo];
+  	res = vDatos - vModelo;
+  	nRes = norm(res);
+	return nRes;
+end
+
+# ╔═╡ fe5c63c6-db9b-42a0-80d3-9714d393f441
+residuoVB([1 1],camas,dias)
+
+# ╔═╡ e6019a5a-83e0-41de-be82-3d5c71bbc047
+rVB(tupla) = residuoVB(tupla, camas, dias)
+
+# ╔═╡ bd9ca7ec-35e1-452c-89a6-0823df747e12
+oVB = Optim.optimize(rVB, [.01,.01], NelderMead())
+
+# ╔═╡ 9c9a62f8-4719-4c35-89a0-c6142fa2fa57
+oVB.minimizer
+
+# ╔═╡ 001ff16c-b315-4b92-bd57-06a869b5f7ff
+oVB.minimum
+
+# ╔═╡ 69a7a377-6df6-4378-8573-767525c06ac6
+begin
+	dominioTiempo=(Dates.value(Date("01/01/2022", df)), Dates.value(Date("25/01/2022", df)))
+	V0=222
+	oVBtupla=oVB.minimizer
+	EDOoptima=ODEProblem(modeloVB,V0,dominioTiempo,oVBtupla)
+	VEDOoptima=solve(EDOoptima)
+	plot(VEDOoptima,lw=5,label="EDO optima")
+	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
+end
+
+# ╔═╡ 3d48e22c-4bd0-4384-ae18-0fc88344a0aa
+md"""
+## Modelo de Crecimiento Logístico
+"""
+
 # ╔═╡ d4703198-4f45-49b7-ab5a-06ec61da41fc
 md"""
 $$V' = aV\left(1 - \frac{V}{b}\right),$$
@@ -440,19 +521,28 @@ rCL(tupla) = residuoCL(tupla, camas, dias)
 
 # ╔═╡ 26432f87-c19e-4110-94a1-54d153b8bf7e
 # ╠═╡ show_logs = false
+# ╠═╡ disabled = true
+#=╠═╡
 oCL = Optim.optimize(rCL, [.01,.01], NelderMead())
+  ╠═╡ =#
 
 # ╔═╡ ee04760f-e861-4f52-87ea-09b9155199fd
+#=╠═╡
 oCL.minimizer
+  ╠═╡ =#
+
+# ╔═╡ 428ce68b-6bab-4c32-baae-f1c58a63ca02
+#=╠═╡
+oCL.minimum
+  ╠═╡ =#
 
 # ╔═╡ 61f70619-ecef-4d5a-9135-45bcad412e01
+#=╠═╡
 begin
-	dominioTiempo=(Dates.value(Date("31/12/2021", df)), Dates.value(Date("30/01/2022", df)))
-	V0=222
 	oCLtupla=oCL.minimizer
-	EDOoptima=ODEProblem(modeloCL,V0,dominioTiempo,oCLtupla)
-	VEDOoptima=solve(EDOoptima)
-	plot(VEDOoptima,lw=5,label="EDO optima")
+	EDOoptima2=ODEProblem(modeloCL,V0,dominioTiempo,oCLtupla)
+	VEDOoptima2=solve(EDOoptima2)
+	plot(VEDOoptima2,lw=5,label="EDO optima")
 	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
 end
 
@@ -3252,6 +3342,18 @@ version = "1.4.1+1"
 # ╠═4dd33dcf-d48d-41d9-b245-bb18f538206c
 # ╠═70443317-e15e-46ba-b98b-38e7e639cc4e
 # ╟─74011f7b-4aec-4e37-8206-9679ada6f685
+# ╟─44d043ce-c2e8-4ba2-8278-e4ab571ee244
+# ╠═aa7176a0-48d0-4cc7-983c-38929282f3cb
+# ╠═72aa94d7-2d7b-46a3-9da9-081ae7137ac6
+# ╠═41c5ff90-6a29-4b46-a145-c3dfc26c234e
+# ╠═fe5c63c6-db9b-42a0-80d3-9714d393f441
+# ╠═e6019a5a-83e0-41de-be82-3d5c71bbc047
+# ╠═bd9ca7ec-35e1-452c-89a6-0823df747e12
+# ╠═9c9a62f8-4719-4c35-89a0-c6142fa2fa57
+# ╠═001ff16c-b315-4b92-bd57-06a869b5f7ff
+# ╠═69a7a377-6df6-4378-8573-767525c06ac6
+# ╠═3d48e22c-4bd0-4384-ae18-0fc88344a0aa
+# ╟─d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
 # ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
@@ -3260,6 +3362,16 @@ version = "1.4.1+1"
 # ╠═d802b272-cbf4-41e6-ab4e-ae786246c86c
 # ╠═26432f87-c19e-4110-94a1-54d153b8bf7e
 # ╠═ee04760f-e861-4f52-87ea-09b9155199fd
+# ╠═428ce68b-6bab-4c32-baae-f1c58a63ca02
 # ╠═61f70619-ecef-4d5a-9135-45bcad412e01
+# ╠═66fcf5e0-b0f8-4b3f-9a08-335cbffc5239
+# ╠═0e4e9e27-9918-4620-9be9-8b82af3719a3
+# ╠═411c7315-55e2-4a01-9a1f-0b3e164e6534
+# ╠═d6c360df-5d43-4e0d-9563-d975c4db0c7b
+# ╠═a0c45d59-d929-44fb-83c3-158e1408a51c
+# ╠═b0ea88e3-8c8e-49f8-84b4-20cae5fbef2b
+# ╠═6c794132-063b-4b08-8eb0-06df78c9339b
+# ╟─00000000-0000-0000-0000-000000000001
+# ╟─00000000-0000-0000-0000-000000000002
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
