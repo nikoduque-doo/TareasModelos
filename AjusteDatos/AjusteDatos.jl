@@ -150,72 +150,35 @@ oCub.minimizer
 # ╔═╡ 537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
 oCub.minimum
 
-# ╔═╡ 158204bb-0342-4900-9a59-67acc8d1f9a1
-md"""
-Entonces, nuestra función optima segun el algoritmo usado seria:
-
-$V(t) \approx 185.333+19.862t+-1.245t^2+0.043t^3$
-"""
-
 # ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
 begin
 	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
 	plot(fechas, vModeloCub, lw=5, label="Modelo Cúbico óptimo");
 	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
 end
 
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
 md"""
 ## Modelo de redes neuronales artificiales
 
-Ahora continuamos con el modelo de redes neuronales artificiales. aqui buscaremos valores $a,b,c,d,f,g\in\mathbb{R}$ tal que nos aproxime la función
+Empezaremos con el modelo lineal, que asumiremos tiene la siguiente forma: 
 
-$V(t) \approx a\frac{1}{1+e^{bt+ c}}+d\frac{1}{1+e^{ft+g}}$
+$V(t) \approx a + bt + ct^2 + dt^3$
 
-entonces proseguimos construyendo con la función a minimizar
+Y entonces buscamos encontrar los parámetros $a, b \in \mathbb{R}$ tal que minimicen nuestro residuo. Para calcular el residuo, creamos la siguiente función, donde nuestra entrada será *tuplaC*, una tupla que representa nuestro valor inicial para la optimización, *vDatos*, que será el vector de datos de las camas, y *tiempo*, que corresponderá a nuestros días.
+
 """
 
 # ╔═╡ d3001ce5-5d33-45b1-ab73-90c340d80fb3
 function residuoRedesNeuronalesArtificiales(tuplaC, vDatos, tiempo)
-	a,b,c,d,f,g = tuplaC;
+	a,b = tuplaC;
 	arrAux = fill(1, size(tiempo));
-	vModelo=a *( arrAux./(arrAux+exp.( b*tiempo + c*arrAux )))+ d *( arrAux./(arrAux+exp.( f*tiempo + g*arrAux )))
+	vModelo = a * arrAux + b * tiempo;
 	res=vDatos-vModelo
 	nRes=norm(res)
 
 	return nRes
-
-end
-
-# ╔═╡ 6ac8b9da-eb3d-4d05-8b8b-0dbbe1600927
-rRNA(tuplaC) = residuoRedesNeuronalesArtificiales(tuplaC, camas, dias)
-
-# ╔═╡ ae744c3d-7bde-4d14-8605-c359ef71b91f
-oRNA=Optim.optimize(rRNA, [.1,.001,.001,.001,.001,.001], LBFGS())
-
-# ╔═╡ 8f63fee6-7b46-4abd-be48-47af54236e03
-oRNA.minimizer
-
-# ╔═╡ c82edc8d-c553-42b3-b181-7cde493dd3bc
-oRNA.minimum
-
-# ╔═╡ 3fd0b6db-6a86-48e4-a387-3f1651e3da74
-md"""
-La función que minimiza el residuo con las Redes neuronales artificiales seria aproximadamente la siguiente
-
-$V(t) \approx -94.064\frac{1}{1+e^{-24740.6t+ -2125.72}}+84746.2\frac{1}{1+e^{-0.027t+5.629}}$
-
-
-"""
-
-# ╔═╡ 7a8610a4-96ca-4c91-9536-04272bbd73a9
-begin
-	vModeloRNA = oRNA.minimizer[1] * 
-	( arrAux./(arrAux+exp.( oRNA.minimizer[2]*dias + oRNA.minimizer[3]*arrAux ))) + oRNA.minimizer[4] *( arrAux./(arrAux+exp.( oRNA.minimizer[5]*dias + oRNA.minimizer[6]*arrAux )))
-	
-	plot(fechas, vModeloRNA, lw=5, label="Modelo Cúbico óptimo");
-	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-	
 end
 
 # ╔═╡ 3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
@@ -572,17 +535,6 @@ begin
 	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
 end
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstrea
-
-# ╔═╡ 942d6518-c556-4eb7-8928-36bece52a9f2
-md"""
-abc
-"""
-======
-
->>>>>>> Stashed changes
 # ╔═╡ e9c63094-35a0-4bed-9c64-8dd07d491b8d
 md"""def"""
 
@@ -596,7 +548,7 @@ Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
 [compat]
-DifferentialEquations = "~7.15.0"
+DifferentialEquations = "~7.14.0"
 Optim = "~1.9.4"
 Plots = "~1.40.8"
 """
@@ -607,7 +559,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.1"
 manifest_format = "2.0"
-project_hash = "3d174e0c21ecab67d7af3ac86dd13cb3a3c6c6a8"
+project_hash = "094de53b6ebcf6c7db79521d19cda06ee5453a98"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "eea5d80188827b35333801ef97a40c2ed653b081"
@@ -1015,10 +967,11 @@ version = "6.158.3"
     Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [[deps.DiffEqCallbacks]]
-deps = ["ConcreteStructs", "DataStructures", "DiffEqBase", "DifferentiationInterface", "Functors", "LinearAlgebra", "Markdown", "RecipesBase", "RecursiveArrayTools", "SciMLBase", "StaticArraysCore"]
-git-tree-sha1 = "b1f970a2873a2cf76ce35fb0ed2b755a11b31052"
+deps = ["DataStructures", "DiffEqBase", "ForwardDiff", "Functors", "LinearAlgebra", "Markdown", "NonlinearSolve", "Parameters", "RecipesBase", "RecursiveArrayTools", "SciMLBase", "StaticArraysCore"]
+git-tree-sha1 = "19dbd44d18bbfdfcf5e56c99cea9b0ed23df350a"
 uuid = "459566f4-90b8-5000-8ac3-15dfb0a30def"
-version = "4.1.0"
+version = "3.9.1"
+weakdeps = ["OrdinaryDiffEq", "OrdinaryDiffEqCore", "Sundials"]
 
 [[deps.DiffEqNoiseProcess]]
 deps = ["DiffEqBase", "Distributions", "GPUArraysCore", "LinearAlgebra", "Markdown", "Optim", "PoissonRandom", "QuadGK", "Random", "Random123", "RandomNumbers", "RecipesBase", "RecursiveArrayTools", "ResettableStacks", "SciMLBase", "StaticArraysCore", "Statistics"]
@@ -1046,15 +999,15 @@ version = "1.15.1"
 
 [[deps.DifferentialEquations]]
 deps = ["BoundaryValueDiffEq", "DelayDiffEq", "DiffEqBase", "DiffEqCallbacks", "DiffEqNoiseProcess", "JumpProcesses", "LinearAlgebra", "LinearSolve", "NonlinearSolve", "OrdinaryDiffEq", "Random", "RecursiveArrayTools", "Reexport", "SciMLBase", "SteadyStateDiffEq", "StochasticDiffEq", "Sundials"]
-git-tree-sha1 = "d55af9d6b51c54f81ae30d1a463206d32cc4c24a"
+git-tree-sha1 = "d851f2ca05f3cec9988f081b047a778a58b48aaf"
 uuid = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
-version = "7.15.0"
+version = "7.14.0"
 
 [[deps.DifferentiationInterface]]
 deps = ["ADTypes", "LinearAlgebra"]
-git-tree-sha1 = "5e27b35fae15c8f955c07edf608baa21d091e366"
+git-tree-sha1 = "95cf94719d2f71ad8b8c7ba3eb0accc978626856"
 uuid = "a0c0ee7d-e4b9-4e03-894e-1c5f64a51d63"
-version = "0.6.20"
+version = "0.6.18"
 
     [deps.DifferentiationInterface.extensions]
     DifferentiationInterfaceChainRulesCoreExt = "ChainRulesCore"
@@ -1110,9 +1063,9 @@ version = "1.11.0"
 
 [[deps.Distributions]]
 deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "3101c32aab536e7a27b1763c0797dba151b899ad"
+git-tree-sha1 = "d7477ecdafb813ddee2ae727afa94e9dcb5f3fb0"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.113"
+version = "0.25.112"
 
     [deps.Distributions.extensions]
     DistributionsChainRulesCoreExt = "ChainRulesCore"
@@ -2111,9 +2064,9 @@ version = "1.2.1"
 
 [[deps.OrdinaryDiffEqNonlinearSolve]]
 deps = ["ADTypes", "ArrayInterface", "DiffEqBase", "FastBroadcast", "FastClosures", "ForwardDiff", "LinearAlgebra", "LinearSolve", "MuladdMacro", "NonlinearSolve", "OrdinaryDiffEqCore", "OrdinaryDiffEqDifferentiation", "PreallocationTools", "RecursiveArrayTools", "SciMLBase", "SciMLOperators", "SciMLStructures", "SimpleNonlinearSolve", "StaticArrays"]
-git-tree-sha1 = "e4be6539f4aaae8db1f29fcfdf6ef817df1f25cf"
+git-tree-sha1 = "a2a4119f3e35f7982f78e17beea7b12485d179e9"
 uuid = "127b3ac7-2247-4354-8eb6-78cf4e7c58e8"
-version = "1.2.2"
+version = "1.2.1"
 
 [[deps.OrdinaryDiffEqNordsieck]]
 deps = ["DiffEqBase", "FastBroadcast", "LinearAlgebra", "MuladdMacro", "OrdinaryDiffEqCore", "OrdinaryDiffEqTsit5", "Polyester", "RecursiveArrayTools", "Reexport", "Static"]
@@ -2434,9 +2387,9 @@ version = "0.6.12"
 
 [[deps.RecursiveArrayTools]]
 deps = ["Adapt", "ArrayInterface", "DocStringExtensions", "GPUArraysCore", "IteratorInterfaceExtensions", "LinearAlgebra", "RecipesBase", "StaticArraysCore", "Statistics", "SymbolicIndexingInterface", "Tables"]
-git-tree-sha1 = "6f4dca5fd8e97087a76b7ab8384d1c3086ace0b7"
+git-tree-sha1 = "ed2514425d030d7c9054fa0f2275ada45681788d"
 uuid = "731186ca-8d62-57ce-b412-fbd966d074cd"
-version = "3.27.3"
+version = "3.27.2"
 
     [deps.RecursiveArrayTools.extensions]
     RecursiveArrayToolsFastBroadcastExt = "FastBroadcast"
@@ -2532,9 +2485,9 @@ version = "0.6.43"
 
 [[deps.SciMLBase]]
 deps = ["ADTypes", "Accessors", "ArrayInterface", "CommonSolve", "ConstructionBase", "Distributed", "DocStringExtensions", "EnumX", "Expronicon", "FunctionWrappersWrappers", "IteratorInterfaceExtensions", "LinearAlgebra", "Logging", "Markdown", "PrecompileTools", "Preferences", "Printf", "RecipesBase", "RecursiveArrayTools", "Reexport", "RuntimeGeneratedFunctions", "SciMLOperators", "SciMLStructures", "StaticArraysCore", "Statistics", "SymbolicIndexingInterface"]
-git-tree-sha1 = "f102316e5c958b425ef530ee51c7c8a1def55d1f"
+git-tree-sha1 = "7a54136472ca0cb0f66ef22aa3f0ff198f379fa7"
 uuid = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
-version = "2.58.1"
+version = "2.58.0"
 
     [deps.SciMLBase.extensions]
     SciMLBaseChainRulesCoreExt = "ChainRulesCore"
@@ -2863,9 +2816,9 @@ version = "3.7.2"
 
 [[deps.Symbolics]]
 deps = ["ADTypes", "ArrayInterface", "Bijections", "CommonWorldInvalidations", "ConstructionBase", "DataStructures", "DiffRules", "Distributions", "DocStringExtensions", "DomainSets", "DynamicPolynomials", "IfElse", "LaTeXStrings", "Latexify", "Libdl", "LinearAlgebra", "LogExpFunctions", "MacroTools", "Markdown", "NaNMath", "PrecompileTools", "Primes", "RecipesBase", "Reexport", "RuntimeGeneratedFunctions", "SciMLBase", "Setfield", "SparseArrays", "SpecialFunctions", "StaticArraysCore", "SymbolicIndexingInterface", "SymbolicLimits", "SymbolicUtils", "TermInterface"]
-git-tree-sha1 = "0caef7687abf7094132fa3112bf5514c36a99226"
+git-tree-sha1 = "41852067b437d16a3ad4e01705ffc6e22925c42c"
 uuid = "0c5d862f-8b57-4792-8d23-62f2024744c7"
-version = "6.18.3"
+version = "6.17.0"
 
     [deps.Symbolics.extensions]
     SymbolicsForwardDiffExt = "ForwardDiff"
@@ -3338,21 +3291,9 @@ version = "1.4.1+1"
 # ╠═97d224a5-09f0-4414-89c2-b5400bce79f4
 # ╠═1f4e3c04-7515-4203-9414-a8860243cf2f
 # ╠═537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
-<<<<<<< Updated upstream
 # ╟─a3359ad2-b267-43c9-a685-50b20cce0621
 # ╟─7dfb1224-530c-4c51-bc28-196c000e907a
-=======
-# ╠═158204bb-0342-4900-9a59-67acc8d1f9a1
-# ╠═a3359ad2-b267-43c9-a685-50b20cce0621
-# ╠═7dfb1224-530c-4c51-bc28-196c000e907a
->>>>>>> Stashed changes
 # ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
-# ╠═6ac8b9da-eb3d-4d05-8b8b-0dbbe1600927
-# ╠═ae744c3d-7bde-4d14-8605-c359ef71b91f
-# ╠═8f63fee6-7b46-4abd-be48-47af54236e03
-# ╠═c82edc8d-c553-42b3-b181-7cde493dd3bc
-# ╠═3fd0b6db-6a86-48e4-a387-3f1651e3da74
-# ╠═7a8610a4-96ca-4c91-9536-04272bbd73a9
 # ╟─3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
 # ╠═2319d25e-e453-402e-87da-d31084cd274c
 # ╟─ffa7d0a1-5b82-4430-9075-4ee681a4a7db
@@ -3416,10 +3357,6 @@ version = "1.4.1+1"
 # ╠═428ab073-94f6-45ef-9171-ee69f057ff5a
 # ╠═ddb395d5-3b82-4d4b-9483-ece75294857f
 # ╠═4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
-<<<<<<< Updated upstream
-=======
-# ╠═942d6518-c556-4eb7-8928-36bece52a9f2
->>>>>>> Stashed changes
 # ╠═e9c63094-35a0-4bed-9c64-8dd07d491b8d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
