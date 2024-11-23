@@ -158,8 +158,6 @@ begin
 	
 end
 
->>>>>>> Stashed change
-
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
 md"""
 ## Modelo de redes neuronales artificiales
@@ -257,8 +255,6 @@ md"""Notemos que los valores que fueron asignados a los parámetros $a$ y $b$ no
 
 # ╔═╡ 520b5819-bca1-42f9-b209-5bbaad2faf0f
 md"""
-### 2. Hiperbólico con desplazamiento
-Sean $d, c \in \mathbb{R}$ los parámetros a ser optmizados:
 ### 2. Hiperbólico con desplazamiento
 Sean $d, c \in \mathbb{R}$ los parámetros a ser optimizados en nuestro modelo:
 
@@ -493,25 +489,17 @@ residuoCL([1 1],camas,dias)
 # ╔═╡ d802b272-cbf4-41e6-ab4e-ae786246c86c
 rCL(tupla) = residuoCL(tupla, camas, dias)
 
-# ╔═╡ 26432f87-c19e-4110-94a1-54d153b8bf7e
+# ╔═╡ fc71ce48-b773-4cbc-9f96-80e442ba85d0
 # ╠═╡ show_logs = false
-# ╠═╡ disabled = true
-#=╠═╡
 oCL = Optim.optimize(rCL, [.01,.01], NelderMead())
-  ╠═╡ =#
 
-# ╔═╡ ee04760f-e861-4f52-87ea-09b9155199fd
-#=╠═╡
+# ╔═╡ 428ab073-94f6-45ef-9171-ee69f057ff5a
 oCL.minimizer
-  ╠═╡ =#
 
-# ╔═╡ 428ce68b-6bab-4c32-baae-f1c58a63ca02
-#=╠═╡
+# ╔═╡ ddb395d5-3b82-4d4b-9483-ece75294857f
 oCL.minimum
-  ╠═╡ =#
 
-# ╔═╡ 61f70619-ecef-4d5a-9135-45bcad412e01
-#=╠═╡
+# ╔═╡ 4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
 begin
 	oCLtupla=oCL.minimizer
 	EDOoptima2=ODEProblem(modeloCL,V0,dominioTiempo,oCLtupla)
@@ -519,7 +507,6 @@ begin
 	plot(VEDOoptima2,lw=5,label="EDO optima")
 	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
 end
-  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3290,7 +3277,7 @@ version = "1.4.1+1"
 # ╟─68edb892-1538-44ef-be5a-d9d2ed3264bb
 # ╟─2b59c2da-b9f8-43ea-826a-9133f1f790b1
 # ╟─867cafd7-5166-4b78-83fe-19e2620f340e
-# ╟─520b5819-bca1-42f9-b209-5bbaad2faf0f
+# ╠═520b5819-bca1-42f9-b209-5bbaad2faf0f
 # ╠═e8851a41-ef58-46fa-aec8-644389a4d451
 # ╠═84e3f6b3-3965-4bd9-b2c5-ad1576925c67
 # ╠═19d68e50-019e-4d11-b6a2-a42dc5b793f5
@@ -3333,9 +3320,9 @@ version = "1.4.1+1"
 # ╠═a4fa1201-9189-45b2-be4b-fa92a76c8930
 # ╠═b50cf6c5-07bb-4a9a-8c33-28b37d5ced42
 # ╠═d802b272-cbf4-41e6-ab4e-ae786246c86c
-# ╠═26432f87-c19e-4110-94a1-54d153b8bf7e
-# ╠═ee04760f-e861-4f52-87ea-09b9155199fd
-# ╠═428ce68b-6bab-4c32-baae-f1c58a63ca02
-# ╠═61f70619-ecef-4d5a-9135-45bcad412e01
+# ╠═fc71ce48-b773-4cbc-9f96-80e442ba85d0
+# ╠═428ab073-94f6-45ef-9171-ee69f057ff5a
+# ╠═ddb395d5-3b82-4d4b-9483-ece75294857f
+# ╠═4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
