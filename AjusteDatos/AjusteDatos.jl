@@ -508,6 +508,11 @@ begin
 	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
 end
 
+# ╔═╡ 942d6518-c556-4eb7-8928-36bece52a9f2
+md"""
+abc
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -3324,5 +3329,6 @@ version = "1.4.1+1"
 # ╠═428ab073-94f6-45ef-9171-ee69f057ff5a
 # ╠═ddb395d5-3b82-4d4b-9483-ece75294857f
 # ╠═4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
+# ╠═942d6518-c556-4eb7-8928-36bece52a9f2
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
