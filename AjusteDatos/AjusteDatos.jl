@@ -46,7 +46,7 @@ begin
 
 	fechas = Datos[:,1];
 	dias = collect(1:size(fechas, 1));
-	camas = Datos[:,2];
+	camas = Datos[:,2]
 	arrAux = fill(1, size(dias));
 	Datos
 	# Dates.value(fechas[1])
@@ -105,6 +105,15 @@ oL.minimizer
 # ╔═╡ c1b67505-7bf7-4be8-beae-12794fdc2a7e
 oL.minimum
 
+# ╔═╡ 4049bd2a-666d-404e-8a2a-0ead699e57de
+md"""
+Nuestra función que minimiza el residuo bajo estas condiciones es ent
+
+$V(t) \approx 199.068 + 10.646t$
+
+con un residuo aproximado de $55.778$ 
+"""
+
 # ╔═╡ b3732f0b-26a1-4577-984f-1cd5411104fe
 begin
 	vModeloL = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
@@ -150,6 +159,13 @@ oCub.minimizer
 # ╔═╡ 537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
 oCub.minimum
 
+# ╔═╡ cec7611c-8e9e-48e4-b91f-7e395ff533d6
+md"""
+Entonces, nuestra función optima segun el algoritmo usado seria:
+
+$V(t) \approx 185.333+19.862t+-1.245t^2+0.043t^3$ con un residuo aproximado de $45.014$ 
+"""
+
 # ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
 begin
 	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
@@ -160,25 +176,77 @@ end
 
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
 md"""
-## Modelo de redes neuronales artificiales
+## Modelo de Redes Neuronales Artificiales
 
-Empezaremos con el modelo lineal, que asumiremos tiene la siguiente forma: 
+Ahora continuamos con el modelo de redes neuronales artificiales. Aquí buscaremos valores $a$, $b$, $c$, $d$, $f$, $g \in \mathbb{R}$ tal que nos aproxime la función:
 
-$V(t) \approx a + bt + ct^2 + dt^3$
+$V(t) \approx a\frac{1}{1+e^{bt+c}} + d\frac{1}{1+e^{ft+g}}$
 
-Y entonces buscamos encontrar los parámetros $a, b \in \mathbb{R}$ tal que minimicen nuestro residuo. Para calcular el residuo, creamos la siguiente función, donde nuestra entrada será *tuplaC*, una tupla que representa nuestro valor inicial para la optimización, *vDatos*, que será el vector de datos de las camas, y *tiempo*, que corresponderá a nuestros días.
-
+Entonces, proseguimos construyendo la función a minimizar.
 """
 
 # ╔═╡ d3001ce5-5d33-45b1-ab73-90c340d80fb3
-function residuoRedesNeuronalesArtificiales(tuplaC, vDatos, tiempo)
-	a,b = tuplaC;
+function modeloRNA(tuplaC, vDatos, tiempo)
+	a,b,c,d,f,g = tuplaC;
 	arrAux = fill(1, size(tiempo));
-	vModelo = a * arrAux + b * tiempo;
+	vModelo=a *( arrAux./(arrAux+exp.( b*tiempo + c*arrAux )))+ d *( arrAux./(arrAux+exp.( f*tiempo + g*arrAux )))
 	res=vDatos-vModelo
 	nRes=norm(res)
 
 	return nRes
+
+end
+
+# ╔═╡ 94f410d0-28d5-454c-94e9-77fa0304453b
+rRNA(tuplaC) = modeloRNA(tuplaC, camas, dias)
+
+# ╔═╡ 8486e101-a353-47d1-a2cf-8649e061fa1c
+oRNA=Optim.optimize(rRNA, [.1,.001,.001,.001,.001,.001], LBFGS())
+
+# ╔═╡ f939cefc-3920-434f-9276-8bfb732ec546
+oRNA.minimizer
+
+# ╔═╡ 0b80d3ff-0d76-43c1-9797-2af6a1438cc8
+oRNA.minimum
+
+# ╔═╡ aef0c309-c742-494e-8eb7-f33473483331
+md"""
+La función que minimiza el residuo con las Redes neuronales artificiales seria aproximadamente la siguiente
+
+$V(t) \approx -94.064\frac{1}{1+e^{-24740.6t+ -2125.72}}+84746.2\frac{1}{1+e^{-0.027t+5.629}}$
+
+Y tiene un residuo aproximado de $53.062$
+"""
+
+# ╔═╡ 67e5d06d-f572-4a96-9b84-2f9e6233107e
+begin
+	vModeloRNA = oRNA.minimizer[1] * 
+	( arrAux./(arrAux+exp.( oRNA.minimizer[2]*dias + oRNA.minimizer[3]*arrAux ))) + oRNA.minimizer[4] *( arrAux./(arrAux+exp.( oRNA.minimizer[5]*dias + oRNA.minimizer[6]*arrAux )))
+	
+	plot(fechas, vModeloRNA, lw=5, label="Modelo Redes Neuronales Artificiales óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
+end
+
+# ╔═╡ 3f36f4e0-3d91-4b0b-af5c-86496f52600b
+md"""
+### Análisis de los Modelos Presentados
+
+Dentro de lo revisado entre estos tres modelos, habíamos supuesto que el que quedaría con menor residuo sería el de redes neuronales, pero como se puede ver, en realidad fue el cúbico, lo que también da a entender que el modo en el que se desarrollan los datos y su contexto pueden darnos pistas sobre qué tipo de modelos usar. A continuación se presenta una tabla con los tres modelos.
+
+Vale aclarar que, como se trabajan muchos más modelos en este cuaderno, hemos preferido fusionar las tablas de estos modelos únicamente para ayudar al lector.
+
+"""
+
+# ╔═╡ 5bf52a7a-7533-4131-823b-10809d7c3db0
+begin
+	plot(fechas, vModeloL, lw=5, label="Modelo lineal óptimo");
+
+	plot!(fechas, vModeloCub, lw=5, label="Modelo Cúbico óptimo");
+	
+	plot!(fechas, vModeloRNA, lw=5, label="Modelo Redes Neuronales Artificiales óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
 end
 
 # ╔═╡ 3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
@@ -214,7 +282,7 @@ md"""A partir de nuestra función residuo, podremos aproximar los mejores valore
 Sin embargo, es importante destacar que este modelo nos genera un desajuste significativo. Por ejemplo, si $a = 5$ y $b=10$, esto es $V(t) \approx \frac{5}{t}+10$, este es aproximadamente $1371.037$."""
 
 # ╔═╡ 65390740-8720-4a68-80fb-fea00a8b68d4
-residuoNoLinealOne([5,10],camas,dias)
+residuoNoLinealOne([5,10], camas, dias)
 
 # ╔═╡ f0d95245-d853-4238-9d81-a481d9ad2b24
 md"""
@@ -3284,6 +3352,7 @@ version = "1.4.1+1"
 # ╠═038d95ef-5d51-44d8-a721-cd85d4e34234
 # ╠═be1f5f32-bdfc-46fa-99b6-775206424c6d
 # ╠═c1b67505-7bf7-4be8-beae-12794fdc2a7e
+# ╟─4049bd2a-666d-404e-8a2a-0ead699e57de
 # ╠═b3732f0b-26a1-4577-984f-1cd5411104fe
 # ╟─2b4b2fe4-ffe2-4ece-acda-73f1e00873ee
 # ╠═bc72517b-bf1c-419f-a303-2b993a0d0eed
@@ -3291,9 +3360,18 @@ version = "1.4.1+1"
 # ╠═97d224a5-09f0-4414-89c2-b5400bce79f4
 # ╠═1f4e3c04-7515-4203-9414-a8860243cf2f
 # ╠═537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
-# ╟─a3359ad2-b267-43c9-a685-50b20cce0621
+# ╟─cec7611c-8e9e-48e4-b91f-7e395ff533d6
+# ╠═a3359ad2-b267-43c9-a685-50b20cce0621
 # ╟─7dfb1224-530c-4c51-bc28-196c000e907a
 # ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
+# ╠═94f410d0-28d5-454c-94e9-77fa0304453b
+# ╠═8486e101-a353-47d1-a2cf-8649e061fa1c
+# ╠═f939cefc-3920-434f-9276-8bfb732ec546
+# ╠═0b80d3ff-0d76-43c1-9797-2af6a1438cc8
+# ╟─aef0c309-c742-494e-8eb7-f33473483331
+# ╠═67e5d06d-f572-4a96-9b84-2f9e6233107e
+# ╟─3f36f4e0-3d91-4b0b-af5c-86496f52600b
+# ╟─5bf52a7a-7533-4131-823b-10809d7c3db0
 # ╟─3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
 # ╠═2319d25e-e453-402e-87da-d31084cd274c
 # ╟─ffa7d0a1-5b82-4430-9075-4ee681a4a7db
