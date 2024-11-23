@@ -133,7 +133,7 @@ end
 rCub(tuplaC) = residuoCubico(tuplaC, camas, dias)
 
 # ╔═╡ 97d224a5-09f0-4414-89c2-b5400bce79f4
-oCub =Optim.optimize(rCub, [0.1, 0.1, 0.1, 0.1], LBFGS())
+oCub=Optim.optimize(rCub, [0.1, 0.1, 0.1, 0.1], LBFGS())
 
 # ╔═╡ 1f4e3c04-7515-4203-9414-a8860243cf2f
 oCub.minimizer
@@ -141,6 +141,17 @@ oCub.minimizer
 # ╔═╡ 537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
 oCub.minimum
 
+<<<<<<< Updated upstream
+=======
+# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
+begin
+	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
+	plot(fechas, vModeloCub, lw=5, label="Modelo Cúbico óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
+end
+
+>>>>>>> Stashed changes
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
 md"""
 ## Modelo de redes neuronales artificiales
@@ -155,13 +166,37 @@ Y entonces buscamos encontrar los parámetros $a, b \in \mathbb{R}$ tal que mini
 
 # ╔═╡ d3001ce5-5d33-45b1-ab73-90c340d80fb3
 function residuoRedesNeuronalesArtificiales(tuplaC, vDatos, tiempo)
-	a,b = tuplaC;
+	a,b,c,d,f,g = tuplaC;
 	arrAux = fill(1, size(tiempo));
-	vModelo = a * arrAux + b * tiempo;
-	res=vDatos-vModelo
+	vModeloRNA = a * (arrAux./ (arrAux+exp.(b*tiempo+c*arrAux))) + d * (arrAux./ (arrAux+exp.(f*tiempo+g*arrAux)));
+	res=vDatos-vModeloRNA
 	nRes=norm(res)
 
 	return nRes
+
+end
+
+# ╔═╡ f485205f-24ca-478f-960a-c4b449637486
+rRNA(tuplaC) = residuoRedesNeuronalesArtificiales(tuplaC, camas, dias)
+
+# ╔═╡ 10b07499-9321-4f5d-b81c-57f864120409
+oRNA=Optim.optimize(rRNA, [.01,.01,.01,0.001,0.001,0],  LBFGS())
+
+# ╔═╡ f8a7f804-72d9-495c-ad7f-f686211ce790
+oRNA.minimizer
+
+# ╔═╡ 896bc4b8-b809-498c-a0bc-d943f4e7450d
+oRNA.minimum
+
+# ╔═╡ 268e6024-f71d-4ad8-a49a-c65b71bf5ad4
+begin
+	vModeloRNA = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
+	
+	oRNA.minimizer[1] * (arrAux./ (arrAux+exp.( oRNA.minimizer[2] *dias+oRNA.minimizer[3]*arrAux))) + oRNA.minimizer[4] * (arrAux./ (arrAux+exp.(oRNA.minimizer[5]*dias+oRNA.minimizer[6]*arrAux)))
+	
+	plot(fechas, vModeloCub, lw=5, label="Modelo Cúbico óptimo");
+	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
 end
 
 # ╔═╡ 3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
@@ -3212,6 +3247,7 @@ version = "1.4.1+1"
 # ╠═a3359ad2-b267-43c9-a685-50b20cce0621
 # ╠═7dfb1224-530c-4c51-bc28-196c000e907a
 # ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
+<<<<<<< Updated upstream
 # ╟─3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
 # ╠═2319d25e-e453-402e-87da-d31084cd274c
 # ╟─ffa7d0a1-5b82-4430-9075-4ee681a4a7db
@@ -3252,6 +3288,13 @@ version = "1.4.1+1"
 # ╠═4dd33dcf-d48d-41d9-b245-bb18f538206c
 # ╠═70443317-e15e-46ba-b98b-38e7e639cc4e
 # ╠═74011f7b-4aec-4e37-8206-9679ada6f685
+=======
+# ╠═f485205f-24ca-478f-960a-c4b449637486
+# ╠═10b07499-9321-4f5d-b81c-57f864120409
+# ╠═f8a7f804-72d9-495c-ad7f-f686211ce790
+# ╠═896bc4b8-b809-498c-a0bc-d943f4e7450d
+# ╠═268e6024-f71d-4ad8-a49a-c65b71bf5ad4
+>>>>>>> Stashed changes
 # ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
 # ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
