@@ -370,9 +370,13 @@ Estos parámetros no solo mejoran el ajuste del modelo, sino que también contri
 # ╔═╡ 37066bba-1995-4487-a1c1-d7201317fe76
 md"""
 ### 4. Logístico
-Sean $a, b \in \mathbb{R}$ los parámetros a ser optmizados:
+En este modelo asumimos:
 
 $V(t) \approx \frac{a}{1+be^{cx}}$
+
+con $a, b \in \mathbb{R}$ los parámetros a ser optmizados.
+
+Definimos una función para calcular la magnitud del residuo, que mide el grado de desajuste entre el modelo  y los datos observados. Este cálculo se realiza utilizando la norma euclidiana, aplicada a la diferencia (o residuo) entre los valores predichos por el modelo y los valores reales de los datos. Así:
 """
 
 # ╔═╡ 8a499b8e-c705-454d-a4fa-58e67ef6e16f
@@ -386,6 +390,9 @@ function residuoNoLinealFour(tuplaC, vDatos, tiempo)
 	return nRes
 end;
 
+# ╔═╡ 1f1d125b-6639-4831-a419-19f3645be1e1
+md"""Así, tomamos una función que tome como valor principal un vector con los parametros para luego ser optimizado."""
+
 # ╔═╡ c8725392-9527-4e23-a407-1f26cb9d2d6c
 rNLF(tuplaC) = residuoNoLinealFour(tuplaC,camas,dias);
 
@@ -398,6 +405,13 @@ oNLF.minimizer
 # ╔═╡ 70443317-e15e-46ba-b98b-38e7e639cc4e
 oNLF.minimum
 
+# ╔═╡ ca67cfd6-2ec3-4683-9fda-4cebd5b08cca
+md"""De tal manera, obtenemos una función óptima que se acerca más a los datos deseados. 
+
+$V(t) \approx \frac{4389.64}{1+19.746e^{-0.0370714}}$
+
+Veamos su gráfica:"""
+
 # ╔═╡ 74011f7b-4aec-4e37-8206-9679ada6f685
 begin
 	oNLFm = oNLF.minimizer
@@ -405,6 +419,19 @@ begin
 	plot(fechas, vModeloNLF,lw=5, label = "Cuarto Modelo no lineal óptimo");
 	scatter!(fechas, camas, ls =:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
 end
+
+# ╔═╡ 75b2e2be-831a-446c-8c48-0de8663b17ad
+md"""
+Al igual que en nuestro modelo anterior, podemos observar que el desajuste es significativamente bajo, y nuestra aproximación es considerablemente mejor en comparación con los modelos previos. Esto se debe tanto a que el residuo es menor como a que cada parámetro tiene un significado cualitativo dentro del modelo. En particular:  
+
+1. El parámetro $a$ representa la capacidad límite o valor asintótico superior, que corresponde al máximo valor que el modelo puede alcanzar. Es conocido también como la capacidad de carga.  
+
+2. El parámetro $b$ corresponde al valor inicial, proporcionando una referencia para evaluar qué tan lejos o cerca estamos del límite $a$.  
+
+3. El parámetro $c$ indica la tasa de cambio, que describe la velocidad de crecimiento del modelo.  
+
+Al igual que en el modelo exponencial, estas ideas intuitivas enriquecen el modelo, ya que no solo permiten realizar mejores aproximaciones, sino que también facilitan una interpretación más clara y comprensible para los usuarios, como en aplicaciones prácticas y académicas.  
+"""
 
 # ╔═╡ 44d043ce-c2e8-4ba2-8278-e4ab571ee244
 md"""
@@ -508,15 +535,8 @@ begin
 	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
 end
 
-<<<<<<< Updated upstream
-# ╔═╡ 942d6518-c556-4eb7-8928-36bece52a9f2
-md"""
-abc
-"""
-=======
 # ╔═╡ e9c63094-35a0-4bed-9c64-8dd07d491b8d
 md"""def"""
->>>>>>> Stashed changes
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3272,7 +3292,7 @@ version = "1.4.1+1"
 # ╠═1f4e3c04-7515-4203-9414-a8860243cf2f
 # ╠═537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
 # ╟─a3359ad2-b267-43c9-a685-50b20cce0621
-# ╠═7dfb1224-530c-4c51-bc28-196c000e907a
+# ╟─7dfb1224-530c-4c51-bc28-196c000e907a
 # ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
 # ╟─3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
 # ╠═2319d25e-e453-402e-87da-d31084cd274c
@@ -3287,7 +3307,7 @@ version = "1.4.1+1"
 # ╟─68edb892-1538-44ef-be5a-d9d2ed3264bb
 # ╟─2b59c2da-b9f8-43ea-826a-9133f1f790b1
 # ╟─867cafd7-5166-4b78-83fe-19e2620f340e
-# ╠═520b5819-bca1-42f9-b209-5bbaad2faf0f
+# ╟─520b5819-bca1-42f9-b209-5bbaad2faf0f
 # ╠═e8851a41-ef58-46fa-aec8-644389a4d451
 # ╠═84e3f6b3-3965-4bd9-b2c5-ad1576925c67
 # ╠═19d68e50-019e-4d11-b6a2-a42dc5b793f5
@@ -3297,8 +3317,8 @@ version = "1.4.1+1"
 # ╟─3a8a8d6c-0153-4c62-9c8e-2dd9db26dca3
 # ╟─faee0e7a-837b-4fe4-a4ab-f463d33f65a3
 # ╟─faf8809b-2564-4533-a6cb-223841ef51f0
-# ╠═8fb76862-6a94-4476-95fe-7d164a0843ee
-# ╟─ac562837-5d8c-4267-8da0-feba868c5ccb
+# ╟─8fb76862-6a94-4476-95fe-7d164a0843ee
+# ╠═ac562837-5d8c-4267-8da0-feba868c5ccb
 # ╟─c2a52be1-0899-4eca-b245-04eb5df55cb7
 # ╠═7bac2553-65a8-4959-a21a-cde925a301d6
 # ╠═79d13bb9-973d-4369-8b87-1cab27c431cc
@@ -3307,13 +3327,16 @@ version = "1.4.1+1"
 # ╟─51b44545-8f04-48aa-b7a2-0f3762a7fb88
 # ╟─5dac5ba8-aa77-4f1d-b0be-83e4a6f51ff7
 # ╟─ef6e48bc-d3ac-47a9-8e42-6466a267bbaf
-# ╠═37066bba-1995-4487-a1c1-d7201317fe76
+# ╟─37066bba-1995-4487-a1c1-d7201317fe76
 # ╠═8a499b8e-c705-454d-a4fa-58e67ef6e16f
+# ╟─1f1d125b-6639-4831-a419-19f3645be1e1
 # ╠═c8725392-9527-4e23-a407-1f26cb9d2d6c
 # ╠═567b1693-bac3-4dc0-9287-d4dd81350bee
 # ╠═4dd33dcf-d48d-41d9-b245-bb18f538206c
 # ╠═70443317-e15e-46ba-b98b-38e7e639cc4e
+# ╟─ca67cfd6-2ec3-4683-9fda-4cebd5b08cca
 # ╟─74011f7b-4aec-4e37-8206-9679ada6f685
+# ╟─75b2e2be-831a-446c-8c48-0de8663b17ad
 # ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
 # ╠═aa7176a0-48d0-4cc7-983c-38929282f3cb
 # ╠═72aa94d7-2d7b-46a3-9da9-081ae7137ac6
@@ -3324,7 +3347,7 @@ version = "1.4.1+1"
 # ╠═9c9a62f8-4719-4c35-89a0-c6142fa2fa57
 # ╠═001ff16c-b315-4b92-bd57-06a869b5f7ff
 # ╠═69a7a377-6df6-4378-8573-767525c06ac6
-# ╠═3d48e22c-4bd0-4384-ae18-0fc88344a0aa
+# ╟─3d48e22c-4bd0-4384-ae18-0fc88344a0aa
 # ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
 # ╠═a4fa1201-9189-45b2-be4b-fa92a76c8930
@@ -3334,10 +3357,6 @@ version = "1.4.1+1"
 # ╠═428ab073-94f6-45ef-9171-ee69f057ff5a
 # ╠═ddb395d5-3b82-4d4b-9483-ece75294857f
 # ╠═4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
-<<<<<<< Updated upstream
-# ╠═942d6518-c556-4eb7-8928-36bece52a9f2
-=======
 # ╠═e9c63094-35a0-4bed-9c64-8dd07d491b8d
->>>>>>> Stashed changes
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
