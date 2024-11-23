@@ -110,6 +110,7 @@ begin
 	vModeloL = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
 	plot(fechas, vModeloL, lw=5, label="Modelo lineal óptimo");
 	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
+	
 end
 
 # ╔═╡ 2b4b2fe4-ffe2-4ece-acda-73f1e00873ee
@@ -151,24 +152,14 @@ oCub.minimum
 
 # ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
 begin
-	# arrAux2 = fill(1, size(fechas));
-	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
-	plot(fechas, vModeloCub, lw=5, label="Modelo lineal óptimo");
-	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-	
-end
-
-<<<<<<< Updated upstream
-=======
-# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
-begin
 	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
 	plot(fechas, vModeloCub, lw=5, label="Modelo Cúbico óptimo");
 	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
 	
 end
 
->>>>>>> Stashed changes
+>>>>>>> Stashed change
+
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
 md"""
 ## Modelo de redes neuronales artificiales
@@ -252,23 +243,6 @@ md"""Lo que nos permite saber que el mejor modelo sería:
 
 $V(t) \approx \frac{-193.225}{t}+345.609$
 Al igual, visualizar nuestra función aproximada con los datos obtenidos:"""
-
-# ╔═╡ 2b59c2da-b9f8-43ea-826a-9133f1f790b1
-begin
-	arrAux = fill(1, size(dias));
-	oNLOm = oNLO.minimizer
-	vModeloNLO =  (oNLOm[1] * arrAux)./(dias) + oNLOm[2] * arrAux
-	plot(fechas, vModeloNLO,lw=5, label = "Primer Modelo no lineal óptimo");
-	scatter!(fechas, camas, ls =:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-end
-
-# ╔═╡ b3732f0b-26a1-4577-984f-1cd5411104fe
-begin
-	vModeloL = oL.minimizer[1] * arrAux + oL.minimizer[2] * dias;
-	plot(fechas, vModeloL, lw=5, label="Modelo lineal óptimo");
-	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-	
-end
 
 # ╔═╡ 2b59c2da-b9f8-43ea-826a-9133f1f790b1
 begin
@@ -545,6 +519,7 @@ begin
 	plot(VEDOoptima2,lw=5,label="EDO optima")
 	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
 end
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3342,7 +3317,7 @@ version = "1.4.1+1"
 # ╠═4dd33dcf-d48d-41d9-b245-bb18f538206c
 # ╠═70443317-e15e-46ba-b98b-38e7e639cc4e
 # ╟─74011f7b-4aec-4e37-8206-9679ada6f685
-# ╟─44d043ce-c2e8-4ba2-8278-e4ab571ee244
+# ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
 # ╠═aa7176a0-48d0-4cc7-983c-38929282f3cb
 # ╠═72aa94d7-2d7b-46a3-9da9-081ae7137ac6
 # ╠═41c5ff90-6a29-4b46-a145-c3dfc26c234e
@@ -3353,8 +3328,6 @@ version = "1.4.1+1"
 # ╠═001ff16c-b315-4b92-bd57-06a869b5f7ff
 # ╠═69a7a377-6df6-4378-8573-767525c06ac6
 # ╠═3d48e22c-4bd0-4384-ae18-0fc88344a0aa
-# ╟─d4703198-4f45-49b7-ab5a-06ec61da41fc
-# ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
 # ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
 # ╠═a4fa1201-9189-45b2-be4b-fa92a76c8930
@@ -3364,14 +3337,5 @@ version = "1.4.1+1"
 # ╠═ee04760f-e861-4f52-87ea-09b9155199fd
 # ╠═428ce68b-6bab-4c32-baae-f1c58a63ca02
 # ╠═61f70619-ecef-4d5a-9135-45bcad412e01
-# ╠═66fcf5e0-b0f8-4b3f-9a08-335cbffc5239
-# ╠═0e4e9e27-9918-4620-9be9-8b82af3719a3
-# ╠═411c7315-55e2-4a01-9a1f-0b3e164e6534
-# ╠═d6c360df-5d43-4e0d-9563-d975c4db0c7b
-# ╠═a0c45d59-d929-44fb-83c3-158e1408a51c
-# ╠═b0ea88e3-8c8e-49f8-84b4-20cae5fbef2b
-# ╠═6c794132-063b-4b08-8eb0-06df78c9339b
-# ╟─00000000-0000-0000-0000-000000000001
-# ╟─00000000-0000-0000-0000-000000000002
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
