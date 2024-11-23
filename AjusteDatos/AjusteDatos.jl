@@ -133,7 +133,7 @@ end
 rCub(tuplaC) = residuoCubico(tuplaC, camas, dias)
 
 # ╔═╡ 97d224a5-09f0-4414-89c2-b5400bce79f4
-oCub=Optim.optimize(rCub, [0.1, 0.1, 0.1, 0.1], LBFGS())
+oCub =Optim.optimize(rCub, [0.1, 0.1, 0.1, 0.1], LBFGS())
 
 # ╔═╡ 1f4e3c04-7515-4203-9414-a8860243cf2f
 oCub.minimizer
@@ -141,17 +141,6 @@ oCub.minimizer
 # ╔═╡ 537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
 oCub.minimum
 
-<<<<<<< Updated upstream
-=======
-# ╔═╡ a3359ad2-b267-43c9-a685-50b20cce0621
-begin
-	vModeloCub = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
-	plot(fechas, vModeloCub, lw=5, label="Modelo Cúbico óptimo");
-	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-	
-end
-
->>>>>>> Stashed changes
 # ╔═╡ 7dfb1224-530c-4c51-bc28-196c000e907a
 md"""
 ## Modelo de redes neuronales artificiales
@@ -166,37 +155,13 @@ Y entonces buscamos encontrar los parámetros $a, b \in \mathbb{R}$ tal que mini
 
 # ╔═╡ d3001ce5-5d33-45b1-ab73-90c340d80fb3
 function residuoRedesNeuronalesArtificiales(tuplaC, vDatos, tiempo)
-	a,b,c,d,f,g = tuplaC;
+	a,b = tuplaC;
 	arrAux = fill(1, size(tiempo));
-	vModeloRNA = a * (arrAux./ (arrAux+exp.(b*tiempo+c*arrAux))) + d * (arrAux./ (arrAux+exp.(f*tiempo+g*arrAux)));
-	res=vDatos-vModeloRNA
+	vModelo = a * arrAux + b * tiempo;
+	res=vDatos-vModelo
 	nRes=norm(res)
 
 	return nRes
-
-end
-
-# ╔═╡ f485205f-24ca-478f-960a-c4b449637486
-rRNA(tuplaC) = residuoRedesNeuronalesArtificiales(tuplaC, camas, dias)
-
-# ╔═╡ 10b07499-9321-4f5d-b81c-57f864120409
-oRNA=Optim.optimize(rRNA, [.01,.01,.01,0.001,0.001,0],  LBFGS())
-
-# ╔═╡ f8a7f804-72d9-495c-ad7f-f686211ce790
-oRNA.minimizer
-
-# ╔═╡ 896bc4b8-b809-498c-a0bc-d943f4e7450d
-oRNA.minimum
-
-# ╔═╡ 268e6024-f71d-4ad8-a49a-c65b71bf5ad4
-begin
-	vModeloRNA = oCub.minimizer[1] * arrAux + oCub.minimizer[2] * dias + oCub.minimizer[3] * dias .^ 2 + oCub.minimizer[4] * dias .^ 3;
-	
-	oRNA.minimizer[1] * (arrAux./ (arrAux+exp.( oRNA.minimizer[2] *dias+oRNA.minimizer[3]*arrAux))) + oRNA.minimizer[4] * (arrAux./ (arrAux+exp.(oRNA.minimizer[5]*dias+oRNA.minimizer[6]*arrAux)))
-	
-	plot(fechas, vModeloCub, lw=5, label="Modelo Cúbico óptimo");
-	scatter!(fechas, camas, ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19", title="Ocupación de Camas UCI")
-	
 end
 
 # ╔═╡ 3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
@@ -3226,12 +3191,12 @@ version = "1.4.1+1"
 
 # ╔═╡ Cell order:
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
-# ╠═f03955a0-a5f3-11ef-1c1b-3ffc12415778
+# ╟─f03955a0-a5f3-11ef-1c1b-3ffc12415778
 # ╠═1775cf34-9368-4b4a-9827-f430305b3ca6
 # ╠═f88abf94-d802-4760-9d94-135f3550af16
-# ╠═51ac93bd-913c-4975-bfe8-f9aee033b70e
-# ╠═294d3337-5bc9-4e47-a168-c1f1cc988581
-# ╠═89de066c-2866-4202-9b22-1075ea94066a
+# ╟─51ac93bd-913c-4975-bfe8-f9aee033b70e
+# ╟─294d3337-5bc9-4e47-a168-c1f1cc988581
+# ╟─89de066c-2866-4202-9b22-1075ea94066a
 # ╠═4481dd92-82aa-40e8-89b7-762d5f0e1783
 # ╠═4947173b-fc52-40ad-8dd5-0ede7e2a5d6b
 # ╠═038d95ef-5d51-44d8-a721-cd85d4e34234
@@ -3244,10 +3209,9 @@ version = "1.4.1+1"
 # ╠═97d224a5-09f0-4414-89c2-b5400bce79f4
 # ╠═1f4e3c04-7515-4203-9414-a8860243cf2f
 # ╠═537bfbd9-8fe4-41e7-9a69-9fd523ad6cf1
-# ╠═a3359ad2-b267-43c9-a685-50b20cce0621
+# ╟─a3359ad2-b267-43c9-a685-50b20cce0621
 # ╠═7dfb1224-530c-4c51-bc28-196c000e907a
 # ╠═d3001ce5-5d33-45b1-ab73-90c340d80fb3
-<<<<<<< Updated upstream
 # ╟─3d9ec925-1f43-4dbb-a471-e1fe86b3eb70
 # ╠═2319d25e-e453-402e-87da-d31084cd274c
 # ╟─ffa7d0a1-5b82-4430-9075-4ee681a4a7db
@@ -3259,7 +3223,7 @@ version = "1.4.1+1"
 # ╠═13bf26e4-3be7-4030-aa93-84ab7b8d2e52
 # ╠═e31acf4e-0934-44e0-bff1-cd9afa3c864b
 # ╟─68edb892-1538-44ef-be5a-d9d2ed3264bb
-# ╠═2b59c2da-b9f8-43ea-826a-9133f1f790b1
+# ╟─2b59c2da-b9f8-43ea-826a-9133f1f790b1
 # ╟─867cafd7-5166-4b78-83fe-19e2620f340e
 # ╟─520b5819-bca1-42f9-b209-5bbaad2faf0f
 # ╠═e8851a41-ef58-46fa-aec8-644389a4d451
@@ -3269,17 +3233,17 @@ version = "1.4.1+1"
 # ╠═ffbd8964-71e2-4550-8d7f-3906ba6194ac
 # ╠═b3bb9bf2-0e70-4eb6-a3f2-f4b0fc52a8b3
 # ╟─3a8a8d6c-0153-4c62-9c8e-2dd9db26dca3
-# ╠═faee0e7a-837b-4fe4-a4ab-f463d33f65a3
+# ╟─faee0e7a-837b-4fe4-a4ab-f463d33f65a3
 # ╟─faf8809b-2564-4533-a6cb-223841ef51f0
 # ╠═8fb76862-6a94-4476-95fe-7d164a0843ee
-# ╠═ac562837-5d8c-4267-8da0-feba868c5ccb
+# ╟─ac562837-5d8c-4267-8da0-feba868c5ccb
 # ╟─c2a52be1-0899-4eca-b245-04eb5df55cb7
 # ╠═7bac2553-65a8-4959-a21a-cde925a301d6
 # ╠═79d13bb9-973d-4369-8b87-1cab27c431cc
 # ╠═659d81ea-f490-4a5e-930e-87490bda132e
 # ╠═9b7a0198-0f50-4725-8038-8e7ed7d1fd5f
 # ╟─51b44545-8f04-48aa-b7a2-0f3762a7fb88
-# ╠═5dac5ba8-aa77-4f1d-b0be-83e4a6f51ff7
+# ╟─5dac5ba8-aa77-4f1d-b0be-83e4a6f51ff7
 # ╟─ef6e48bc-d3ac-47a9-8e42-6466a267bbaf
 # ╠═37066bba-1995-4487-a1c1-d7201317fe76
 # ╠═8a499b8e-c705-454d-a4fa-58e67ef6e16f
@@ -3287,14 +3251,7 @@ version = "1.4.1+1"
 # ╠═567b1693-bac3-4dc0-9287-d4dd81350bee
 # ╠═4dd33dcf-d48d-41d9-b245-bb18f538206c
 # ╠═70443317-e15e-46ba-b98b-38e7e639cc4e
-# ╠═74011f7b-4aec-4e37-8206-9679ada6f685
-=======
-# ╠═f485205f-24ca-478f-960a-c4b449637486
-# ╠═10b07499-9321-4f5d-b81c-57f864120409
-# ╠═f8a7f804-72d9-495c-ad7f-f686211ce790
-# ╠═896bc4b8-b809-498c-a0bc-d943f4e7450d
-# ╠═268e6024-f71d-4ad8-a49a-c65b71bf5ad4
->>>>>>> Stashed changes
+# ╟─74011f7b-4aec-4e37-8206-9679ada6f685
 # ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
 # ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
