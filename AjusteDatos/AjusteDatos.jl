@@ -7,6 +7,13 @@ using InteractiveUtils
 # ╔═╡ 8778b6d8-70e1-4698-9f96-497b4408e4cd
 using Plots, Dates, LinearAlgebra, Optim, DifferentialEquations;
 
+# ╔═╡ 5d9909c7-e2d6-431a-90eb-16ad64c77254
+md"""
+Actividad realizada por Alan Acero, Johan López y Nicolás Duque
+
+Se utilizarán las siguientes librerías:
+"""
+
 # ╔═╡ f03955a0-a5f3-11ef-1c1b-3ffc12415778
 md"""
 # Actividad Ajuste de Datos
@@ -14,7 +21,9 @@ En esta actividad de ajuste de datos, vamos a analizar la ocupación de las cama
 
 El ajuste de datos, también llamado ajuste de curvas, hace referencia a, dado un conjunto de datos, buscar alguna correlación entre ellos; es decir, intentar encontrar una relación que describa de manera cercana cómo se comportan los datos en relación entre sí.
 
-Para este tipo de problemas, lo que se hace es usar un algoritmo de optimización y elegir las variables que nos den un mínimo residuo al usar este algoritmo. El algoritmo será implementado por la librería *Optim*, y nuestra función a minimizar será la de residuo, que en nuestro caso será mínimos cuadrados (con la norma euclidiana o la norma base 2).
+Para este tipo de problemas, lo que se hace es usar un algoritmo de optimización y elegir las variables que nos den un mínimo residuo al usar este algoritmo. El algoritmo que usaremos en cada caso será implementado por la librería *Optim* [1], y nuestra función a minimizar será la de residuo, que en nuestro caso será por mínimos cuadrados (con la norma euclidiana o la norma base 2).
+
+Este trabajo se basa en el cuaderno "Análisis numérico - Ajuste de curvas" del Laboratorio Virtual de Matemáticas de la Universidad Nacional de Colombia, Sede Bogotá [2].
 """
 
 # ╔═╡ 1775cf34-9368-4b4a-9827-f430305b3ca6
@@ -233,8 +242,6 @@ md"""
 ### Análisis de los Modelos Presentados
 
 Dentro de lo revisado entre estos tres modelos, habíamos supuesto que el que quedaría con menor residuo sería el de redes neuronales, pero como se puede ver, en realidad fue el cúbico, lo que también da a entender que el modo en el que se desarrollan los datos y su contexto pueden darnos pistas sobre qué tipo de modelos usar. A continuación se presenta una tabla con los tres modelos.
-
-Vale aclarar que, como se trabajan muchos más modelos en este cuaderno, hemos preferido fusionar las tablas de estos modelos únicamente para ayudar al lector.
 
 """
 
@@ -504,12 +511,18 @@ Al igual que en el modelo exponencial, estas ideas intuitivas enriquecen el mode
 # ╔═╡ 44d043ce-c2e8-4ba2-8278-e4ab571ee244
 md"""
 # Modelos basados en Ecuaciones Diferenciales
+Con el fin de analizar algunos modelos basados en EDO, analizaremos la aproximación que nos genera dos de estos modelos y loss ilustraremos. De esta manera, tendremos en cuenta los siguientes modelamientos: 
 """
 
 # ╔═╡ aa7176a0-48d0-4cc7-983c-38929282f3cb
 md"""
-### Modelo de von Bertalanffy
+## Modelo de von Bertalanffy
+Asumamos que nuestro método tiene siguiente forma:
+
 $V'=aV^{\frac{2}{3}}-bV$
+
+Donde $V$ corresponde al valor de los datos y $a, b \in \mathbb{R}$ los parámetros a ser optmizados.
+Definimos una función para calcular la magnitud del residuo, el cual se realiza utilizando la norma euclidiana, aplicada a la diferenciaentre los valores predichos por el modelo y los valores reales de los datos. Así:
 """
 
 # ╔═╡ 72aa94d7-2d7b-46a3-9da9-081ae7137ac6
@@ -527,8 +540,10 @@ function residuoVB(tupla,vDatos,tiempo)
 	return nRes;
 end
 
-# ╔═╡ fe5c63c6-db9b-42a0-80d3-9714d393f441
-residuoVB([1 1],camas,dias)
+# ╔═╡ a95f37e0-f13e-4e5b-86c7-19aff3e633f7
+md"""
+Así, tomamos una función que tome como valor principal un vector con los parametros para luego ser optimizado.
+"""
 
 # ╔═╡ e6019a5a-83e0-41de-be82-3d5c71bbc047
 rVB(tupla) = residuoVB(tupla, camas, dias)
@@ -542,6 +557,15 @@ oVB.minimizer
 # ╔═╡ 001ff16c-b315-4b92-bd57-06a869b5f7ff
 oVB.minimum
 
+# ╔═╡ e006189b-1077-4049-a489-5f918f3727fa
+md"""
+De tal manera, obtenemos una función óptima que se acerca más a los datos deseados. 
+
+$V'=(-0.334623)V^{\frac{2}{3}}-(-0.0824633)V$
+
+Veamos su gráfica:
+"""
+
 # ╔═╡ 69a7a377-6df6-4378-8573-767525c06ac6
 begin
 	dominioTiempo=(Dates.value(Date("01/01/2022", df)), Dates.value(Date("25/01/2022", df)))
@@ -550,17 +574,18 @@ begin
 	EDOoptima=ODEProblem(modeloVB,V0,dominioTiempo,oVBtupla)
 	VEDOoptima=solve(EDOoptima)
 	plot(VEDOoptima,lw=5,label="EDO optima")
-	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
+	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de von Bertalanffy óptimo")
 end
 
 # ╔═╡ 3d48e22c-4bd0-4384-ae18-0fc88344a0aa
 md"""
 ## Modelo de Crecimiento Logístico
-"""
+Asumamos que nuestro método tiene siguiente forma:
 
-# ╔═╡ d4703198-4f45-49b7-ab5a-06ec61da41fc
-md"""
-$$V' = aV\left(1 - \frac{V}{b}\right),$$
+$V' = aV\left(1 - \frac{V}{b}\right)$
+
+Donde $V$ corresponde al valor de los datos y $a, b \in \mathbb{R}$ los parámetros a ser optmizados.
+Definimos una función para calcular la magnitud del residuo, el cual se realiza utilizando la norma euclidiana, aplicada a la diferenciaentre los valores predichos por el modelo y los valores reales de los datos. Así:
 """
 
 # ╔═╡ 5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
@@ -578,8 +603,10 @@ function residuoCL(tupla,vDatos,tiempo)
 	return nRes;
 end
 
-# ╔═╡ b50cf6c5-07bb-4a9a-8c33-28b37d5ced42
-residuoCL([1 1],camas,dias)
+# ╔═╡ b1d6b843-2129-4109-98c7-ff7b8e50a1dd
+md"""
+Así, tomamos una función que tome como valor principal un vector con los parametros para luego ser optimizado.
+"""
 
 # ╔═╡ d802b272-cbf4-41e6-ab4e-ae786246c86c
 rCL(tupla) = residuoCL(tupla, camas, dias)
@@ -594,17 +621,33 @@ oCL.minimizer
 # ╔═╡ ddb395d5-3b82-4d4b-9483-ece75294857f
 oCL.minimum
 
+# ╔═╡ 784f5f92-1f04-4fcf-8b45-1524c3972d03
+md"""
+De tal manera, obtenemos una función óptima que se acerca más a los datos deseados. 
+
+$V' = (0.0150148)V\left(1 - \frac{V}{(-262.515)}\right)$
+
+Veamos su gráfica:
+"""
+
 # ╔═╡ 4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
 begin
 	oCLtupla=oCL.minimizer
 	EDOoptima2=ODEProblem(modeloCL,V0,dominioTiempo,oCLtupla)
 	VEDOoptima2=solve(EDOoptima2)
 	plot(VEDOoptima2,lw=5,label="EDO optima")
-	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Ecuación diferencial ordinaria óptima")
+	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
 end
 
-# ╔═╡ e9c63094-35a0-4bed-9c64-8dd07d491b8d
-md"""def"""
+# ╔═╡ f657bd01-9c11-4416-a98e-73541c88ef73
+md"""
+Es importante observar que los dos modelos no presentan diferencias notables a simple vista, si bien su funcionamiento y los parámetros optimizados difieren.
+
+# Bibliografía
+[1] "Optim.jl", Sciml.ai, 2024. https://docs.sciml.ai/Optimization/stable/optimization_packages/optim/ Accedido 20 de Noviembre de 2024
+
+[2] J. Galvis, F. Gómez y Y. Trujillo, "Ajuste de curvas", Laboratorio de matemáticas, Material de acompañamiento para los cursos del Departamento de Matemáticas y Ciencias de la Computación de la Universidad Nacional de Colombia, sede Bogotá, 2022. https://labmatecc.github.io/Notebooks/AnalisisNumerico/AjusteDeCurvas/ Accedido 21 de Noviembre de 2024
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3340,6 +3383,7 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
+# ╠═5d9909c7-e2d6-431a-90eb-16ad64c77254
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
 # ╟─f03955a0-a5f3-11ef-1c1b-3ffc12415778
 # ╠═1775cf34-9368-4b4a-9827-f430305b3ca6
@@ -3415,26 +3459,27 @@ version = "1.4.1+1"
 # ╟─ca67cfd6-2ec3-4683-9fda-4cebd5b08cca
 # ╟─74011f7b-4aec-4e37-8206-9679ada6f685
 # ╟─75b2e2be-831a-446c-8c48-0de8663b17ad
-# ╠═44d043ce-c2e8-4ba2-8278-e4ab571ee244
-# ╠═aa7176a0-48d0-4cc7-983c-38929282f3cb
+# ╟─44d043ce-c2e8-4ba2-8278-e4ab571ee244
+# ╟─aa7176a0-48d0-4cc7-983c-38929282f3cb
 # ╠═72aa94d7-2d7b-46a3-9da9-081ae7137ac6
 # ╠═41c5ff90-6a29-4b46-a145-c3dfc26c234e
-# ╠═fe5c63c6-db9b-42a0-80d3-9714d393f441
+# ╟─a95f37e0-f13e-4e5b-86c7-19aff3e633f7
 # ╠═e6019a5a-83e0-41de-be82-3d5c71bbc047
 # ╠═bd9ca7ec-35e1-452c-89a6-0823df747e12
 # ╠═9c9a62f8-4719-4c35-89a0-c6142fa2fa57
 # ╠═001ff16c-b315-4b92-bd57-06a869b5f7ff
-# ╠═69a7a377-6df6-4378-8573-767525c06ac6
+# ╟─e006189b-1077-4049-a489-5f918f3727fa
+# ╟─69a7a377-6df6-4378-8573-767525c06ac6
 # ╟─3d48e22c-4bd0-4384-ae18-0fc88344a0aa
-# ╠═d4703198-4f45-49b7-ab5a-06ec61da41fc
 # ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
 # ╠═a4fa1201-9189-45b2-be4b-fa92a76c8930
-# ╠═b50cf6c5-07bb-4a9a-8c33-28b37d5ced42
+# ╟─b1d6b843-2129-4109-98c7-ff7b8e50a1dd
 # ╠═d802b272-cbf4-41e6-ab4e-ae786246c86c
 # ╠═fc71ce48-b773-4cbc-9f96-80e442ba85d0
 # ╠═428ab073-94f6-45ef-9171-ee69f057ff5a
 # ╠═ddb395d5-3b82-4d4b-9483-ece75294857f
-# ╠═4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
-# ╠═e9c63094-35a0-4bed-9c64-8dd07d491b8d
+# ╠═784f5f92-1f04-4fcf-8b45-1524c3972d03
+# ╟─4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
+# ╟─f657bd01-9c11-4416-a98e-73541c88ef73
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
