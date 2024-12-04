@@ -287,18 +287,16 @@ con $N$ simbolizando la población, veamos cómo se pueden restringir los parám
 
 # ╔═╡ 2b242f9d-8b5b-4162-bef5-8fe90ec05fd2
 md"""
-#### Primero, encontremos los puntos de equilibrio de la ecuación:
+##### Primero, encontremos los puntos de equilibrio de la ecuación:
 
 $$N(r - a(N - b)^2) = 0$$
 
-Esto da lugar a los siguientes casos:
+Al ser una multiplicacion esto da lugar a los siguientes casos:
 
 1. Si $N = 0$, entonces $N = 0$ es un punto de equilibrio.
 2. Si $(r - a(N - b)^2) = 0$, se tiene que:
 
 $$r = a(N - b)^2$$
-
-y
 
 $$\frac{r}{a} = (N - b)^2 \quad \text{por lo que} \quad \frac{r}{a} \geq 0, \quad a \neq 0$$
 
@@ -318,9 +316,9 @@ md"""
 
 Considere que, al tratarse de una población, $N \geq 0$. Por lo tanto, se tiene lo siguiente sobre los puntos de equilibrio:
 
- $N = 0$
- $N = b - \sqrt{\frac{r}{a}} \geq 0$
- $N = b + \sqrt{\frac{r}{a}} \geq 0$
+$N = 0$
+$N = b - \sqrt{\frac{r}{a}} \geq 0$
+$N = b + \sqrt{\frac{r}{a}} \geq 0$
 
 Por lo tanto, se debe cumplir que:
 
@@ -331,11 +329,12 @@ $$b \geq \sqrt{\frac{r}{a}} \geq 0 \quad \text{y} \quad b \geq 0$$
 md"""
 ###### Cuando $r = 0$:
 
-En este caso, la ecuación se reduce a:
+En este caso, la ecuación
 
 $$N' = N \left( r - a(N - b)^2 \right) = 0$$
 
-que será siempre negativa si $a > 0$ y siempre positiva si $a < 0$. Ninguno de estos casos describe el comportamiento de una población según el efecto Allee.
+será siempre negativa en caso de $a > 0$ y siempre positiva si $a < 0$. Ninguno de estos casos describe el comportamiento de una población según el efecto Allee.
+
 """
 
 # ╔═╡ 775e6207-b511-4f1a-9367-8927d83ed417
@@ -347,30 +346,46 @@ Si $r \neq 0$, $N' = N \left( r - a(N - b)^2 \right)$ será positivo cuando $r -
 
 # ╔═╡ 3d6df443-8fb1-4985-977a-2ac441c4ed55
 md"""
-- **Caso 1: $N' > 0$:**
 
-    Si $N > 0$ y $r - a(N - b)^2 > 0$, existen dos casos:
+ **$N' > 0$:**
 
-    $$r > a(N - b)^2$$
+Si $N > 0$ y $r - a(N - b)^2 > 0$, existen dos casos:
 
-    lo cual implica que:
+**Caso 1**. Si $a < 0$ y $r < 0$, se tiene que:
 
-    $$\frac{r}{a} < (N - b)^2$$
+$$r > a(N - b)^2$$
+$$\frac{r}{a} < (N - b)^2$$
+$$\sqrt{\frac{r}{a}} < N - b \quad \text{o} \quad - \sqrt{\frac{r}{a}} > N - b$$
+$$b + \sqrt{\frac{r}{a}} < N \quad \text{o} \quad b - \sqrt{\frac{r}{a}} > N$$
 
-    Por lo tanto:
+Luego, $b + \sqrt{\frac{r}{a}} < N < b - \sqrt{\frac{r}{a}}$.
 
-    $$\sqrt{\frac{r}{a}} < N - b \quad \text{o} \quad - \sqrt{\frac{r}{a}} < N - b$$
+**Caso 2**. Si $a > 0$ y $r > 0$:
 
-    lo que se traduce en:
+$$r > a(N - b)^2$$
+$$\frac{r}{a} > (N - b)^2$$
+$$\sqrt{\frac{r}{a}} > N - b \quad \text{o} \quad - \sqrt{\frac{r}{a}} < N - b$$
+$$b + \sqrt{\frac{r}{a}} > N \quad \text{o} \quad b - \sqrt{\frac{r}{a}} < N$$
 
-    $$b + \sqrt{\frac{r}{a}} < N \quad \text{o} \quad b - \sqrt{\frac{r}{a}} > N$$
+Luego, $b - \sqrt{\frac{r}{a}} < N < b + \sqrt{\frac{r}{a}}$.
 
-    De los cuales, solo $N < b - \sqrt{\frac{r}{a}}$ es posible bajo las condiciones propuestas.
+Note que cuando $a < 0$ y $r < 0$, $b + \sqrt{\frac{r}{a}} < b - \sqrt{\frac{r}{a}}$, lo que es una contradicción al ser $\sqrt{\frac{r}{a}} > 0$.
+
+Por lo tanto, tenemos las siguientes condiciones: $r > 0$ , $a > 0$ , $b \geq \sqrt{\frac{r}{a}} > 0$.
+
+Ahora, si $N > 0$ y $r - a(N - b)^2 < 0$, se tiene que:
+
+$$r < a(N - b)^2$$
+$$\sqrt{\frac{r}{a}} < N - b \quad \text{o} \quad - \sqrt{\frac{r}{a}} > N - b$$
+$$b + \sqrt{\frac{r}{a}} < N \quad \text{o} \quad b - \sqrt{\frac{r}{a}} > N$$
+
+De los cuales, solo $N < b - \sqrt{\frac{r}{a}}$ es posible bajo las condiciones propuestas.
 """
+
 
 # ╔═╡ 325f5ecd-52ad-48ff-ab09-b918021b6358
 md"""
-- **Caso 2: $N' < 0$:**
+- **$N' < 0$:**
 
     En este caso, se debe cumplir que $r - a(N - b)^2 < 0$, lo cual sucede cuando:
 
@@ -387,6 +402,13 @@ $r > 0 \quad a > 0 \quad b \geq \sqrt{\frac{r}{a}}$
 
 Además, $N'$ será positiva entre los valores $b - \sqrt{\frac{r}{a}} < N < b + \sqrt{\frac{r}{a}}$ y negativa fuera de este intervalo.
 """
+
+# ╔═╡ 435905d6-fa00-40ea-8686-43be1cbc456b
+md"""
+Mediante el análisis anterior, se puede verificar que $N' = N(r - a(N - b)^2)$ describirá una población que presente el efecto Allee siempre y cuando $r > 0$, $a > 0$, $b \geq \sqrt{\frac{r}{a}}$.
+Además, $N'$ será positiva entre los valores $b - \sqrt{\frac{r}{a}} < N < b + \sqrt{\frac{r}{a}}$ y negativa en el resto de los valores de $N$.
+"""
+
 
 # ╔═╡ 862dae66-915b-4e44-be04-54fe6ac54e98
 md"""
@@ -458,6 +480,7 @@ En este caso, los puntos de equilibrio son:
 # ╟─3d6df443-8fb1-4985-977a-2ac441c4ed55
 # ╟─325f5ecd-52ad-48ff-ab09-b918021b6358
 # ╟─a3eb52da-d2bc-4a56-8c32-1c22d4e96b44
+# ╟─435905d6-fa00-40ea-8686-43be1cbc456b
 # ╟─862dae66-915b-4e44-be04-54fe6ac54e98
 # ╟─5dbc885f-c5ff-45d0-827d-471f9df90729
 # ╟─09428df7-571a-4612-96db-4df927b0f189
