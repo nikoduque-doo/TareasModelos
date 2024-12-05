@@ -284,7 +284,7 @@ Encuentre todos lospuntos fijos y clasifique su estabilidad. Bosqueje algunas so
 
 # ╔═╡ ee0e5870-b7c6-4b86-b2f2-2374be182b62
 md"""
-El **efecto Allee** describe que, en el contexto de poblaciones, existe un umbral poblacional debajo del cual la tasa de crecimiento de la población disminuye. Dicha tasa puede ser negativa, lo que se conoce como efecto Allee fuerte, o puede nunca llegar a ser negativa, lo que se denomina efecto Allee débil. Es también importante aclarar que, al acercarse a la capacidad de carga, la tasa de crecimiento de la población también aumentará [Wikipedia].
+El **efecto Allee** describe que, en el contexto de poblaciones, existe un umbral poblacional debajo del cual la tasa de crecimiento de la población disminuye. Dicha tasa puede ser negativa, lo que se conoce como efecto Allee fuerte, o puede nunca llegar a ser negativa, lo que se denomina efecto Allee débil. Es también importante aclarar que, al acercarse a la capacidad de carga, la tasa de crecimiento de la población también aumentará. [1]
 """
 
 # ╔═╡ 8829a967-c12c-4425-90b4-ed84a06519ff
@@ -447,7 +447,7 @@ md"""
 ##### Tipo 2: $b > \sqrt{\frac{r}{a}}$
 """
 
-# ╔═╡ 221b8dd7-669e-4228-988d-95c6fb26381a
+# ╔═╡ 0d6af858-1c60-43d1-8c1f-35d1e3ad2462
 load("imagenes/4.2..png")
 
 # ╔═╡ 6a78a9f0-6e27-4531-83bd-8293dca22f1d
@@ -458,10 +458,27 @@ En este caso, los puntos de equilibrio son:
 - Con $N = b - \sqrt{\frac{r}{a}}$: inestable
 - Con $N = b + \sqrt{\frac{r}{a}}$: estable
 
+Veamos ahora algunas soluciones particulares del modelo:
 """
 
-# ╔═╡ 06009e2a-b274-46f9-ab71-03ec1cce8657
+# ╔═╡ bb02257f-629a-4a92-844e-3df1abaa74b6
+load("imagenes/4.3..png")
 
+# ╔═╡ ad12805b-d9ce-4795-ba3c-b0e557857ace
+md"""
+### Relación con el modelo de crecimiento logístico
+Como se puede apreciar en las graficaciones anteriores, las soluciones particulares a la ecuación estudiada se asemejan a las soluciones particulares del modelo logístico. Es incluso posible expresar el modelo estudiado de la siguiente forma que recuerda a la del modelo de crecimiento logístico:
+
+$$N' = N \left( r - a(N - b)^2 \right) = rN \left( 1 - \frac{(N - b)^2}{\frac{r}{a}} \right)$$
+
+Es claro que ambos modelos relacionan una constante de crecimiento poblacional con una tasa que limita dicho crecimiento. La consistencia entre estos dos modelos da cuenta de que estos se ajustan a la situación que buscan describir.
+"""
+
+# ╔═╡ 96a2285a-f7bc-4ec0-9f27-aa8d6cc940f5
+md"""
+# Referencias
+[1] Wikipedia, "Allee effect," Wikipedia: The Free Encyclopedia. [Online]. Disponible en: https://en.wikipedia.org/wiki/Allee_effect. [Revisado: Dic. 4, 2024].
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1272,9 +1289,9 @@ uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
 version = "0.5.5+0"
 
 [[deps.OrderedCollections]]
-git-tree-sha1 = "12f1439c4f986bb868acda6ea33ebc78e19b95ad"
+git-tree-sha1 = "dfdf5519f235516220579f949664f1bf44e741c5"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
-version = "1.7.0"
+version = "1.6.3"
 
 [[deps.PNGFiles]]
 deps = ["Base64", "CEnum", "ImageCore", "IndirectArrays", "OffsetArrays", "libpng_jll"]
@@ -1773,8 +1790,10 @@ version = "17.4.0+2"
 # ╟─6788df5d-0e23-4479-9225-c0811fb7b9e0
 # ╟─09428df7-571a-4612-96db-4df927b0f189
 # ╟─705e94de-5439-42f1-877a-348fec6d2503
-# ╟─221b8dd7-669e-4228-988d-95c6fb26381a
+# ╟─0d6af858-1c60-43d1-8c1f-35d1e3ad2462
 # ╟─6a78a9f0-6e27-4531-83bd-8293dca22f1d
-# ╟─06009e2a-b274-46f9-ab71-03ec1cce8657
+# ╟─bb02257f-629a-4a92-844e-3df1abaa74b6
+# ╟─ad12805b-d9ce-4795-ba3c-b0e557857ace
+# ╟─96a2285a-f7bc-4ec0-9f27-aa8d6cc940f5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
