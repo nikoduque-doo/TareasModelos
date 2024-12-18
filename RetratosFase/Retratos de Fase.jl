@@ -414,6 +414,11 @@ $$x'=y$$
 $$y'=-x+y(1-x^2)$$
 """
 
+# ╔═╡ 02077120-2136-49c8-86e5-54f13dc828c5
+md"""
+en la grafica de abajo podemos ver como las trayectorias cercanas al origen convergen a $(0,0)$, lo que indica que este es un punto de equilibrio estable. Sin embargo, también se observa una órbita cerrada en forma de "ocho", donde las trayectorias más alejadas del origen siguen un ciclo cerrado y no se acercan al punto fijo. Esto sugiere que el sistema tiene un punto de equilibrio estable en $(0,0)$ y un ciclo límite estable en otras regiones del plano de fases.
+"""
+
 # ╔═╡ a2c3c446-1650-4c34-8b67-de2cdc866dfa
 load("img/3.1.png")
 
@@ -432,8 +437,14 @@ $$x'=y+y^2$$
 $$y'=-0.5x-0.2y-xy+1.2y^2$$
 """
 
+# ╔═╡ 83906467-766e-4def-87c2-8b423d232947
+md"""
+Acá también podemos ver cómo las trayectorias parecen converger hacia el origen $(0,0)$, lo que indica que es un punto de equilibrio estable. Sin embargo, también se observa una curva que proviene desde la zona a la derecha, un poco por debajo del eje $x$, donde todas las trayectorias se acercan a esa curva antes de continuar hacia el origen. Esta curva parece ser un camino que todas las trayectorias siguen antes de converger al origen. El comportamiento de las trayectorias cambia alrededor del corte entre el tercer y cuarto cuadrante, donde parece haber una transición entre las trayectorias que se dirigen directamente hacia esta curva y las que siguen un ciclo cerrado alrededor del origen antes de ir hacia esta curva. Esta transición podría estar relacionada con la presencia de otro punto fijo que afecta la dinámica en esa región.
+"""
+
+
 # ╔═╡ 0c45e49a-f306-4359-a13f-ff8cfbd2af8a
-load("img/3.1.png")
+load("img/3.2.png")
 
 # ╔═╡ 5af13c4e-7668-40c6-858e-747a6600c67e
 function B(x, y)
@@ -450,8 +461,13 @@ $$x'=y+y^2$$
 $$y'=-x+0.2y-xy+1.2y^2$$
 """
 
+# ╔═╡ 15d2b67e-c9be-4861-96cf-c1f96e95fb1b
+md"""
+Por último, en este ejercicio podemos observar cómo las trayectorias en este sistema también convergen hacia el origen $(0,0)$, lo que indica que es un punto de equilibrio estable. A diferencia del sistema anterior, el giro alrededor del origen no es ovalado, sino más circular. Las trayectorias parecen seguir un patrón más simétrico y equilibrado cerca del origen, moviéndose de manera más uniforme antes de converger al punto de equilibrio. Aunque la forma del giro es diferente, el comportamiento general es similar: las trayectorias se aproximan al origen de manera estable, dirigiéndose hacia la curva que viene desde la derecha hasta la zona de convergencia, pero con un patrón más circular alrededor del eje $x$.
+"""
+
 # ╔═╡ 6e55a6d1-d054-488f-935c-62ff9e1eecd9
-load("img/3.1.png")
+load("img/3.3.png")
 
 # ╔═╡ b59c504f-6a45-44dc-a7e2-0854910fbf1d
 function C(x, y)
@@ -460,6 +476,11 @@ end
 
 # ╔═╡ c15c6279-2c72-40eb-abbc-f97b1e2e401b
 graficadorRetratoDeFase(C, (-3, 3), (-3, 3))
+
+# ╔═╡ 4d104c07-47c9-48cf-960d-c250f46b4f45
+md"""
+En general, las graficas de los sistemas nos pueden ayudar a darnos una idea intuitiva de los puntos estables e inestables, las orbitas, etc. de un sistema de ecuaciones y permiten describir el comportamiento del sistema.
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3676,7 +3697,7 @@ version = "1.4.1+1"
 # ╟─3fb6b832-3779-4223-ab6b-4207c0f2759b
 # ╟─7047fb13-e2f4-4ea4-a6c6-cab5a2d89eae
 # ╟─ff237a48-2004-4151-9ede-18389f55b244
-# ╠═189e6afc-74d6-44b1-89bb-9bd9df495f50
+# ╟─189e6afc-74d6-44b1-89bb-9bd9df495f50
 # ╟─0d97ce6d-9afd-47cc-b4eb-4f9733a3592b
 # ╟─31041159-71d8-4004-a7f5-ad4ee51402f2
 # ╟─5836bf1a-b1f3-4574-bf0a-5e1c7b929800
@@ -3685,16 +3706,20 @@ version = "1.4.1+1"
 # ╟─82eefe9b-c8b1-446c-b204-572a27f28538
 # ╠═a7a4d02f-5f4a-4cb6-84a4-30575d0095d8
 # ╟─38171da3-d684-437d-b136-10eb80d8e491
+# ╟─02077120-2136-49c8-86e5-54f13dc828c5
 # ╟─a2c3c446-1650-4c34-8b67-de2cdc866dfa
 # ╠═f89481c9-2089-48c6-b90e-26010066350d
 # ╠═3ec48262-c16a-498d-a5e3-2b296543800f
 # ╟─92f11c40-1c20-4265-92b9-5d5c0ca0f2d0
+# ╟─83906467-766e-4def-87c2-8b423d232947
 # ╟─0c45e49a-f306-4359-a13f-ff8cfbd2af8a
 # ╠═5af13c4e-7668-40c6-858e-747a6600c67e
 # ╠═1a15b23e-372a-4c71-94f3-24cdd41ad366
 # ╟─dfd227ee-4b08-44ff-a4f8-e7b1137cc776
+# ╟─15d2b67e-c9be-4861-96cf-c1f96e95fb1b
 # ╟─6e55a6d1-d054-488f-935c-62ff9e1eecd9
 # ╠═b59c504f-6a45-44dc-a7e2-0854910fbf1d
 # ╠═c15c6279-2c72-40eb-abbc-f97b1e2e401b
+# ╟─4d104c07-47c9-48cf-960d-c250f46b4f45
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
