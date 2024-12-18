@@ -9,475 +9,377 @@ using PlutoUI, FileIO, Images
 
 # ╔═╡ d3703fde-b1e9-11ef-3055-cf662349c47f
 md"""
-# Tarea Dinámica 1D
+# Tarea Retratos de Fase
 Actividad realizada por Alan Acero, Johan López y Nicolás Duque
 """
 
 # ╔═╡ 5ff70b9c-33a9-4673-816b-0bf4cc4fdcbc
 md"""
-## 1. Estudiar las siguientes EDOs:  
-- Dibuje los retratos de fase en la recta real.  
-- Encuentre los equilibrios o puntos fijos.  
-- Clasifique la estabilidad de los puntos fijos.  
-- Realice un bosquejo de la solución para algunas condiciones iniciales.  
+## 1. Realizar el bosquejo de los retratos de fase de los siguientes sistemas de EDOs:
+### 1.1 Primer Sistema
+$x'=x^2-y$ 
+$y'=x-y$
+Para visualizar los retratos de fase de la ecuación, primero hallemos la matriz asociada dada por el Jacobiano:
 
+$D=
+\begin{pmatrix}
+\frac{\delta(x^2-y)}{\delta x} & \frac{\delta(x^2-y)}{\delta y} \\
+\frac{\delta(x-y)}{\delta x} & \frac{\delta(x-y)}{\delta x}
+\end{pmatrix} 
+= 
+\begin{pmatrix}
+2x & -1 \\
+1 & -1
+\end{pmatrix}$
+
+Ahora encontremos los puntos de equilibrio:
+
+$x^2-y = 0$ 
+$x-y=0$
+
+Por lo que $x=y$ y se tiene que:
+
+$x^2-x=0$
+
+Lo cual se tiene cuando:
+
+$x=y=0$  
+
+$o$  
+
+$x=y=1$
+
+Por lo tanto, se tienen dos puntos fijos:
+
+$p_1 = (0,0)$
+$p_2 = (1,1)$
+
+Veamos que comportamiento tiene cada punto:
+Para $p_1$ se tiene que:
+
+$D=
+\begin{pmatrix}
+0 & -1 \\
+1 & -1
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$det(\begin{pmatrix}
+-\lambda & -1\\
+1 & -1-\lambda
+\end{pmatrix}) 
+=
+\lambda(\lambda+1)+1 = (\lambda-(-\frac{1}{2}+\frac{\sqrt{3}}{2}i))(\lambda-(-\frac{1}{2}-\frac{\sqrt{3}}{2}i))$
+
+Así, $\lambda\approx-0.5\pm0.866i$ y los vectores propios son los siguientes respectivamente:
+
+$\vec{a}=\begin{pmatrix}
+1 \\
+\frac{1}{2}+\frac{\sqrt{3}}{2}i
+\end{pmatrix}
+\hspace{1cm}
+\vec{b}=\begin{pmatrix}
+1 \\
+\frac{1}{2}-\frac{\sqrt{3}}{2}i
+\end{pmatrix}$
+
+Ahora como $Re(\lambda)>0$, se tendrá un espiral estable en este punto y como $Im(\lambda)>0$ va de $\vec{b}$ a $\vec{a}$. Lo anterior puede visualizarse en la siguiente figura:
 """
 
-# ╔═╡ 3c0221c2-21f0-4fd9-999f-d078d37f5688
-md"""
-#### 1.1 $x' = 4x^2 - 16$  
+# ╔═╡ c202eaa8-3dc3-462d-b0a2-53ea783707d6
+load("img/1.1.1.png")
 
+# ╔═╡ c4e73ab1-eb8c-44cf-8bcc-73c09e8c2672
+md"""
+Para $p_2$ se tiene que:
+
+$D=
+\begin{pmatrix}
+2 & -1 \\
+1 & -1
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$det(\begin{pmatrix}
+2-\lambda & -1\\
+1 & -1-\lambda
+\end{pmatrix}) 
+=
+(\lambda-2)(\lambda+1)+1 = (\lambda-(\frac{1+\sqrt{5}}{2}))(\lambda-(\frac{1-\sqrt{5}}{2}))$
+
+Así, $\lambda_1\approx1.618$ y $\lambda_2\approx-0.618$. Además se tienen los siguientes vectores propios:
+
+$\vec{v_1}=\begin{pmatrix}
+2.618 \\
+1
+\end{pmatrix}
+\hspace{1cm}
+\vec{v_2}=\begin{pmatrix}
+0.381 \\
+1
+\end{pmatrix}$
+
+Este punto fijo es un punto silla. Lo anterior puede visualizarse en la siguiente figura:
 """
 
-# ╔═╡ 26290e71-c19d-4c25-bc42-3e0c711984f1
+# ╔═╡ c1891882-1ee5-46c9-ba79-fe5f979367db
+load("img/1.1.2.png")
+
+# ╔═╡ d5d79673-7e57-46c6-81ec-b9a982626109
 md"""
-Podemos factorizar de tal manera que $x' = 4x^2 - 16 = 4(x + 2)(x - 2)$. Luego, encontramos los puntos fijos o de equilibrio igualando a 0, así:
-
-$$4(x + 2)(x - 2) = 0$$
-$$x_1 = -2 \quad \text{o} \quad x_2 = 2$$
-
+Finalmente, se tiene el siguiente retrato de fase para ambos:
 """
 
-# ╔═╡ 5ae61f05-7dbe-49c0-b539-030d25557a15
-load("imagenes/1.1a.png")
+# ╔═╡ fb32e56b-127d-42a0-a5d3-b7594fc537f2
+load("img/1.1.3.png")
 
-# ╔═╡ 3c86def7-d55e-49e8-85e1-4bfab98624dc
+# ╔═╡ 7651ee6a-f16c-4b3c-9b24-792a4cecb867
 md"""
-Al observar cómo se comporta nuestra derivada alrededor de los puntos, sabemos que $x_1 = -2$ es un punto estable, mientras que $x_2 = 2$ es inestable.
+### 1.2 Segundo Sistema
+$x'=x(2-x-y)=2x-x^2-xy$ 
+$y'=x-y$
+Para visualizar los retratos de fase de la ecuación, primero hallemos la matriz asociada dada por el Jacobiano:
 
+$D=
+\begin{pmatrix}
+\frac{\delta(2x-x^2-xy)}{\delta x} & \frac{\delta(2x-x^2-xy)}{\delta y} \\
+\frac{\delta(x-y)}{\delta x} & \frac{\delta(x-y)}{\delta x}
+\end{pmatrix} 
+= 
+\begin{pmatrix}
+2-2x-y & -x \\
+1 & -1
+\end{pmatrix}$
+
+Ahora encontremos los puntos de equilibrio:
+
+$2-2x-y = 0$ 
+$x-y=0$
+
+Por lo que $x=y$ y se tiene que:
+
+$x(1-x)=0$
+
+Lo cual se tiene cuando:
+
+$x=y=0$  
+
+$o$  
+
+$x=y=1$
+
+Por lo tanto, se tienen dos puntos fijos:
+
+$p_1 = (0,0)$
+$p_2 = (1,1)$
+
+Veamos que comportamiento tiene cada punto:
+Para $p_1=(0,0)$ se tiene que:
+
+$D=
+\begin{pmatrix}
+2 & 0 \\
+1 & -1
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$det(\begin{pmatrix}
+2-\lambda & 0\\
+1 & -1-\lambda
+\end{pmatrix}) 
+=
+(\lambda-2)(\lambda+1)$
+
+Así, $\lambda_1=2$, $\lambda_2=-1$ los vectores propios son los siguientes respectivamente:
+
+$\vec{v_1}=\begin{pmatrix}
+3 \\
+1
+\end{pmatrix}
+\hspace{1cm}
+\vec{v_2}=\begin{pmatrix}
+0 \\
+1
+\end{pmatrix}$
+
+El comportamiento de lo anterior puede visualizarse en la siguiente figura:
 """
 
-# ╔═╡ 756afc72-f55c-4944-837a-32b20f7bf119
-load("imagenes/1.1b.png")
+# ╔═╡ 4f3702b2-3854-472c-a673-b515bd8e3eb4
+load("img/1.2.1.png")
 
-# ╔═╡ 3bdb3550-cf67-45c3-b0df-aac59d6681fa
+# ╔═╡ 99ca1cf5-67f5-492a-b09e-bc3235071d37
 md"""
-#### 1.2 $x' = 1 + 0.5\cos(x)$  
+Para $p_2 = (1,1)$ se tiene que:
+
+$D=
+\begin{pmatrix}
+-1 & -1 \\
+1 & -1
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$det(\begin{pmatrix}
+-1-\lambda & -1\\
+1 & -1-\lambda
+\end{pmatrix}) 
+=
+(\lambda+1)^2+1 = (\lambda-(-1+i)(\lambda-(-1-i))$
+
+Así, $\lambda_1=-1+i$ y $\lambda_2=-1-i$. Además se tienen los siguientes vectores propios:
+
+$\vec{v_1}=\vec{a}\begin{pmatrix}
+1 \\
+i
+\end{pmatrix}
+\hspace{1cm}
+\vec{v_2}==\vec{b}\begin{pmatrix}
+1 \\
+-i
+\end{pmatrix}$
+
+Ahora como $Re(\lambda)>0$, se tendrá un espiral estable en este punto y como $Im(\lambda)>0$ va de $\vec{b}$ a $\vec{a}$. Lo anterior puede visualizarse en la siguiente figura:
 """
 
-# ╔═╡ a94cdb28-f2dd-4c76-86e6-714acaece5ed
+# ╔═╡ d64021a9-6cb7-4ba1-a388-2205212bcba4
+load("img/1.1.1.png")
+
+# ╔═╡ 6cb0e442-0542-4381-a436-308c9803e108
 md"""
-Nuevamente igualamos nuestra derivada a $0$, luego:
-
-$\begin{align*}
-1 + 0.5 \cos(x) &= 0 \\
-\cos(x) &= -2
-\end{align*}$
-
-Dado que $-1 \leq \cos(x) \leq 1$, no existen puntos fijos o de equilibrio.
-
-Asimismo, como $1 + 0.5 \cos(x) > 0$ para todo $x \in \mathbb{R}$:
-
+Finalmente, con la información obtenida se tiene el siguiente retrato de fase:
 """
 
-# ╔═╡ 9834d479-30e9-4e52-ae21-4cc282f2ec6e
-load("imagenes/1.2a.png")
+# ╔═╡ 8da93763-ae58-4451-9543-f67909f0ea1e
+load("img/1.2.2.png")
 
-# ╔═╡ 73d751f5-d089-4431-8bef-b162303e085e
+# ╔═╡ 3fb6b832-3779-4223-ab6b-4207c0f2759b
 md"""
- concluimos entonces que los valores siempre tenderan hacia infinito, con valor inicial quedaria de la siguiente manera:
+### 1.3 Tercer Sistema
+$x'=xy-1$ 
+$y'=x-y^3$
+Para visualizar los retratos de fase de la ecuación, primero hallemos la matriz asociada dada por el Jacobiano:
+
+$D=
+\begin{pmatrix}
+\frac{\delta(xy-1)}{\delta x} & \frac{\delta(xy-1)}{\delta y} \\
+\frac{\delta(x-y^3)}{\delta x} & \frac{\delta(x-y^3)}{\delta x}
+\end{pmatrix} 
+= 
+\begin{pmatrix}
+y & x \\
+1 & -3y^2
+\end{pmatrix}$
+
+Ahora encontremos los puntos de equilibrio:
+
+$xy-1 = 0$ 
+$x-y^3=0$
+
+Por lo que $x=y^3$ y se tiene que:
+
+$y^4-1 = 0$
+
+Lo cual se tiene cuando:
+
+$x=y=1$  
+
+$o$  
+
+$x=y=-1$
+
+Por lo tanto, se tienen dos puntos fijos:
+
+$p_1 = (1,1)$
+$p_2 = (-1,-1)$
+
+Veamos que comportamiento tiene cada punto:
+Para $p_1=(1,1)$ se tiene que:
+
+$D=
+\begin{pmatrix}
+1 & 1 \\
+1 & -3
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$det(\begin{pmatrix}
+1-\lambda & 1\\
+1 & -3-\lambda
+\end{pmatrix}) 
+=
+(\lambda-1)(\lambda+3)-1=(\lambda-(-1+\sqrt{5}))(\lambda-(-1-\sqrt{5}))$
+
+Así, $\lambda_1\approx-3.236$, $\lambda_2\approx1.236$ los vectores propios son los siguientes respectivamente:
+
+$\vec{v_1}\approx\begin{pmatrix}
+-0.236 \\
+1
+\end{pmatrix}
+\hspace{1cm}
+\vec{v_2}\approx\begin{pmatrix}
+4.236 \\
+1
+\end{pmatrix}$
+
+El comportamiento de lo anterior puede visualizarse en la siguiente figura:
 """
 
-# ╔═╡ 2b3291fa-e8e8-4cd6-a0b9-9f42041cdd99
-load("imagenes/1.2b.png")
+# ╔═╡ 7047fb13-e2f4-4ea4-a6c6-cab5a2d89eae
+load("img/1.3.1.png")
 
-# ╔═╡ 501b338a-f45b-4f37-8a35-28a5e8db6d5f
+# ╔═╡ ff237a48-2004-4151-9ede-18389f55b244
 md"""
-#### 1.3 $x' = 1 - x^{14}$  
+Para $p_2 = (-1,-1)$ se tiene que:
 
+$D=
+\begin{pmatrix}
+-1 & -1 \\
+1 & -3
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$det(\begin{pmatrix}
+-1-\lambda & -1\\
+1 & -3-\lambda
+\end{pmatrix}) 
+=
+(\lambda+1)(\lambda+3)+1 = (\lambda+2)^2$
+
+Así, $\lambda=-2$ con multiplicidad algebráica 2. Además tiene multiplicidad geométrica 1 y al ser $\lambda<0$, el punto es un atractor:
+
+$\vec{v}=\vec{a}\begin{pmatrix}
+1 \\
+1
+\end{pmatrix}$
+
+Lo anterior puede visualizarse en la siguiente figura:
 """
 
-# ╔═╡ 66260eb7-1b61-4e07-9606-ab69b7da7d49
+# ╔═╡ 189e6afc-74d6-44b1-89bb-9bd9df495f50
+load("img/1.3.2.png")
+
+# ╔═╡ 0d97ce6d-9afd-47cc-b4eb-4f9733a3592b
 md"""
-Primero, factorizamos, así obtenemos que $x' = 1 - x^{14} = (1 - x^7)(1 + x^7)$. Ahora, para encontrar nuestros puntos de equilibrio:
-
-$$(1 - x^7)(1 + x^7) = 0$$
-
-De aquí, tenemos que:
-
-$$x_1 = 1 \quad \text{y} \quad x_2 = -1$$
-
+## 2. Imagine un retrato de fase que tenga exactamente tres orbitar cerradas y un punto fijo.
 """
 
-# ╔═╡ 7b4b4cae-cbed-4452-890d-41eb304ca010
-load("imagenes/1.3a.png")
+# ╔═╡ 31041159-71d8-4004-a7f5-ad4ee51402f2
+load("img/2.jpeg")
 
-# ╔═╡ ae5353eb-e1b1-489f-8e39-86de52f5ca8c
+# ╔═╡ 5836bf1a-b1f3-4574-bf0a-5e1c7b929800
 md"""
-Estos son nuestros puntos de equilibrio. Como se puede ver en la gráfica, $x_1 = -1$ es inestable, mientras que $x_2 = 1$ es estable. Ahora vamos a analizar cómo se comporta con problemas de valor inicial:
-
+Es importante aclarar que las fases entre órbitas cerradas y en el interior de la órbita "interior" deben ser necesariamente órbitas o espirales, ya que no es posible que las órbitas cerradas sean atravesadas por otra trayectoria.
 """
 
-# ╔═╡ 9b20cf11-3e56-4415-8919-52c3e6c76c88
-load("imagenes/1.3b.png")
-
-# ╔═╡ 1d685b37-4996-49e3-8449-295584c67481
+# ╔═╡ d9167832-f556-4946-9024-a60ee454cb90
 md"""
-#### 1.4 $x' = 1 - 2\cos(x)$  
-
-"""
-
-# ╔═╡ c4c09933-dc87-46a3-9fe6-fddd0757612b
-md"""
-En este caso, igualando a 0, tenemos que:
-
-$\begin{align*}
-1 - 2 \cos(x) &= 0 \\
-\cos(x) &= \frac{1}{2}
-\end{align*}$
-$x_a = \frac{\pi}{3} + 2k\pi, \quad x_b = -\frac{\pi}{3} + 2k\pi, \quad k \in \mathbb{Z}$
-
-Luego, se presentan infinitos puntos de equilibrio:
-
-"""
-
-# ╔═╡ a0590530-4992-4ac3-a3cf-3f05625a6907
-load("imagenes/1.4a.png")
-
-# ╔═╡ 1e311318-ad71-4850-95de-e969e2fb8ac4
-md"""
-Para este caso, los puntos de equilibrio estables serán los de la forma $x_b = -\frac{\pi}{3} + 2k\pi$, y los puntos inestables serán los de la forma $x_a = \frac{\pi}{3} + 2k\pi$.
-
-Para el valor inicial, quedaría de la siguiente manera:
-
-"""
-
-# ╔═╡ 7b30d7d8-d4f0-481b-8d2d-88761bbd6076
-load("imagenes/1.4b.png")
-
-# ╔═╡ d5c6afc5-56af-4ecf-9ef8-feb1cabb09b3
-md"""
-## 2. Usar el análisis de estabilidad lineal para clasificar los equilibrios de las siguientes EDOs:  
-
-"""
-
-# ╔═╡ f823721d-4082-4043-b3df-b37cac5b031c
-md"""
-#### 2.1 $x' = x(1 - x)$  
-
-"""
-
-# ╔═╡ 74369ecc-1111-4263-8f3b-7b33cdbdd3f3
-md"""
-Encontremos los puntos fijos o de equilibrio. 
-
-Usando el siguiente sistema:
-
-$$x(1 - x) = 0$$
-De donde obtenemos que:
-
-$$x_1 = 0 \quad \text{o} \quad x_2 = 1$$
-
-Ahora, sea $f(x) = x(1 - x)$. Tomemos su derivada y evaluemos en los puntos de equilibrio para clasificarlos. Con $f'(x) = 1 - 2x$, tenemos entonces:
-
-$$\begin{align*}
-f'(0) &= 1 > 0 \\
-f'(1) &= 1 - 2 = -1 < 0
-\end{align*}$$
-
-De esta manera, concluimos que:
-
-$$\begin{align*}
-x = 0 &\quad \text{es inestable linealmente} \\
-x = 1 &\quad \text{es estable linealmente}
-\end{align*}$$
-
-"""
-
-# ╔═╡ 2b5ba01b-2797-4e83-a246-46045e03e8a0
-md"""
-#### 2.2 $x' = x^2(6 - x)$  
-
-"""
-
-# ╔═╡ 52ad07ab-3b12-4d53-808d-3016b249d2f6
-md"""
-Siguiendo los pasos del punto anterior:
-
-$$x^2(6 - x) = 0$$
-
-De donde obtenemos que los puntos de equilibrio son:
-
-$$x_1 = 0 \quad \text{y} \quad x_2 = 6$$
-
-Ahora, sea $f(x) = x^2(6 - x)$. Tomemos su derivada:
-
-$$f'(x) = 2x(6 - x) - x^2$$
-
-Encontremos la estabilidad o inestabilidad de cada punto. Evaluamos $f'(x)$ en los puntos de equilibrio:
-
-$$\begin{align*}
-f'(6) &= 12 \cdot 6 - 3 \cdot 36 = -36 < 0  &\text{estable linealmente} \\
-f'(0) &= 0  &\text{semiestable linealmente}
-\end{align*}$$
-
-Por la derivada no podemos concluir nada, pero notemos que si $0 < x < 6$, entonces $f(x) > 0$, y si $x < 0$, entonces $f(x) > 0$. De esta manera, $x$ *"atrae"* los elementos de la izquierda y *"repela"* los de su derecha.
-
-
-"""
-
-# ╔═╡ 3ef79edd-cb7d-45a7-baa1-af1491ed4d9e
-md"""
-#### 2.3 $x' = \ln(x)$  
-
-"""
-
-# ╔═╡ cdf99963-bbf6-4059-b659-fa310a0a4d04
-md"""
-En este caso, el único punto de equilibrio donde $\ln(x) = 0$ es con $x = 1$.
-
-Luego, si $f(x) = \ln(x)$, entonces $f'(x) = \frac{1}{x}$. De esta manera, $f'(1) = 1 > 0$. Por lo tanto, $x = 1$ es inestable linealmente.
-"""
-
-# ╔═╡ 017fb29f-5659-46fc-9e21-9cc0df17b4bf
-md"""
-## 3. Análisis del modelo de Gompertz:  
-Use el análisis de estabilidad lineal para clasificar los equilibrios de la siguiente EDO:  
-
-$N' = -aN*\ln(bN)$
-"""
-
-# ╔═╡ 5f9e6ed9-2cc6-4b12-804c-5557112cbf92
-md"""
-
-Tomamos para este ejercicio que $a, b \neq 0$, puesto que si no, la ecuación daría constante 0 para el caso $a = 0$ e indeterminada para $b = 0$.
-
-Encontremos entonces los puntos de equilibrio de la ecuación diferencial:
-
-$$-aN \ln(bN) = 0$$
-
-De donde obtenemos:
-
-$$-aN = 0 \quad \text{o} \quad \ln(bN) = 0$$
-
-Luego, como $a$ y $b$ son valores arbitrarios, solo queda que:
-
-$$N = 0 \quad \text{o} \quad N = \frac{1}{b}$$
-
-Ahora, hagamos uso del análisis de estabilidad lineal y tomemos $f(N) = -aN \ln(bN)$. Luego, la derivada de $f(N)$ es:
-
-$$f'(N) = -a \ln(bN) - a$$
-
-De esta manera, evaluamos en los puntos de equilibrio:
-
-$$f'\left(\frac{1}{b}\right) = -a \cdot 0 - a = -a$$
-
-Finalmente, evaluamos el límite cuando $N \to 0$:
-
-$$\lim_{N \to 0} f'(N) = -a \ln(b \cdot 0) - a \quad \Rightarrow \quad \infty \quad \gg \quad 0$$
-
-De esta manera, obtenemos que:
-
-- Con $N = 0$ es **inestable linealmente**.
-- Con $N = \frac{1}{b}$ es **estable linealmente** si $a > 0$ e **inestable linealmente** si $a < 0$.
-
-"""
-
-# ╔═╡ 33f6167c-04d4-4a39-8854-afc1915c3e17
-md"""
-## 4. El efecto Allee
-Muestre que la siguiente equción es un ejemplo del efecto Allee si r,a,b, satisfacen algunas restricciones a detarminar.
-Encuentre todos lospuntos fijos y clasifique su estabilidad. Bosqueje algunas soluciones. Como se compara con el modelo de crecimiento logistico? 
-
-####  4.1 $N'= N* ( r-a(N-b)^2)$
-"""
-
-# ╔═╡ ee0e5870-b7c6-4b86-b2f2-2374be182b62
-md"""
-El **efecto Allee** describe que, en el contexto de poblaciones, existe un umbral poblacional debajo del cual la tasa de crecimiento de la población disminuye. Dicha tasa puede ser negativa, lo que se conoce como efecto Allee fuerte, o puede nunca llegar a ser negativa, lo que se denomina efecto Allee débil. Es también importante aclarar que, al acercarse a la capacidad de carga, la tasa de crecimiento de la población también aumentará. [1]
-"""
-
-# ╔═╡ 8829a967-c12c-4425-90b4-ed84a06519ff
-md"""
-Dada la EDO
-
-$$N' = N \left( r - a(N - b)^2 \right)$$
-
-con $N$ simbolizando la población, veamos cómo se pueden restringir los parámetros $r$, $a$, $b$ para que la ecuación describa el efecto Allee.
-"""
-
-# ╔═╡ 2b242f9d-8b5b-4162-bef5-8fe90ec05fd2
-md"""
-##### Primero, encontremos los puntos de equilibrio de la ecuación:
-
-$$N(r - a(N - b)^2) = 0$$
-
-Al ser una multiplicacion esto da lugar a los siguientes casos:
-
-1. Si $N = 0$, entonces $N = 0$ es un punto de equilibrio.
-2. Si $(r - a(N - b)^2) = 0$, se tiene que:
-
-$$r = a(N - b)^2$$
-
-$$\frac{r}{a} = (N - b)^2 \quad \text{por lo que} \quad \frac{r}{a} \geq 0, \quad a \neq 0$$
-
-De aquí obtenemos:
-
-$$\pm \sqrt{\frac{r}{a}} = N - b$$
-
-lo que nos lleva a:
-
-$$N = b - \sqrt{\frac{r}{a}} \quad \text{y} \quad N = b + \sqrt{\frac{r}{a}}$$
-
-"""
-
-# ╔═╡ 06c47559-ac8c-4b0d-bb72-3aaeb11f9f5b
-md"""
-##### Segundo, veamos las restricciones que surgen a partir de la formulación del problema:
-
-Considere que, al tratarse de una población, $N \geq 0$. Por lo tanto, se tiene lo siguiente sobre los puntos de equilibrio:
-
-$N = 0$
-$N = b - \sqrt{\frac{r}{a}} \geq 0$
-$N = b + \sqrt{\frac{r}{a}} \geq 0$
-
-Por lo tanto, se debe cumplir que:
-
-$$b \geq \sqrt{\frac{r}{a}} \geq 0 \quad \text{y} \quad b \geq 0$$
-"""
-
-# ╔═╡ cd7a3046-4d14-4ea7-b8af-8bc6d5824301
-md"""
-###### Cuando $r = 0$:
-
-En este caso, la ecuación
-
-$$N' = N \left( r - a(N - b)^2 \right) = 0$$
-
-será siempre negativa en caso de $a > 0$ y siempre positiva si $a < 0$. Ninguno de estos casos describe el comportamiento de una población según el efecto Allee.
-
-"""
-
-# ╔═╡ 775e6207-b511-4f1a-9367-8927d83ed417
-md"""
-###### Cuando $r \neq 0$:
-
-Si $r \neq 0$, $N' = N \left( r - a(N - b)^2 \right)$ será positivo cuando $r - a(N - b)^2 > 0$ y negativo cuando $r - a(N - b)^2 < 0$. Veamos cada uno de estos casos:
-"""
-
-# ╔═╡ 3d6df443-8fb1-4985-977a-2ac441c4ed55
-md"""
-
- **$N' > 0$:**
-
-Si $N > 0$ y $r - a(N - b)^2 > 0$, existen dos casos:
-
-**Caso 1**. Si $a < 0$ y $r < 0$, se tiene que:
-
-$$r > a(N - b)^2$$
-$$\frac{r}{a} < (N - b)^2$$
-$$\sqrt{\frac{r}{a}} < N - b \quad \text{o} \quad - \sqrt{\frac{r}{a}} > N - b$$
-$$b + \sqrt{\frac{r}{a}} < N \quad \text{o} \quad b - \sqrt{\frac{r}{a}} > N$$
-
-Luego, $b + \sqrt{\frac{r}{a}} < N < b - \sqrt{\frac{r}{a}}$.
-
-**Caso 2**. Si $a > 0$ y $r > 0$:
-
-$$r > a(N - b)^2$$
-$$\frac{r}{a} > (N - b)^2$$
-$$\sqrt{\frac{r}{a}} > N - b \quad \text{o} \quad - \sqrt{\frac{r}{a}} < N - b$$
-$$b + \sqrt{\frac{r}{a}} > N \quad \text{o} \quad b - \sqrt{\frac{r}{a}} < N$$
-
-Luego, $b - \sqrt{\frac{r}{a}} < N < b + \sqrt{\frac{r}{a}}$.
-
-Note que cuando $a < 0$ y $r < 0$, $b + \sqrt{\frac{r}{a}} < b - \sqrt{\frac{r}{a}}$, lo que es una contradicción al ser $\sqrt{\frac{r}{a}} > 0$.
-
-Por lo tanto, tenemos las siguientes condiciones: $r > 0$ , $a > 0$ , $b \geq \sqrt{\frac{r}{a}} > 0$.
-
-Ahora, si $N > 0$ y $r - a(N - b)^2 < 0$, se tiene que:
-
-$$r < a(N - b)^2$$
-$$\sqrt{\frac{r}{a}} < N - b \quad \text{o} \quad - \sqrt{\frac{r}{a}} > N - b$$
-$$b + \sqrt{\frac{r}{a}} < N \quad \text{o} \quad b - \sqrt{\frac{r}{a}} > N$$
-
-De los cuales, solo $N < b - \sqrt{\frac{r}{a}}$ es posible bajo las condiciones propuestas.
-"""
-
-
-# ╔═╡ 325f5ecd-52ad-48ff-ab09-b918021b6358
-md"""
-- **$N' < 0$:**
-
-    En este caso, se debe cumplir que $r - a(N - b)^2 < 0$, lo cual sucede cuando:
-
-    $$N < b - \sqrt{\frac{r}{a}} \quad \text{o} \quad N > b + \sqrt{\frac{r}{a}}$$
-"""
-
-# ╔═╡ a3eb52da-d2bc-4a56-8c32-1c22d4e96b44
-md"""
-##### Conclusión:
-
-Mediante el análisis anterior, podemos verificar que la ecuación $N' = N \left( r - a(N - b)^2 \right)$ describirá una población que presenta el efecto Allee siempre y cuando se cumplan las siguientes condiciones:
-
-$r > 0 \quad a > 0 \quad b \geq \sqrt{\frac{r}{a}}$
-
-Además, $N'$ será positiva entre los valores $b - \sqrt{\frac{r}{a}} < N < b + \sqrt{\frac{r}{a}}$ y negativa fuera de este intervalo.
-"""
-
-# ╔═╡ 435905d6-fa00-40ea-8686-43be1cbc456b
-md"""
-Mediante el análisis anterior, se puede verificar que $N' = N(r - a(N - b)^2)$ describirá una población que presente el efecto Allee siempre y cuando $r > 0$, $a > 0$, $b \geq \sqrt{\frac{r}{a}}$.
-Además, $N'$ será positiva entre los valores $b - \sqrt{\frac{r}{a}} < N < b + \sqrt{\frac{r}{a}}$ y negativa en el resto de los valores de $N$.
-"""
-
-
-# ╔═╡ 862dae66-915b-4e44-be04-54fe6ac54e98
-md"""
-#### En ese sentido, existen dos tipos de diagramas de flujo:
-"""
-
-# ╔═╡ 5dbc885f-c5ff-45d0-827d-471f9df90729
-md"""
-##### Tipo 1: $b = \sqrt{\frac{r}{a}}$
-"""
-
-# ╔═╡ 6788df5d-0e23-4479-9225-c0811fb7b9e0
-load("imagenes/4.1..png")
-
-# ╔═╡ 09428df7-571a-4612-96db-4df927b0f189
-md"""
-En este caso, los puntos de equilibrio son:
-
-- Con $N = 0$: inestable
-- Con $N = b + \sqrt{\frac{r}{a}}$: estable
-"""
-
-# ╔═╡ 705e94de-5439-42f1-877a-348fec6d2503
-md"""
-##### Tipo 2: $b > \sqrt{\frac{r}{a}}$
-"""
-
-# ╔═╡ 0d6af858-1c60-43d1-8c1f-35d1e3ad2462
-load("imagenes/4.2..png")
-
-# ╔═╡ 6a78a9f0-6e27-4531-83bd-8293dca22f1d
-md"""
-En este caso, los puntos de equilibrio son:
-
-- Con $N = 0$: semiestable
-- Con $N = b - \sqrt{\frac{r}{a}}$: inestable
-- Con $N = b + \sqrt{\frac{r}{a}}$: estable
-
-Veamos ahora algunas soluciones particulares del modelo:
-"""
-
-# ╔═╡ bb02257f-629a-4a92-844e-3df1abaa74b6
-load("imagenes/4.3..png")
-
-# ╔═╡ ad12805b-d9ce-4795-ba3c-b0e557857ace
-md"""
-### Relación con el modelo de crecimiento logístico
-Como se puede apreciar en las graficaciones anteriores, las soluciones particulares a la ecuación estudiada se asemejan a las soluciones particulares del modelo logístico. Es incluso posible expresar el modelo estudiado de la siguiente forma que recuerda a la del modelo de crecimiento logístico:
-
-$$N' = N \left( r - a(N - b)^2 \right) = rN \left( 1 - \frac{(N - b)^2}{\frac{r}{a}} \right)$$
-
-Es claro que ambos modelos relacionan una constante de crecimiento poblacional con una tasa que limita dicho crecimiento. La consistencia entre estos dos modelos da cuenta de que estos se ajustan a la situación que buscan describir.
-"""
-
-# ╔═╡ 96a2285a-f7bc-4ec0-9f27-aa8d6cc940f5
-md"""
-# Referencias
-[1] Wikipedia, "Allee effect," Wikipedia: The Free Encyclopedia. [Online]. Disponible en: https://en.wikipedia.org/wiki/Allee_effect. [Revisado: Dic. 4, 2024].
+# 3. Usar un sistema de computo para calcular los retratos de fase de los siguientes sistemas. Comentar los resultados
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1745,55 +1647,24 @@ version = "17.4.0+2"
 # ╟─d3703fde-b1e9-11ef-3055-cf662349c47f
 # ╠═a9d02dd3-f5d8-4238-b104-73ddb325c13e
 # ╟─5ff70b9c-33a9-4673-816b-0bf4cc4fdcbc
-# ╠═3c0221c2-21f0-4fd9-999f-d078d37f5688
-# ╟─26290e71-c19d-4c25-bc42-3e0c711984f1
-# ╟─5ae61f05-7dbe-49c0-b539-030d25557a15
-# ╟─3c86def7-d55e-49e8-85e1-4bfab98624dc
-# ╟─756afc72-f55c-4944-837a-32b20f7bf119
-# ╟─3bdb3550-cf67-45c3-b0df-aac59d6681fa
-# ╟─a94cdb28-f2dd-4c76-86e6-714acaece5ed
-# ╟─9834d479-30e9-4e52-ae21-4cc282f2ec6e
-# ╟─73d751f5-d089-4431-8bef-b162303e085e
-# ╟─2b3291fa-e8e8-4cd6-a0b9-9f42041cdd99
-# ╟─501b338a-f45b-4f37-8a35-28a5e8db6d5f
-# ╟─66260eb7-1b61-4e07-9606-ab69b7da7d49
-# ╟─7b4b4cae-cbed-4452-890d-41eb304ca010
-# ╟─ae5353eb-e1b1-489f-8e39-86de52f5ca8c
-# ╟─9b20cf11-3e56-4415-8919-52c3e6c76c88
-# ╟─1d685b37-4996-49e3-8449-295584c67481
-# ╟─c4c09933-dc87-46a3-9fe6-fddd0757612b
-# ╟─a0590530-4992-4ac3-a3cf-3f05625a6907
-# ╟─1e311318-ad71-4850-95de-e969e2fb8ac4
-# ╟─7b30d7d8-d4f0-481b-8d2d-88761bbd6076
-# ╟─d5c6afc5-56af-4ecf-9ef8-feb1cabb09b3
-# ╟─f823721d-4082-4043-b3df-b37cac5b031c
-# ╟─74369ecc-1111-4263-8f3b-7b33cdbdd3f3
-# ╟─2b5ba01b-2797-4e83-a246-46045e03e8a0
-# ╟─52ad07ab-3b12-4d53-808d-3016b249d2f6
-# ╟─3ef79edd-cb7d-45a7-baa1-af1491ed4d9e
-# ╟─cdf99963-bbf6-4059-b659-fa310a0a4d04
-# ╟─017fb29f-5659-46fc-9e21-9cc0df17b4bf
-# ╟─5f9e6ed9-2cc6-4b12-804c-5557112cbf92
-# ╟─33f6167c-04d4-4a39-8854-afc1915c3e17
-# ╟─ee0e5870-b7c6-4b86-b2f2-2374be182b62
-# ╟─8829a967-c12c-4425-90b4-ed84a06519ff
-# ╟─2b242f9d-8b5b-4162-bef5-8fe90ec05fd2
-# ╟─06c47559-ac8c-4b0d-bb72-3aaeb11f9f5b
-# ╟─cd7a3046-4d14-4ea7-b8af-8bc6d5824301
-# ╟─775e6207-b511-4f1a-9367-8927d83ed417
-# ╟─3d6df443-8fb1-4985-977a-2ac441c4ed55
-# ╟─325f5ecd-52ad-48ff-ab09-b918021b6358
-# ╟─a3eb52da-d2bc-4a56-8c32-1c22d4e96b44
-# ╟─435905d6-fa00-40ea-8686-43be1cbc456b
-# ╟─862dae66-915b-4e44-be04-54fe6ac54e98
-# ╟─5dbc885f-c5ff-45d0-827d-471f9df90729
-# ╟─6788df5d-0e23-4479-9225-c0811fb7b9e0
-# ╟─09428df7-571a-4612-96db-4df927b0f189
-# ╟─705e94de-5439-42f1-877a-348fec6d2503
-# ╟─0d6af858-1c60-43d1-8c1f-35d1e3ad2462
-# ╟─6a78a9f0-6e27-4531-83bd-8293dca22f1d
-# ╟─bb02257f-629a-4a92-844e-3df1abaa74b6
-# ╟─ad12805b-d9ce-4795-ba3c-b0e557857ace
-# ╟─96a2285a-f7bc-4ec0-9f27-aa8d6cc940f5
+# ╟─c202eaa8-3dc3-462d-b0a2-53ea783707d6
+# ╟─c4e73ab1-eb8c-44cf-8bcc-73c09e8c2672
+# ╟─c1891882-1ee5-46c9-ba79-fe5f979367db
+# ╟─d5d79673-7e57-46c6-81ec-b9a982626109
+# ╟─fb32e56b-127d-42a0-a5d3-b7594fc537f2
+# ╟─7651ee6a-f16c-4b3c-9b24-792a4cecb867
+# ╟─4f3702b2-3854-472c-a673-b515bd8e3eb4
+# ╟─99ca1cf5-67f5-492a-b09e-bc3235071d37
+# ╟─d64021a9-6cb7-4ba1-a388-2205212bcba4
+# ╟─6cb0e442-0542-4381-a436-308c9803e108
+# ╟─8da93763-ae58-4451-9543-f67909f0ea1e
+# ╟─3fb6b832-3779-4223-ab6b-4207c0f2759b
+# ╟─7047fb13-e2f4-4ea4-a6c6-cab5a2d89eae
+# ╟─ff237a48-2004-4151-9ede-18389f55b244
+# ╠═189e6afc-74d6-44b1-89bb-9bd9df495f50
+# ╟─0d97ce6d-9afd-47cc-b4eb-4f9733a3592b
+# ╟─31041159-71d8-4004-a7f5-ad4ee51402f2
+# ╟─5836bf1a-b1f3-4574-bf0a-5e1c7b929800
+# ╠═d9167832-f556-4946-9024-a60ee454cb90
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
