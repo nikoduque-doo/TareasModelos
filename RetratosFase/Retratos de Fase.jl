@@ -26,8 +26,8 @@ Para visualizar los retratos de fase de la ecuación, primero hallemos la matriz
 
 $D=
 \begin{pmatrix}
-\frac{\delta(x^2-y)}{\delta x} & \frac{\delta(x^2-y)}{\delta y} \\
-\frac{\delta(x-y)}{\delta x} & \frac{\delta(x-y)}{\delta x}
+\frac{\partial(x^2-y)}{\delta x} & \frac{\partial(x^2-y)}{\partial y} \\
+\frac{\partial(x-y)}{\delta x} & \frac{\partial(x-y)}{\partial x}
 \end{pmatrix} 
 = 
 \begin{pmatrix}
@@ -87,7 +87,7 @@ $\vec{a}=\begin{pmatrix}
 \frac{1}{2}-\frac{\sqrt{3}}{2}i
 \end{pmatrix}$
 
-Ahora como $Re(\lambda)>0$, se tendrá un espiral estable en este punto y como $Im(\lambda)>0$ va de $\vec{b}$ a $\vec{a}$. Lo anterior puede visualizarse en la siguiente figura:
+Ahora como $Re(\lambda)<0$, se tendrá un espiral estable en este punto y como $Im(\lambda)<0$ va de $\vec{b}$ a $\vec{a}$. Lo anterior puede visualizarse en la siguiente figura:
 """
 
 # ╔═╡ c202eaa8-3dc3-462d-b0a2-53ea783707d6
@@ -147,8 +147,8 @@ Para visualizar los retratos de fase de la ecuación, primero hallemos la matriz
 
 $D=
 \begin{pmatrix}
-\frac{\delta(2x-x^2-xy)}{\delta x} & \frac{\delta(2x-x^2-xy)}{\delta y} \\
-\frac{\delta(x-y)}{\delta x} & \frac{\delta(x-y)}{\delta x}
+\frac{\partial(2x-x^2-xy)}{\partial x} & \frac{\partial(2x-x^2-xy)}{\partial y} \\
+\frac{\partial(x-y)}{\partial x} & \frac{\partial(x-y)}{\partial x}
 \end{pmatrix} 
 = 
 \begin{pmatrix}
@@ -235,17 +235,17 @@ $det(\begin{pmatrix}
 
 Así, $\lambda_1=-1+i$ y $\lambda_2=-1-i$. Además se tienen los siguientes vectores propios:
 
-$\vec{v_1}=\vec{a}\begin{pmatrix}
+$\vec{v_1}=\vec{a}=\begin{pmatrix}
 1 \\
 i
 \end{pmatrix}
 \hspace{1cm}
-\vec{v_2}==\vec{b}\begin{pmatrix}
+\vec{v_2}=\vec{b}=\begin{pmatrix}
 1 \\
 -i
 \end{pmatrix}$
 
-Ahora como $Re(\lambda)>0$, se tendrá un espiral estable en este punto y como $Im(\lambda)>0$ va de $\vec{b}$ a $\vec{a}$. Lo anterior puede visualizarse en la siguiente figura:
+Ahora como $Re(\lambda)<0$, se tendrá un espiral estable en este punto y como $Im(\lambda)<0$ va de $\vec{b}$ a $\vec{a}$. Lo anterior puede visualizarse en la siguiente figura:
 """
 
 # ╔═╡ d64021a9-6cb7-4ba1-a388-2205212bcba4
@@ -268,8 +268,8 @@ Para visualizar los retratos de fase de la ecuación, primero hallemos la matriz
 
 $D=
 \begin{pmatrix}
-\frac{\delta(xy-1)}{\delta x} & \frac{\delta(xy-1)}{\delta y} \\
-\frac{\delta(x-y^3)}{\delta x} & \frac{\delta(x-y^3)}{\delta x}
+\frac{\partial(xy-1)}{\partial x} & \frac{\partial(xy-1)}{\partial y} \\
+\frac{\partial(x-y^3)}{\partial x} & \frac{\partial(x-y^3)}{\partial x}
 \end{pmatrix} 
 = 
 \begin{pmatrix}
@@ -356,7 +356,7 @@ $det(\begin{pmatrix}
 
 Así, $\lambda=-2$ con multiplicidad algebráica 2. Además tiene multiplicidad geométrica 1 y al ser $\lambda<0$, el punto es un atractor:
 
-$\vec{v}=\vec{a}\begin{pmatrix}
+$\vec{v}=\vec{a}=\begin{pmatrix}
 1 \\
 1
 \end{pmatrix}$
@@ -382,7 +382,7 @@ Es importante aclarar que las fases entre órbitas cerradas y en el interior de 
 
 # ╔═╡ d9167832-f556-4946-9024-a60ee454cb90
 md"""
-# 3. Usar un sistema de computo para calcular los retratos de fase de los siguientes sistemas. Comentar los resultados
+## 3. Usar un sistema de computo para calcular los retratos de fase de los siguientes sistemas. Comentar los resultados
 """
 
 # ╔═╡ 4a7e44ec-62a3-4c9a-bb90-ec8fc04f29af
