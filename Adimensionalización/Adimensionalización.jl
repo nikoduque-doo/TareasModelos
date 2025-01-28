@@ -54,17 +54,29 @@ md"""
 # ╔═╡ 6793429f-b688-485a-907b-18773f5c6a5e
 md"""
 Hallemos el $\alpha$ y $\beta$ de tal forma que las dimensiones de $t_c$ sean consistentes, así:
-
+	
 $$T=[t_c]=[k]^{\alpha}[u_0]^{\beta}=M^{-\alpha}T^{-\alpha}M^{\beta}=M^{-\alpha+\beta}T^{-\alpha}$$
 
-De esta manera $-\alpha+\beta=1$ y $-alpha=0$, lo que implica que $\beta=1$ y
+De esta manera $-\alpha+\beta=1$ y $-\alpha=1$, resolviendo tenemos que $\alpha=-1$ y $\beta=-1$, lo que significa que
 
-$u_c=u_0$
+$$t_c=K^{-1}u_0^{-1}\frac{1}{ku_0}$$
+
 """
 
 # ╔═╡ 5efcc77e-35bf-4a26-af9f-c71a145c6b4b
 md"""
 (c). Demuestre que cualquier escala de masa característica de la forma $u_c = k^\alpha u_0^\beta$ está dada por $u_c = u_0$.  
+"""
+
+# ╔═╡ 3f3c31ca-689f-4a84-a04f-d9787577d2b6
+md"""
+Encontremos el $\alpha$ y $\beta$ de tal forma que las dimensiones de $u_c$ sean consistentes:
+
+$$M=[m_c]=[k]^{\alpha}[u_0]^{\beta}=M^{-\alpha}T^{-\alpha}M^{\beta}=M^{-\alpha+\beta}T^{-\alpha}$$
+
+Luego, $-\alpha+\beta=1$ y $-\alpha=0$, lo que implica que $\beta=1$ y
+
+$u_c=u_0$
 """
 
 # ╔═╡ 85e40b27-13df-4b2a-bb65-721fd07e38f4
@@ -76,10 +88,51 @@ md"""
 con la condición inicial $\bar{u}(0) = 1$.  
 """
 
+# ╔═╡ 428adddd-6efc-47dd-9fa1-b890aa86c69c
+md"""
+Definimos las variables adimensionales
+
+$$\displaystyle \overline{u}=\frac{u}{u_c}=\frac{u}{u_0} \quad \quad \text{y} \quad \quad \overline{t}=\frac{t}{t_c}=ktu_0$$
+
+ahora, $u(t)=u_0\overline{u}(\overline{t})$, y derivando tenemos que:
+
+$$\displaystyle \frac{du(t)}{dt} =u_0\frac{d\overline{u}}{d\overline{t}} \cdot\frac{\overline{dt}}{dt}=ku_0^2\frac{d\overline{u}}{\overline{dt}}$$
+
+entonces remplazando en $u'(t)=-Ku^2(t)$:
+
+$$\cancel{ku_0^2}\frac{d\overline{u}}{\overline{dt}}=\cancel{ku_0^2}\overline{u}^2(\overline{t}) \quad \quad \text{con } u_0=u_0\overline{u}(0)$$
+
+esto es que, $\displaystyle \frac{d\overline{u}}{d\overline{t}}=-\overline{u}^2(t)\;$  con  $\;\overline{u}(0)=1$
+"""
+
 # ╔═╡ 6a8234b4-9c90-4f00-954c-8e2ecc9c006c
 md"""
 (e). Resuelva la EDO $u'(t) = -ku^2(t)$ con $u(0) = u_0$ y calcule el tiempo necesario para que $u(t)$ decaiga desde $u_0$ hasta la mitad de ese valor, $u_0/2$.  
 
+"""
+
+# ╔═╡ d53ef143-b84a-487b-b920-5208fbfbb427
+md"""
+Tenemos la EDO $\displaystyle \frac{du}{dt}=-Ku^2$, por lo tanto usemos el método de variables separables:
+
+$$\frac{1}{u^2}du=-Kdt$$
+
+integrando en ambas igualdades,
+
+$\begin{align*}
+\int\frac{1}{u^2}du&=\int-Kdt\\
+-\frac{1}{u}&=-Kt+C
+\end{align*}$
+
+de esta manera $\displaystyle u(t)=\frac{1}{Kt-C}$ con $u(0)=u_0$, lo que significa que $\displaystyle C=-\frac{1}{u_0}$ y,
+
+$$u(t)=\frac{1}{kt+\frac{1}{u_0}}$$
+
+ahora, para que $u(t)$ decaiga a $\displaystyle\frac{u_0}{2}$ 
+
+$\displaystyle\frac{u_0}{2}=\frac{1}{kt+\frac{1}{u_0}}$
+
+esto es $\; \;u_0Kt+1=2$, por lo tanto, $\displaystyle t=\frac{1}{Ku_0}$, lo que verifica que es consistente con la escala de $t_c$, comprobando así el punto (f), que consiste en:
 """
 
 # ╔═╡ f54478b8-37e7-4afb-95ff-0ff06785750f
@@ -3359,10 +3412,13 @@ version = "1.4.1+1"
 # ╟─6ddff793-b895-4576-b745-0a5eaf2e7813
 # ╠═22916c78-f4a9-49da-86e7-30b0ba94fd38
 # ╟─f26b3368-d3d9-4d09-bcff-e1a6b71726d3
-# ╠═6793429f-b688-485a-907b-18773f5c6a5e
+# ╟─6793429f-b688-485a-907b-18773f5c6a5e
 # ╟─5efcc77e-35bf-4a26-af9f-c71a145c6b4b
+# ╟─3f3c31ca-689f-4a84-a04f-d9787577d2b6
 # ╟─85e40b27-13df-4b2a-bb65-721fd07e38f4
+# ╟─428adddd-6efc-47dd-9fa1-b890aa86c69c
 # ╟─6a8234b4-9c90-4f00-954c-8e2ecc9c006c
+# ╟─d53ef143-b84a-487b-b920-5208fbfbb427
 # ╟─f54478b8-37e7-4afb-95ff-0ff06785750f
 # ╟─d896173e-5a48-4099-8f5e-d70caa246873
 # ╟─d3e71671-8820-4133-bac9-d490adaeeae4
