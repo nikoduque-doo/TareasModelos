@@ -158,9 +158,57 @@ md"""
 (a). Esboce el retrato de fase de la ecuación y verifique que si $0 < u < P$, las soluciones decaen a cero, y si $u > P$, las soluciones se aproximan a $K$.
 """
 
+# ╔═╡ 0c31d89f-d58d-4c00-9b77-fde91a60a88a
+md"""
+Se tiene que $\displaystyle 0=-ru\left(1-\frac{u}{K}\right)\left(1-\frac{u}{P}\right)$, por lo que $-ru=0$, $\displaystyle \left(1-\frac{u}{K}\right)=0$ o $\displaystyle \left(1-\frac{u}{P}\right)=0$.
+Por lo tanto los puntos de equilibrio son $u=0$,$u=K$ o $u=P$. Además, se tiene que:
+
+$\begin{align*}
+\text{si }u<0&: -ru>0 \text{,}& 1-\frac{u}{K}>0 \text{, }\quad &  1-\frac{u}{P}>0 & \text{ luego }\frac{dy}{dt}>0\\
+
+\text{si }0<u<P&: -ru<0 \text{,}& 1-\frac{u}{K}>0 \text{, }\quad &  1-\frac{u}{P}>0 & \text{ luego }\frac{dy}{dt}<0\\
+
+\text{si }P<u<K&: -ru<0 \text{,}& 1-\frac{u}{K}>0 \text{, }\quad &  1-\frac{u}{P}<0 & \text{ luego }\frac{dy}{dt}>0\\
+
+\text{si }K<u&: -ru<0 \text{,}& 1-\frac{u}{K}<0 \text{, }\quad &  1-\frac{u}{P}<0 & \text{ luego }\frac{dy}{dt}<0\\
+\end{align*}$
+"""
+
+# ╔═╡ 4b0b97c7-1c10-4e88-9286-7d9da8920855
+load("img/RetratoFase2.a).png")
+
+# ╔═╡ b2d02055-6966-4d4e-a171-21b745a03e6d
+md"""
+Se tiene entonces que:
+- si $0<u<P$, $u$ tiende a $0$.
+- si $P<u$, $u$ tiende a $K$.
+"""
+
 # ╔═╡ 87b22644-5856-4415-b813-f5263e17336d
 md"""
-(b). Si $N$ denota la dimensión de la población, entonces $[K] = [P] = N$. ¿Cuál es la dimensión de $r$? 
+(b). Si $N$ denota la dimensión de la población, entonces $[K] = [P] = N$.
+
+¿Cuál es la dimensión de $r$? 
+"""
+
+# ╔═╡ 4f6d5592-208e-485d-8db7-94fb708fc8fc
+md"""
+Consideremos que: 
+
+$\begin{align*}
+\left[\frac{du}{dt}\right] &= \frac{N}{T}=NT^{-1}\\
+
+\left[-ru\left(1-\frac{u}{K}\right) \left(1-\frac{u}{P}\right)\right]
+&=[r]\cdot [u]\cdot \left[1-\frac{u}{K}\right]\cdot \left[1-\frac{u}{P}\right]\\
+&=[r]\cdot N\cdot 1 \cdot 1 = [r] \cdot N \\
+\\
+\text{Por lo tanto, }\;\;NT^{-1} &= [r]\cdot N
+\end{align*}$
+
+es decir $[r]=T^{-1}$
+
+
+
 """
 
 # ╔═╡ 8c89e505-4cf4-4ac1-8d8d-27e2ac547f4f
@@ -168,9 +216,49 @@ md"""
 (c). Demuestre que la única escala de tiempo característica de la forma $t_c = r^\alpha K^\beta P^\gamma$ es $t_c = r^{-1}(K/P)^\beta$. Tome $\beta = 0$, de modo que $t_c = 1/r$. Si muestreamos la población en tiempos periódicos, ¿qué implicaciones tiene esto para la frecuencia de muestreo?
 """
 
+# ╔═╡ 0d251455-4aba-418f-97b0-185f6245bf27
+md"""
+calculemos las dimensiones de $t_c$:
+
+$\begin{align*}
+[t_c]&=[r^\alpha K^\beta P^\gamma]\\
+T&=[ r^\alpha][ K^\beta][ P^\gamma  ] \\
+T&=T^{-\alpha} N^{\beta} N^{\gamma} =T^{-\alpha} N^{\beta+\gamma} \\
+\end{align*}$
+
+por lo tanto, se tiene que $-\alpha=1$ y $\beta+\gamma=0$, por lo que $\alpha=-1$ y $\gamma=-\beta$.
+
+De lo anterior tenemos entonces que $t_c=r^{-1} K^\beta P^{-\beta}=\displaystyle r^{-1} \left(\frac{K}{P}\right)^\beta$.
+
+Ahora, si $\beta=0$ se tiene que $t_c=r^{-1}$. Por lo tanto $\overline{t}$, la variable temporal adimensionada, es igual a $\displaystyle \frac{t}{t_c}=\frac{t}{r^{-1}}=rt$.
+
+Cuando el periodo de muestreo se acerca a la escala de tiempo característica del sistema, la información que obtenemos será precisa y representativa de los cambios dinámicos del sistema. En este caso, el intervalo entre las muestras es lo suficientemente corto como para capturar correctamente la evolución del sistema.
+
+Por otro lado, si la escala de tiempo característica es mucho mayor que el periodo de muestreo, los cambios importantes del sistema se "saltan" entre una muestra y otra, lo que puede llevar a una distorsión de la información. En este caso, perdemos detalles cruciales y la interpretación del comportamiento del sistema se vuelve menos confiable.
+
+En el caso opuesto, si el periodo de muestreo es muy pequeño, podríamos obtener demasiada información sin que se observe un cambio significativo en el sistema, lo que podría hacer que el análisis sea más complejo de lo necesario y añadir ruido en lugar de claridad.
+
+En resumen, para obtener una representación fiel del sistema, el periodo de muestreo debe estar cercano a la escala de tiempo característica.
+"""
+
 # ╔═╡ 36349379-1ca0-40ef-9a4d-efb1bf7fced5
 md"""
 (d). Demuestre que cualquier escala característica de población de la forma $u_c = r^\alpha K^\beta P^\gamma$ es $u_c = K^\beta P^\gamma$ con $\beta + \gamma = 1$, o equivalentemente $u_c = K(P/K)^\gamma$.
+"""
+
+# ╔═╡ 4e5cf153-d22e-48e7-83e6-4f3b74d04e31
+md"""
+Calculemos las dimensiones de $u_c$:
+
+$\begin{align*}
+[u_c] &= [r^\alpha][ K^\beta][ P^\gamma]\\
+N&=T^{-\alpha} N^\beta N^\gamma=T^{-\alpha} N^{\beta +\gamma}  \\
+\end{align*}$
+
+por lo tanto, $-\alpha=0$ y $\beta+\gamma=1$, es decir $\alpha=0$ y $\gamma=1-\beta$.
+
+De lo anterior, tenemos que $\displaystyle u_c = r^0 K^{1-\gamma} P^\gamma=K^{1-\gamma} P^\gamma=K\left(\frac{P}{K}\right)^\gamma$
+
 """
 
 # ╔═╡ c943b623-80b9-4eba-9559-375b578aac9c
@@ -179,10 +267,53 @@ md"""
 $u(0) = u_0$ en el problema adimensionalizado?
 """
 
+# ╔═╡ 82471256-da9d-46fa-a755-b3d4268947d0
+md"""
+Veamos la forma de las variables adimensionalizadas:
+
+($\cdot$) $\displaystyle \overline{t} = \frac{t}{t_c} = \frac{t}{r^{-1}} = r t$, por lo que $\displaystyle t=\frac{\overline{t}}{r}$
+
+($\cdot$) $\displaystyle \overline{u} = \frac{u}{u_c} = \frac{u}{K}$ por lo que $u=K\;\overline{u}$
+
+De lo anterior, tenemos que $\displaystyle \frac{d \overline{t}}{d t} = r$, y que $\displaystyle \frac{d u}{d t} = K \cdot \frac{d \overline{u}}{d \overline{t}} \cdot \frac{d \overline{t}}{d t} = K r \cdot \frac{d \overline{u}}{d \overline{t}}$.  Ahora remplazando en la ecuacion original
+
+
+$\begin{align*}
+\displaystyle \frac{d u}{d t} &= -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) \\
+\displaystyle K r \frac{d \overline{u}}{d \overline{t}} &= - r \left( K \overline{u} \right) \left( 1 - \frac{K \overline{u}}{k} \right) \left( 1 - \frac{\overline{u}}{P} \right) \\
+\displaystyle \frac{d \overline{u}}{d \overline{t}} &= - \overline{u} \left( 1 - \overline{u} \right) \left( 1 - \frac{K}{P} \overline{u} \right)
+\end{align*}$
+
+Ahora, sea $u(0)=u_0$, se tiene que: $\displaystyle \overline{u}(0) = \frac{u(0)}{k}$
+
+"""
+
 # ╔═╡ 1084bd0a-920f-45b6-9ad1-cd65682d17a7
 md"""
 (f). Adimensionalice la ecuación usando $t_c = 1/r$ y $u_c = P$ (correspondiente a $\gamma = 1$ en $u_c = K(P/K)^\gamma$). ¿En qué se transforma la condición inicial
 $u(0) = u_0$ en el problema adimensionalizado?
+"""
+
+# ╔═╡ f70b185c-8058-4556-b943-6ce4f984ee54
+md"""
+Veamos la forma de las variables adimensionalizadas:
+
+($\cdot$) $\displaystyle \overline{t} = \frac{t}{t_c} = \frac{t}{r^{-1}} = r t$, por lo que $\displaystyle t=\frac{\overline{t}}{r}$
+
+($\cdot$) $\displaystyle \overline{u} = \frac{u}{u_c} = \frac{u}{P}$ por lo que $u = P\; \overline{u}$
+
+De lo anterior, tenemos que $\displaystyle \frac{d \overline{t}}{d t} = r$, y que $\displaystyle \frac{d u}{d t} = P \cdot \frac{d \overline{u}}{d \overline{t}} \cdot \frac{d \overline{t}}{d t} = P r \cdot \frac{d \overline{u}}{d \overline{t}}$. Ahora reemplazando en la ecuación original se tiene que:
+
+$\begin{align*}
+\displaystyle \frac{d u}{d t} &= -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) \\
+\displaystyle P r \frac{d \overline{u}}{d \overline{t}} &= - r \left( P \overline{u} \right) \left( 1 - \frac{P \overline{u}}{K} \right) \left( 1 - \frac{\overline{u}}{P} \right) \\
+\displaystyle \frac{d \overline{u}}{d \overline{t}} &= - \overline{u} \left( 1 - \frac{P}{K} \overline{u} \right) \left( 1 - \overline{u} \right)
+\end{align*}$
+
+ 
+Ahora, sea $u(0) = u_0$, se tiene que: $\displaystyle \overline{u}(0) = \frac{u(0)}{P}$.
+
+
 """
 
 # ╔═╡ e472c5b6-cc51-4a80-bd53-d464a46ac859
@@ -198,6 +329,45 @@ $\frac{d\bar{u}}{d\tau} = -\bar{u} \left(1 - \bar{u}\right)\left(1 - \frac{K}{P}
 con $\varepsilon = h/r$.
 """
 
+# ╔═╡ 4c1208b2-0549-4e79-a9bd-9a68509fa32c
+md"""
+como fue probado en **e)**, se tiene que $t_c=r^{-1}$, $u=k\overline{u}$ y $\displaystyle \frac{d u}{d t} = K r \frac{d \overline{u}}{d \overline{t}}$, por lo que:
+
+$\begin{align*}
+\displaystyle \frac{d u}{d t} &= -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) + h u \\
+\displaystyle K r \frac{d \overline{u}}{d \overline{t}} &= -r \left( K \overline{u} \right) \left( 1 - \frac{K \overline{u}}{K} \right) \left( 1 - \frac{K \overline{u}}{P} \right) + h K \overline{u} \\
+\displaystyle K r \frac{d \overline{u}}{d \overline{t}} &= -r \left( K \overline{u} \right) \left( 1 - \overline{u} \right) \left( 1 - \frac{K}{P} \overline{u} \right) + h K \overline{u} \\
+&= -r \left( K \overline{u} \right) \left( 1 - \overline{u} \right) \left( 1 - \frac{K}{P} \overline{u} \right) - \varepsilon \overline{u} \quad \text{con} \quad \varepsilon = \frac{h}{r}
+\end{align*}$
+
+
+"""
+
+# ╔═╡ 7c1ad535-e7f9-4a09-acca-cd601dd830ab
+md"""
+
+La ecuación original con cosecha es:
+
+$$\frac{du}{dt} = -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) - h u.$$
+
+Utilizando las escalas adimensionales $t_c = \frac{1}{r}$ y $u_c = K$, tenemos:
+
+$$u = K \bar{u}, \quad \frac{du}{dt} = r K \frac{d\bar{u}}{d\tau}, \quad \tau = r t.$$
+
+Sustituyendo en la ecuación:
+
+$$r K \frac{d\bar{u}}{d\tau} = -r K \bar{u} \left( 1 - \bar{u} \right) \left( 1 - \frac{K}{P} \bar{u} \right) - h K \bar{u}.$$
+
+Dividiendo por $r K$ y usando $\varepsilon = \frac{h}{r}$, obtenemos:
+
+$$\frac{d\bar{u}}{d\tau} = - \bar{u} \left( 1 - \bar{u} \right) \left( 1 - \frac{K}{P} \bar{u} \right) - \varepsilon \bar{u}.$$
+
+Sustituyendo $P = \frac{K}{10}$, obtenemos la ecuación adimensionalizada:
+
+$$\frac{d\bar{u}}{d\tau} = - \bar{u} \left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) - \varepsilon \bar{u}.$$
+
+"""
+
 # ╔═╡ 448fb2e9-c31d-4f13-8c54-089df9c9e45c
 md"""
 (h). Suponga que en la ecuación con cosecha, $P = K/10$. Escriba explícitamente la ecuación:
@@ -205,6 +375,62 @@ md"""
 $\frac{d\bar{u}}{d\tau} = -\bar{u} \left(1 - \bar{u}\right)\left(1 - 10\bar{u}\right) - \varepsilon \bar{u}.$
 
 Muestre que si $\varepsilon > 2.025$, todas las soluciones con $u(0) > 0$ convergen a cero. Identifique los puntos fijos, esboce el retrato de fase y analice la dependencia con respecto a $\varepsilon$. ¿Qué restricción impone esto sobre $h/r$  para evitar la extinción en la ecuación original?
+"""
+
+# ╔═╡ 985caeaa-ffdf-4525-a8ea-566dcc149951
+md"""
+
+Los puntos fijos se encuentran al resolver:
+
+$$\frac{d\bar{u}}{d\tau} = 0,$$
+
+lo que implica:
+
+$$\bar{u} \left[ - \left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) - \varepsilon \right] = 0.$$
+
+Esto da como soluciones:
+
+($\cdot$) $\bar{u} = 0$,
+
+($\cdot$) $- \left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) - \varepsilon = 0$.
+
+Resolvemos la ecuación cuadrática:
+
+$$\left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) = \varepsilon,$$
+
+expandiendo:
+
+$$1 - 10 \bar{u} - \bar{u} + 10 \bar{u}^2 = \varepsilon,$$
+
+$$10 \bar{u}^2 - 11 \bar{u} + (1 - \varepsilon) = 0.$$
+
+Las soluciones para $\bar{u}$ son:
+
+$$\bar{u} = \frac{11 \pm \sqrt{121 - 40(1 - \varepsilon)}}{20}.$$
+
+Simplificando:
+
+$$\bar{u} = \frac{11 \pm \sqrt{81 + 40 \varepsilon}}{20}.$$
+
+Si $\varepsilon > 2.025$, el discriminante $81 + 40 \varepsilon$ es positivo, y las soluciones para $\bar{u}$ incluyen una positiva y una negativa. La solución positiva será lo suficientemente pequeña como para que el sistema se estabilice en $\bar{u} = 0$, lo que indica la extinción de la población.
+
+Los puntos fijos son:
+
+($\cdot$) $\bar{u} = 0$ (extinción),
+
+($\cdot$) La solución positiva depende de $\varepsilon$.
+
+Esbozando el retrato de fase:
+
+- Cuando $\varepsilon$ es pequeño, las soluciones positivas convergen a un valor de $\bar{u}$ mayor que cero, representando una población estable.
+- Cuando $\varepsilon > 2.025$, todas las soluciones con $u(0) > 0$ convergen a $\bar{u} = 0$, indicando la extinción.
+
+Para evitar la extinción, debemos tener $\varepsilon \leq 2.025$, lo que implica que:
+
+$$\frac{h}{r} \leq 2.025.$$
+
+Esta es la restricción que debe cumplirse en la ecuación original para evitar la extinción de la población.
+
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3422,12 +3648,23 @@ version = "1.4.1+1"
 # ╟─f54478b8-37e7-4afb-95ff-0ff06785750f
 # ╟─d896173e-5a48-4099-8f5e-d70caa246873
 # ╟─d3e71671-8820-4133-bac9-d490adaeeae4
+# ╟─0c31d89f-d58d-4c00-9b77-fde91a60a88a
+# ╟─4b0b97c7-1c10-4e88-9286-7d9da8920855
+# ╟─b2d02055-6966-4d4e-a171-21b745a03e6d
 # ╟─87b22644-5856-4415-b813-f5263e17336d
+# ╟─4f6d5592-208e-485d-8db7-94fb708fc8fc
 # ╟─8c89e505-4cf4-4ac1-8d8d-27e2ac547f4f
+# ╟─0d251455-4aba-418f-97b0-185f6245bf27
 # ╟─36349379-1ca0-40ef-9a4d-efb1bf7fced5
+# ╟─4e5cf153-d22e-48e7-83e6-4f3b74d04e31
 # ╟─c943b623-80b9-4eba-9559-375b578aac9c
+# ╟─82471256-da9d-46fa-a755-b3d4268947d0
 # ╟─1084bd0a-920f-45b6-9ad1-cd65682d17a7
+# ╟─f70b185c-8058-4556-b943-6ce4f984ee54
 # ╟─e472c5b6-cc51-4a80-bd53-d464a46ac859
+# ╟─4c1208b2-0549-4e79-a9bd-9a68509fa32c
+# ╟─7c1ad535-e7f9-4a09-acca-cd601dd830ab
 # ╟─448fb2e9-c31d-4f13-8c54-089df9c9e45c
+# ╟─985caeaa-ffdf-4525-a8ea-566dcc149951
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
