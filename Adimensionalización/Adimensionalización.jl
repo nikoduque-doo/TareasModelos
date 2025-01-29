@@ -10,9 +10,6 @@ using PlutoUI, FileIO, Images
 # ╔═╡ 78b46127-f516-49c6-8ad5-6405f77476ab
 using DifferentialEquations, Plots, LinearAlgebra, CalculusWithJulia, SymPy, ForwardDiff
 
-# ╔═╡ de9d2a52-21be-4bf7-ac29-da989486444d
-# borrador load("img/1.1.1.png")
-
 # ╔═╡ 0bd6bdb4-b859-4471-951b-d7a52fcbd135
 md"""
 # Adimensionalización
@@ -280,11 +277,11 @@ De lo anterior, tenemos que $\displaystyle \frac{d \overline{t}}{d t} = r$, y qu
 
 $\begin{align*}
 \displaystyle \frac{d u}{d t} &= -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) \\
-\displaystyle K r \frac{d \overline{u}}{d \overline{t}} &= - r \left( K \overline{u} \right) \left( 1 - \frac{K \overline{u}}{k} \right) \left( 1 - \frac{\overline{u}}{P} \right) \\
+\displaystyle K r \frac{d \overline{u}}{d \overline{t}} &= - r \left( K \overline{u} \right) \left( 1 - \frac{K \overline{u}}{K} \right) \left( 1 - \frac{\overline{u}}{P} \right) \\
 \displaystyle \frac{d \overline{u}}{d \overline{t}} &= - \overline{u} \left( 1 - \overline{u} \right) \left( 1 - \frac{K}{P} \overline{u} \right)
 \end{align*}$
 
-Ahora, sea $u(0)=u_0$, se tiene que: $\displaystyle \overline{u}(0) = \frac{u(0)}{k}$
+Ahora, sea $u(0)=u_0$, se tiene que: $\displaystyle \overline{u}(0) = \frac{u(0)}{K}$
 
 """
 
@@ -306,7 +303,7 @@ De lo anterior, tenemos que $\displaystyle \frac{d \overline{t}}{d t} = r$, y qu
 
 $\begin{align*}
 \displaystyle \frac{d u}{d t} &= -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) \\
-\displaystyle P r \frac{d \overline{u}}{d \overline{t}} &= - r \left( P \overline{u} \right) \left( 1 - \frac{P \overline{u}}{K} \right) \left( 1 - \frac{\overline{u}}{P} \right) \\
+\displaystyle P r \frac{d \overline{u}}{d \overline{t}} &= - r \left( P \overline{u} \right) \left( 1 - \frac{P \overline{u}}{K} \right) \left( 1 - \frac{P\overline{u}}{P} \right) \\
 \displaystyle \frac{d \overline{u}}{d \overline{t}} &= - \overline{u} \left( 1 - \frac{P}{K} \overline{u} \right) \left( 1 - \overline{u} \right)
 \end{align*}$
 
@@ -343,7 +340,16 @@ $\begin{align*}
 
 """
 
-# ╔═╡ 7c1ad535-e7f9-4a09-acca-cd601dd830ab
+# ╔═╡ 448fb2e9-c31d-4f13-8c54-089df9c9e45c
+md"""
+(h). Suponga que en la ecuación con cosecha, $P = K/10$. Escriba explícitamente la ecuación:
+
+$\frac{d\bar{u}}{d\tau} = -\bar{u} \left(1 - \bar{u}\right)\left(1 - 10\bar{u}\right) - \varepsilon \bar{u}.$
+
+Muestre que si $\varepsilon > 2.025$, todas las soluciones con $u(0) > 0$ convergen a cero. Identifique los puntos fijos, esboce el retrato de fase y analice la dependencia con respecto a $\varepsilon$. ¿Qué restricción impone esto sobre $h/r$  para evitar la extinción en la ecuación original?
+"""
+
+# ╔═╡ 8f39aa1f-3a4d-471a-a322-718d1ef0b355
 md"""
 
 La ecuación original con cosecha es:
@@ -366,15 +372,6 @@ Sustituyendo $P = \frac{K}{10}$, obtenemos la ecuación adimensionalizada:
 
 $$\frac{d\bar{u}}{d\tau} = - \bar{u} \left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) - \varepsilon \bar{u}.$$
 
-"""
-
-# ╔═╡ 448fb2e9-c31d-4f13-8c54-089df9c9e45c
-md"""
-(h). Suponga que en la ecuación con cosecha, $P = K/10$. Escriba explícitamente la ecuación:
-
-$\frac{d\bar{u}}{d\tau} = -\bar{u} \left(1 - \bar{u}\right)\left(1 - 10\bar{u}\right) - \varepsilon \bar{u}.$
-
-Muestre que si $\varepsilon > 2.025$, todas las soluciones con $u(0) > 0$ convergen a cero. Identifique los puntos fijos, esboce el retrato de fase y analice la dependencia con respecto a $\varepsilon$. ¿Qué restricción impone esto sobre $h/r$  para evitar la extinción en la ecuación original?
 """
 
 # ╔═╡ 985caeaa-ffdf-4525-a8ea-566dcc149951
@@ -3632,7 +3629,6 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╠═8048b320-ddb2-11ef-288f-c9de878b0c2a
 # ╠═78b46127-f516-49c6-8ad5-6405f77476ab
-# ╠═de9d2a52-21be-4bf7-ac29-da989486444d
 # ╟─0bd6bdb4-b859-4471-951b-d7a52fcbd135
 # ╟─48aa4290-30b6-4227-b8c8-468eb1ebde00
 # ╟─6ddff793-b895-4576-b745-0a5eaf2e7813
@@ -3644,11 +3640,11 @@ version = "1.4.1+1"
 # ╟─85e40b27-13df-4b2a-bb65-721fd07e38f4
 # ╟─428adddd-6efc-47dd-9fa1-b890aa86c69c
 # ╟─6a8234b4-9c90-4f00-954c-8e2ecc9c006c
-# ╟─d53ef143-b84a-487b-b920-5208fbfbb427
+# ╠═d53ef143-b84a-487b-b920-5208fbfbb427
 # ╟─f54478b8-37e7-4afb-95ff-0ff06785750f
-# ╟─d896173e-5a48-4099-8f5e-d70caa246873
-# ╟─d3e71671-8820-4133-bac9-d490adaeeae4
-# ╟─0c31d89f-d58d-4c00-9b77-fde91a60a88a
+# ╠═d896173e-5a48-4099-8f5e-d70caa246873
+# ╠═d3e71671-8820-4133-bac9-d490adaeeae4
+# ╠═0c31d89f-d58d-4c00-9b77-fde91a60a88a
 # ╟─4b0b97c7-1c10-4e88-9286-7d9da8920855
 # ╟─b2d02055-6966-4d4e-a171-21b745a03e6d
 # ╟─87b22644-5856-4415-b813-f5263e17336d
@@ -3663,8 +3659,8 @@ version = "1.4.1+1"
 # ╟─f70b185c-8058-4556-b943-6ce4f984ee54
 # ╟─e472c5b6-cc51-4a80-bd53-d464a46ac859
 # ╟─4c1208b2-0549-4e79-a9bd-9a68509fa32c
-# ╟─7c1ad535-e7f9-4a09-acca-cd601dd830ab
 # ╟─448fb2e9-c31d-4f13-8c54-089df9c9e45c
+# ╟─8f39aa1f-3a4d-471a-a322-718d1ef0b355
 # ╟─985caeaa-ffdf-4525-a8ea-566dcc149951
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
