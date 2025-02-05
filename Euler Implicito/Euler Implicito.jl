@@ -4,431 +4,139 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 8048b320-ddb2-11ef-288f-c9de878b0c2a
+# ╔═╡ deb45544-d939-4a7c-9f1d-c87995c7be35
 using PlutoUI, FileIO, Images
 
-# ╔═╡ 78b46127-f516-49c6-8ad5-6405f77476ab
+# ╔═╡ d6f85947-d92c-4d63-b2d2-aac9730feece
 using DifferentialEquations, Plots, LinearAlgebra, CalculusWithJulia, SymPy, ForwardDiff
 
-# ╔═╡ 0bd6bdb4-b859-4471-951b-d7a52fcbd135
+# ╔═╡ b2444365-05b3-4c94-a2ba-6920f6b33264
+load("img/1.1.png")
+
+# ╔═╡ fb00755d-6ea3-49a0-9f44-b554ad7d17fc
+load("img/2.1.png")
+
+# ╔═╡ 0b752454-b7cc-431c-ac3d-9bc3046e30c9
+load("img/2.2.png")
+
+# ╔═╡ fe308ed9-5c48-44c3-ad82-cd1b2eaa057b
+load("img/3.1.png")
+
+# ╔═╡ ee3da302-fd84-4aa3-b978-425cf98a85cc
+load("img/3.2.png")
+
+# ╔═╡ 94f64e24-59ba-4581-85a8-dbaf690c26f6
 md"""
-# Adimensionalización
+# Tarea Método de Euler implicíto
 Actividad realizada por Alan Acero, Johan López y Nicolás Duque
+
 """
 
-# ╔═╡ 48aa4290-30b6-4227-b8c8-468eb1ebde00
+# ╔═╡ 07c3f41e-1703-440e-af16-b9151d24cb63
 md"""
-## 1. Análisis Dimensional y Resolución de la EDO $u'(t) = -ku^2(t)$
+El método de Euler implícito es un esquema numérico utilizado para resolver ecuaciones diferenciales ordinarias (EDOs). A diferencia del método de Euler explícito, que avanza la solución utilizando información de la derivada en el punto actual, el método de Euler implícito utiliza la derivada en el punto siguiente.
 
-Suponga que
-$u'(t) = -ku^2(t)$
-describe algún proceso físico con la condición inicial $u(0) = u_0$, donde $u$ es una masa $[u] = M$, y $t$ es el tiempo $[t] = T$.
 """
 
-# ╔═╡ 6ddff793-b895-4576-b745-0a5eaf2e7813
+# ╔═╡ 6ba05a05-de12-4126-aecb-9b87c23cdb0c
 md"""
-(a). Determine las dimensiones de $k$.  
+### Derivación del método
+
+
+Dada una EDO de la forma:
+
+$$\frac{dy}{dt} = f(t, y) \quad \quad y(t_0) = y_0,$$
+
+integramos ambos lados en el intervalo $[t_i, t_{i+1}]$:
+
+$$\int_{t_i}^{t_{i+1}} \frac{dy}{dt} \, dt = y(t_{i+1}) - y(t_i) = \int_{t_i}^{t_{i+1}} f(t, y(t)) \, dt.$$
+Despejando $y(t_{i+1})$, obtenemos:
+
+$$y(t_{i+1}) = y(t_i) + \int_{t_i}^{t_{i+1}} f(t, y(t)) \, dt.$$
+
+Aproximamos la integral utilizando el método del rectángulo superior, donde evaluamos $f$ en el punto final $t_{i+1}$:
+
+$$\int_{t_i}^{t_{i+1}} f(t, y(t)) \, dt \approx h f(t_{i+1}, y(t_{i+1})).$$
+Aquí, $h = t_{i+1} - t_i$ es el tamaño del paso.
+
+Sustituyendo esta aproximación en la ecuación anterior, obtenemos la iteración del método de Euler implícito:
+
+$$y(t_{i+1}) = y(t_i) + h f(t_{i+1}, y(t_{i+1})).$$
+
+Esta ecuación es implícita porque $y(t_{i+1})$ aparece en ambos lados, y a diferencia del metodo anterior, acá no podremos remplazar para hallar nuestro siguiente paso, sino que tendremos que resolver la ecuación, uno de los metodos mas usados es el de Newton-Rapson.
+
 """
 
-# ╔═╡ 22916c78-f4a9-49da-86e7-30b0ba94fd38
+# ╔═╡ 9f76a41a-e8c1-4167-99ea-2526e4e3ded0
+load("img/1.1.png")
+
+# ╔═╡ 3f6ac7d4-9c63-438f-b72b-756e515d03df
 md"""
+Dentro de esta imagen podemos ver una idea que se profundarizara más adelante de como la iteración va aproximando a la función
 
-Sabemos que $[u'(t)]=\frac{[u]}{[t]}=\frac{M}{T}$, luego
-
-$MT^{-1}=[k][u^2]=[k]M^2$
-
-De esta manera, la dimensión de $k$ está dada por
-
-$$[k]=M^{-1}T^{-1}$$
-
+---
 """
 
-# ╔═╡ f26b3368-d3d9-4d09-bcff-e1a6b71726d3
+# ╔═╡ ffb4e101-31a3-4031-8eca-524a0d3510f5
 md"""
-(b). Demuestre que cualquier escala de tiempo característica de la forma $t_c = k^\alpha u_0^\beta$ está dada por $t_c = \frac{1}{ku_0}$.  
+### Bueno, ¿y eso que tiene que ver con las empanadas? 
+###### Titulo alterno: Interpretación gráfica
 """
 
-# ╔═╡ 6793429f-b688-485a-907b-18773f5c6a5e
-md"""
-Hallemos el $\alpha$ y $\beta$ de tal forma que las dimensiones de $t_c$ sean consistentes, así:
-	
-$$T=[t_c]=[k]^{\alpha}[u_0]^{\beta}=M^{-\alpha}T^{-\alpha}M^{\beta}=M^{-\alpha+\beta}T^{-\alpha}$$
-
-De esta manera $-\alpha+\beta=1$ y $-\alpha=1$, resolviendo tenemos que $\alpha=-1$ y $\beta=-1$, lo que significa que
-
-$$t_c=K^{-1}u_0^{-1}\frac{1}{ku_0}$$
-
-"""
-
-# ╔═╡ 5efcc77e-35bf-4a26-af9f-c71a145c6b4b
-md"""
-(c). Demuestre que cualquier escala de masa característica de la forma $u_c = k^\alpha u_0^\beta$ está dada por $u_c = u_0$.  
-"""
-
-# ╔═╡ 3f3c31ca-689f-4a84-a04f-d9787577d2b6
-md"""
-Encontremos el $\alpha$ y $\beta$ de tal forma que las dimensiones de $u_c$ sean consistentes:
-
-$$M=[m_c]=[k]^{\alpha}[u_0]^{\beta}=M^{-\alpha}T^{-\alpha}M^{\beta}=M^{-\alpha+\beta}T^{-\alpha}$$
-
-Luego, $-\alpha+\beta=1$ y $-\alpha=0$, lo que implica que $\beta=1$ y
-
-$u_c=u_0$
-"""
-
-# ╔═╡ 85e40b27-13df-4b2a-bb65-721fd07e38f4
-md"""
-(d). Demuestre que la EDO adimensionalizada es:  
-   
-   $\frac{d \bar{u}}{d\bar{t}} = -\bar{u}^2$
-
-con la condición inicial $\bar{u}(0) = 1$.  
-"""
-
-# ╔═╡ 428adddd-6efc-47dd-9fa1-b890aa86c69c
-md"""
-Definimos las variables adimensionales
-
-$$\displaystyle \overline{u}=\frac{u}{u_c}=\frac{u}{u_0} \quad \quad \text{y} \quad \quad \overline{t}=\frac{t}{t_c}=ktu_0$$
-
-ahora, $u(t)=u_0\overline{u}(\overline{t})$, y derivando tenemos que:
-
-$$\displaystyle \frac{du(t)}{dt} =u_0\frac{d\overline{u}}{d\overline{t}} \cdot\frac{\overline{dt}}{dt}=ku_0^2\frac{d\overline{u}}{\overline{dt}}$$
-
-entonces remplazando en $u'(t)=-Ku^2(t)$:
-
-$$\cancel{ku_0^2}\frac{d\overline{u}}{\overline{dt}}=\cancel{ku_0^2}\overline{u}^2(\overline{t}) \quad \quad \text{con } u_0=u_0\overline{u}(0)$$
-
-esto es que, $\displaystyle \frac{d\overline{u}}{d\overline{t}}=-\overline{u}^2(t)\;$  con  $\;\overline{u}(0)=1$
-"""
-
-# ╔═╡ 6a8234b4-9c90-4f00-954c-8e2ecc9c006c
-md"""
-(e). Resuelva la EDO $u'(t) = -ku^2(t)$ con $u(0) = u_0$ y calcule el tiempo necesario para que $u(t)$ decaiga desde $u_0$ hasta la mitad de ese valor, $u_0/2$.  
-
-"""
-
-# ╔═╡ d53ef143-b84a-487b-b920-5208fbfbb427
-md"""
-Tenemos la EDO $\displaystyle \frac{du}{dt}=-Ku^2$, por lo tanto usemos el método de variables separables:
-
-$$\frac{1}{u^2}du=-Kdt$$
-
-integrando en ambas igualdades,
-
-$\begin{align*}
-\int\frac{1}{u^2}du&=\int-Kdt\\
--\frac{1}{u}&=-Kt+C
-\end{align*}$
-
-de esta manera $\displaystyle u(t)=\frac{1}{Kt-C}$ con $u(0)=u_0$, lo que significa que $\displaystyle C=-\frac{1}{u_0}$ y,
-
-$$u(t)=\frac{1}{kt+\frac{1}{u_0}}$$
-
-ahora, para que $u(t)$ decaiga a $\displaystyle\frac{u_0}{2}$ 
-
-$\displaystyle\frac{u_0}{2}=\frac{1}{kt+\frac{1}{u_0}}$
-
-esto es $\; \;u_0Kt+1=2$, por lo tanto, $\displaystyle t=\frac{1}{Ku_0}$, lo que verifica que es consistente con la escala de $t_c$, comprobando así el punto (f), que consiste en:
-"""
-
-# ╔═╡ f54478b8-37e7-4afb-95ff-0ff06785750f
-md"""
-(f). Verifique si este tiempo es consistente con la escala de tiempo $t_c$.
-
-"""
-
-# ╔═╡ d896173e-5a48-4099-8f5e-d70caa246873
-md"""
-## 2. Modificación de la Ecuación Logística con Tasa de Cosecha
-
-
-Se propone la siguiente modificación de la ecuación logística para modelar poblaciones:  
-
-$\frac{du}{dt} = -ru \left(1 - \frac{u}{K}\right)\left(1 - \frac{u}{P}\right),$
-
-donde $r$ es la tasa intrínseca de crecimiento poblacional, $K$ es la capacidad de carga, y $P$ es el tamaño poblacional mínimo sostenible que satisface $0 < P < K$. Si $u(t) < P$, la especie se extingue, mientras que si $u(t) > P$, la población tiende hacia $K$.
-"""
-
-# ╔═╡ d3e71671-8820-4133-bac9-d490adaeeae4
-md"""
-(a). Esboce el retrato de fase de la ecuación y verifique que si $0 < u < P$, las soluciones decaen a cero, y si $u > P$, las soluciones se aproximan a $K$.
-"""
-
-# ╔═╡ 0c31d89f-d58d-4c00-9b77-fde91a60a88a
-md"""
-Se tiene que $\displaystyle 0=-ru\left(1-\frac{u}{K}\right)\left(1-\frac{u}{P}\right)$, por lo que $-ru=0$, $\displaystyle \left(1-\frac{u}{K}\right)=0$ o $\displaystyle \left(1-\frac{u}{P}\right)=0$.
-Por lo tanto los puntos de equilibrio son $u=0$,$u=K$ o $u=P$. Además, se tiene que:
-
-$\begin{align*}
-\text{si }u<0&: -ru>0 \text{,}& 1-\frac{u}{K}>0 \text{, }\quad &  1-\frac{u}{P}>0 & \text{ luego }\frac{dy}{dt}>0\\
-
-\text{si }0<u<P&: -ru<0 \text{,}& 1-\frac{u}{K}>0 \text{, }\quad &  1-\frac{u}{P}>0 & \text{ luego }\frac{dy}{dt}<0\\
-
-\text{si }P<u<K&: -ru<0 \text{,}& 1-\frac{u}{K}>0 \text{, }\quad &  1-\frac{u}{P}<0 & \text{ luego }\frac{dy}{dt}>0\\
-
-\text{si }K<u&: -ru<0 \text{,}& 1-\frac{u}{K}<0 \text{, }\quad &  1-\frac{u}{P}<0 & \text{ luego }\frac{dy}{dt}<0\\
-\end{align*}$
-"""
-
-# ╔═╡ 4b0b97c7-1c10-4e88-9286-7d9da8920855
-load("img/RetratoFase2.a).png")
-
-# ╔═╡ b2d02055-6966-4d4e-a171-21b745a03e6d
-md"""
-Se tiene entonces que:
-- si $0<u<P$, $u$ tiende a $0$.
-- si $P<u$, $u$ tiende a $K$.
-"""
-
-# ╔═╡ 87b22644-5856-4415-b813-f5263e17336d
-md"""
-(b). Si $N$ denota la dimensión de la población, entonces $[K] = [P] = N$.
-
-¿Cuál es la dimensión de $r$? 
-"""
-
-# ╔═╡ 4f6d5592-208e-485d-8db7-94fb708fc8fc
-md"""
-Consideremos que: 
-
-$\begin{align*}
-\left[\frac{du}{dt}\right] &= \frac{N}{T}=NT^{-1}\\
-
-\left[-ru\left(1-\frac{u}{K}\right) \left(1-\frac{u}{P}\right)\right]
-&=[r]\cdot [u]\cdot \left[1-\frac{u}{K}\right]\cdot \left[1-\frac{u}{P}\right]\\
-&=[r]\cdot N\cdot 1 \cdot 1 = [r] \cdot N \\
-\\
-\text{Por lo tanto, }\;\;NT^{-1} &= [r]\cdot N
-\end{align*}$
-
-es decir $[r]=T^{-1}$
-
-
-
-"""
-
-# ╔═╡ 8c89e505-4cf4-4ac1-8d8d-27e2ac547f4f
-md"""
-(c). Demuestre que la única escala de tiempo característica de la forma $t_c = r^\alpha K^\beta P^\gamma$ es $t_c = r^{-1}(K/P)^\beta$. Tome $\beta = 0$, de modo que $t_c = 1/r$. Si muestreamos la población en tiempos periódicos, ¿qué implicaciones tiene esto para la frecuencia de muestreo?
-"""
-
-# ╔═╡ 0d251455-4aba-418f-97b0-185f6245bf27
-md"""
-calculemos las dimensiones de $t_c$:
-
-$\begin{align*}
-[t_c]&=[r^\alpha K^\beta P^\gamma]\\
-T&=[ r^\alpha][ K^\beta][ P^\gamma  ] \\
-T&=T^{-\alpha} N^{\beta} N^{\gamma} =T^{-\alpha} N^{\beta+\gamma} \\
-\end{align*}$
-
-por lo tanto, se tiene que $-\alpha=1$ y $\beta+\gamma=0$, por lo que $\alpha=-1$ y $\gamma=-\beta$.
-
-De lo anterior tenemos entonces que $t_c=r^{-1} K^\beta P^{-\beta}=\displaystyle r^{-1} \left(\frac{K}{P}\right)^\beta$.
-
-Ahora, si $\beta=0$ se tiene que $t_c=r^{-1}$. Por lo tanto $\overline{t}$, la variable temporal adimensionada, es igual a $\displaystyle \frac{t}{t_c}=\frac{t}{r^{-1}}=rt$.
-
-Cuando el periodo de muestreo se acerca a la escala de tiempo característica del sistema, la información que obtenemos será precisa y representativa de los cambios dinámicos del sistema. En este caso, el intervalo entre las muestras es lo suficientemente corto como para capturar correctamente la evolución del sistema.
-
-Por otro lado, si la escala de tiempo característica es mucho mayor que el periodo de muestreo, los cambios importantes del sistema se "saltan" entre una muestra y otra, lo que puede llevar a una distorsión de la información. En este caso, perdemos detalles cruciales y la interpretación del comportamiento del sistema se vuelve menos confiable.
-
-En el caso opuesto, si el periodo de muestreo es muy pequeño, podríamos obtener demasiada información sin que se observe un cambio significativo en el sistema, lo que podría hacer que el análisis sea más complejo de lo necesario y añadir ruido en lugar de claridad.
-
-En resumen, para obtener una representación fiel del sistema, el periodo de muestreo debe estar cercano a la escala de tiempo característica.
-"""
-
-# ╔═╡ 36349379-1ca0-40ef-9a4d-efb1bf7fced5
-md"""
-(d). Demuestre que cualquier escala característica de población de la forma $u_c = r^\alpha K^\beta P^\gamma$ es $u_c = K^\beta P^\gamma$ con $\beta + \gamma = 1$, o equivalentemente $u_c = K(P/K)^\gamma$.
-"""
-
-# ╔═╡ 4e5cf153-d22e-48e7-83e6-4f3b74d04e31
-md"""
-Calculemos las dimensiones de $u_c$:
-
-$\begin{align*}
-[u_c] &= [r^\alpha][ K^\beta][ P^\gamma]\\
-N&=T^{-\alpha} N^\beta N^\gamma=T^{-\alpha} N^{\beta +\gamma}  \\
-\end{align*}$
-
-por lo tanto, $-\alpha=0$ y $\beta+\gamma=1$, es decir $\alpha=0$ y $\gamma=1-\beta$.
-
-De lo anterior, tenemos que $\displaystyle u_c = r^0 K^{1-\gamma} P^\gamma=K^{1-\gamma} P^\gamma=K\left(\frac{P}{K}\right)^\gamma$
-
-"""
-
-# ╔═╡ c943b623-80b9-4eba-9559-375b578aac9c
-md"""
-(e). Adimensionalice la ecuación usando $t_c = 1/r$ y $u_c = K$ (correspondiente a $\gamma = 0$  en $u_c = K(P/K)^\gamma$. ¿En qué se transforma la condición inicial
-$u(0) = u_0$ en el problema adimensionalizado?
-"""
-
-# ╔═╡ 82471256-da9d-46fa-a755-b3d4268947d0
-md"""
-Veamos la forma de las variables adimensionalizadas:
-
-($\cdot$) $\displaystyle \overline{t} = \frac{t}{t_c} = \frac{t}{r^{-1}} = r t$, por lo que $\displaystyle t=\frac{\overline{t}}{r}$
-
-($\cdot$) $\displaystyle \overline{u} = \frac{u}{u_c} = \frac{u}{K}$ por lo que $u=K\;\overline{u}$
-
-De lo anterior, tenemos que $\displaystyle \frac{d \overline{t}}{d t} = r$, y que $\displaystyle \frac{d u}{d t} = K \cdot \frac{d \overline{u}}{d \overline{t}} \cdot \frac{d \overline{t}}{d t} = K r \cdot \frac{d \overline{u}}{d \overline{t}}$.  Ahora remplazando en la ecuacion original
-
-
-$\begin{align*}
-\displaystyle \frac{d u}{d t} &= -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) \\
-\displaystyle K r \frac{d \overline{u}}{d \overline{t}} &= - r \left( K \overline{u} \right) \left( 1 - \frac{K \overline{u}}{K} \right) \left( 1 - \frac{\overline{u}}{P} \right) \\
-\displaystyle \frac{d \overline{u}}{d \overline{t}} &= - \overline{u} \left( 1 - \overline{u} \right) \left( 1 - \frac{K}{P} \overline{u} \right)
-\end{align*}$
-
-Ahora, sea $u(0)=u_0$, se tiene que: $\displaystyle \overline{u}(0) = \frac{u(0)}{K}$
-
-"""
-
-# ╔═╡ 1084bd0a-920f-45b6-9ad1-cd65682d17a7
-md"""
-(f). Adimensionalice la ecuación usando $t_c = 1/r$ y $u_c = P$ (correspondiente a $\gamma = 1$ en $u_c = K(P/K)^\gamma$). ¿En qué se transforma la condición inicial
-$u(0) = u_0$ en el problema adimensionalizado?
-"""
-
-# ╔═╡ f70b185c-8058-4556-b943-6ce4f984ee54
-md"""
-Veamos la forma de las variables adimensionalizadas:
-
-($\cdot$) $\displaystyle \overline{t} = \frac{t}{t_c} = \frac{t}{r^{-1}} = r t$, por lo que $\displaystyle t=\frac{\overline{t}}{r}$
-
-($\cdot$) $\displaystyle \overline{u} = \frac{u}{u_c} = \frac{u}{P}$ por lo que $u = P\; \overline{u}$
-
-De lo anterior, tenemos que $\displaystyle \frac{d \overline{t}}{d t} = r$, y que $\displaystyle \frac{d u}{d t} = P \cdot \frac{d \overline{u}}{d \overline{t}} \cdot \frac{d \overline{t}}{d t} = P r \cdot \frac{d \overline{u}}{d \overline{t}}$. Ahora reemplazando en la ecuación original se tiene que:
-
-$\begin{align*}
-\displaystyle \frac{d u}{d t} &= -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) \\
-\displaystyle P r \frac{d \overline{u}}{d \overline{t}} &= - r \left( P \overline{u} \right) \left( 1 - \frac{P \overline{u}}{K} \right) \left( 1 - \frac{P\overline{u}}{P} \right) \\
-\displaystyle \frac{d \overline{u}}{d \overline{t}} &= - \overline{u} \left( 1 - \frac{P}{K} \overline{u} \right) \left( 1 - \overline{u} \right)
-\end{align*}$
-
- 
-Ahora, sea $u(0) = u_0$, se tiene que: $\displaystyle \overline{u}(0) = \frac{u(0)}{P}$.
-
-
-"""
-
-# ╔═╡ e472c5b6-cc51-4a80-bd53-d464a46ac859
-md"""
-(g). Considere una versión con cosecha de la ecuación, dada por:
-
-$\frac{du}{dt} = -ru \left(1 - \frac{u}{K}\right)\left(1 - \frac{u}{P}\right) - hu,$
-
-donde $h > 0$ es la tasa de cosecha. Usando $t_c = 1/r$ y $u_c = K$, demuestre que la función adimensionalizada $\bar{u}(\tau) = \frac{u(t)}{K}$ (donde $\tau = \frac{t}{t_c} = rt$) satisface la ecuación:
-
-$\frac{d\bar{u}}{d\tau} = -\bar{u} \left(1 - \bar{u}\right)\left(1 - \frac{K}{P}\bar{u}\right) - \varepsilon \bar{u},$
-
-con $\varepsilon = h/r$.
-"""
-
-# ╔═╡ 4c1208b2-0549-4e79-a9bd-9a68509fa32c
-md"""
-como fue probado en **e)**, se tiene que $t_c=r^{-1}$, $u=k\overline{u}$ y $\displaystyle \frac{d u}{d t} = K r \frac{d \overline{u}}{d \overline{t}}$, por lo que:
-
-$\begin{align*}
-\displaystyle \frac{d u}{d t} &= -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) + h u \\
-\displaystyle K r \frac{d \overline{u}}{d \overline{t}} &= -r \left( K \overline{u} \right) \left( 1 - \frac{K \overline{u}}{K} \right) \left( 1 - \frac{K \overline{u}}{P} \right) + h K \overline{u} \\
-\displaystyle K r \frac{d \overline{u}}{d \overline{t}} &= -r \left( K \overline{u} \right) \left( 1 - \overline{u} \right) \left( 1 - \frac{K}{P} \overline{u} \right) + h K \overline{u} \\
-&= -r \left( K \overline{u} \right) \left( 1 - \overline{u} \right) \left( 1 - \frac{K}{P} \overline{u} \right) - \varepsilon \overline{u} \quad \text{con} \quad \varepsilon = \frac{h}{r}
-\end{align*}$
-
-
-"""
-
-# ╔═╡ 448fb2e9-c31d-4f13-8c54-089df9c9e45c
-md"""
-(h). Suponga que en la ecuación con cosecha, $P = K/10$. Escriba explícitamente la ecuación:
-
-$\frac{d\bar{u}}{d\tau} = -\bar{u} \left(1 - \bar{u}\right)\left(1 - 10\bar{u}\right) - \varepsilon \bar{u}.$
-
-Muestre que si $\varepsilon > 2.025$, todas las soluciones con $u(0) > 0$ convergen a cero. Identifique los puntos fijos, esboce el retrato de fase y analice la dependencia con respecto a $\varepsilon$. ¿Qué restricción impone esto sobre $h/r$  para evitar la extinción en la ecuación original?
-"""
-
-# ╔═╡ 8f39aa1f-3a4d-471a-a322-718d1ef0b355
+# ╔═╡ c0bd6dc4-e9c5-4454-bcf4-4810b64f95e3
 md"""
 
-La ecuación original con cosecha es:
-
-$$\frac{du}{dt} = -r u \left( 1 - \frac{u}{K} \right) \left( 1 - \frac{u}{P} \right) - h u.$$
-
-Utilizando las escalas adimensionales $t_c = \frac{1}{r}$ y $u_c = K$, tenemos:
-
-$$u = K \bar{u}, \quad \frac{du}{dt} = r K \frac{d\bar{u}}{d\tau}, \quad \tau = r t.$$
-
-Sustituyendo en la ecuación:
-
-$$r K \frac{d\bar{u}}{d\tau} = -r K \bar{u} \left( 1 - \bar{u} \right) \left( 1 - \frac{K}{P} \bar{u} \right) - h K \bar{u}.$$
-
-Dividiendo por $r K$ y usando $\varepsilon = \frac{h}{r}$, obtenemos:
-
-$$\frac{d\bar{u}}{d\tau} = - \bar{u} \left( 1 - \bar{u} \right) \left( 1 - \frac{K}{P} \bar{u} \right) - \varepsilon \bar{u}.$$
-
-Sustituyendo $P = \frac{K}{10}$, obtenemos la ecuación adimensionalizada:
-
-$$\frac{d\bar{u}}{d\tau} = - \bar{u} \left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) - \varepsilon \bar{u}.$$
+Para nuestra interpretación, consideramos la curva de la función solución exacta. En el método de Euler implícito, la pendiente se evalúa en el punto futuro $y_{i+1}$, lo que lo diferencia del método de Euler explícito, donde la pendiente se evalúa en el punto actual $y_i$.
 
 """
 
-# ╔═╡ 985caeaa-ffdf-4525-a8ea-566dcc149951
+# ╔═╡ 3f3742ae-1bf3-4f1c-b6d6-75455c969c58
+load("img/2.1.png")
+
+# ╔═╡ 8a854f6e-f1e8-45f2-a0b4-84cc189cdd2a
 md"""
+Dada nuestra curva, y nuestra pendiente en el punto $t_{n+1}$, lo que buscamos hacer entonces es "trasladar" esa pendiente a nuestro punto $t_n$, y desde ahí mandar la recta, como se muestra en la siguiente imagen
+"""
 
-Los puntos fijos se encuentran al resolver:
+# ╔═╡ 4359ad1b-5128-4bdc-9dba-99249dc5d553
+load("img/2.2.png")
 
-$$\frac{d\bar{u}}{d\tau} = 0,$$
+# ╔═╡ 2adb26b3-3762-4a9f-974a-ed9fa3780bfd
+md"""
+Y ¡Listo! ya tenemos nuestra interpretación grafica, ¿verdad?
 
-lo que implica:
+#### no, aún no
 
-$$\bar{u} \left[ - \left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) - \varepsilon \right] = 0.$$
-
-Esto da como soluciones:
-
-($\cdot$) $\bar{u} = 0$,
-
-($\cdot$) $- \left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) - \varepsilon = 0$.
-
-Resolvemos la ecuación cuadrática:
-
-$$\left( 1 - \bar{u} \right) \left( 1 - 10 \bar{u} \right) = \varepsilon,$$
-
-expandiendo:
-
-$$1 - 10 \bar{u} - \bar{u} + 10 \bar{u}^2 = \varepsilon,$$
-
-$$10 \bar{u}^2 - 11 \bar{u} + (1 - \varepsilon) = 0.$$
-
-Las soluciones para $\bar{u}$ son:
-
-$$\bar{u} = \frac{11 \pm \sqrt{121 - 40(1 - \varepsilon)}}{20}.$$
-
-Simplificando:
-
-$$\bar{u} = \frac{11 \pm \sqrt{81 + 40 \varepsilon}}{20}.$$
-
-Si $\varepsilon > 2.025$, el discriminante $81 + 40 \varepsilon$ es positivo, y las soluciones para $\bar{u}$ incluyen una positiva y una negativa. La solución positiva será lo suficientemente pequeña como para que el sistema se estabilice en $\bar{u} = 0$, lo que indica la extinción de la población.
-
-Los puntos fijos son:
-
-($\cdot$) $\bar{u} = 0$ (extinción),
-
-($\cdot$) La solución positiva depende de $\varepsilon$.
-
-Esbozando el retrato de fase:
-
-- Cuando $\varepsilon$ es pequeño, las soluciones positivas convergen a un valor de $\bar{u}$ mayor que cero, representando una población estable.
-- Cuando $\varepsilon > 2.025$, todas las soluciones con $u(0) > 0$ convergen a $\bar{u} = 0$, indicando la extinción.
-
-Para evitar la extinción, debemos tener $\varepsilon \leq 2.025$, lo que implica que:
-
-$$\frac{h}{r} \leq 2.025.$$
-
-Esta es la restricción que debe cumplirse en la ecuación original para evitar la extinción de la población.
+La cuestión con nuestro metodo implicito es que no tenemos el valor de $y(t_{i+1}) = y(t_i) + h f(t_{i+1}, y(t_{i+1}))$
+, ya que nos estamos basando en el valor que precisamente queremos encontrar, así que para cada iteración debemos de encontrar un valor a traves de metodos númericos como el de newton-rapson para el hallar el valor $i+1\text{-esimo}$, así tenemos la siguiente grafica:
 
 """
+
+# ╔═╡ e1a418f0-b923-4cd3-8ce8-d5b37537cd07
+load("img/3.1.png")
+
+# ╔═╡ a8ae2f79-5eb1-43a7-b414-daea872901ba
+md"""
+dada la pendiente aproximada $p'$, vamos a repetir la idea que teniamos de antes con la pendiente real $p$:
+"""
+
+# ╔═╡ c0fc3fdc-6e17-4323-99aa-21e989c27883
+load("img/3.2.png")
+
+# ╔═╡ ef773fb9-252c-4fea-b217-d4d8749240f0
+md"""
+como se puede notar, la pendiente real daria para un metodo más periodico, similar al explicito, pero al tener una pendiente alterada, puede variar respecto a lo que realmente buscamos.
+"""
+
+# ╔═╡ d26891a4-8a88-4209-b495-7019072671ea
+md"""
+#### Conclusión
+
+El método de Euler implícito es una herramienta poderosa para resolver EDOs, especialmente cuando la estabilidad es un factor crítico. Su interpretación gráfica muestra cómo la solución avanza utilizando información del punto futuro, lo que lo hace más robusto pero también más complejo de calcular. La resolución de la ecuación implícita es clave para su implementación práctica.
+"""
+
+# ╔═╡ fbc3d9b3-2723-417e-93be-31b50fc7d31b
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3627,40 +3335,29 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╠═8048b320-ddb2-11ef-288f-c9de878b0c2a
-# ╠═78b46127-f516-49c6-8ad5-6405f77476ab
-# ╠═0bd6bdb4-b859-4471-951b-d7a52fcbd135
-# ╟─48aa4290-30b6-4227-b8c8-468eb1ebde00
-# ╟─6ddff793-b895-4576-b745-0a5eaf2e7813
-# ╠═22916c78-f4a9-49da-86e7-30b0ba94fd38
-# ╟─f26b3368-d3d9-4d09-bcff-e1a6b71726d3
-# ╟─6793429f-b688-485a-907b-18773f5c6a5e
-# ╟─5efcc77e-35bf-4a26-af9f-c71a145c6b4b
-# ╟─3f3c31ca-689f-4a84-a04f-d9787577d2b6
-# ╟─85e40b27-13df-4b2a-bb65-721fd07e38f4
-# ╟─428adddd-6efc-47dd-9fa1-b890aa86c69c
-# ╟─6a8234b4-9c90-4f00-954c-8e2ecc9c006c
-# ╠═d53ef143-b84a-487b-b920-5208fbfbb427
-# ╟─f54478b8-37e7-4afb-95ff-0ff06785750f
-# ╠═d896173e-5a48-4099-8f5e-d70caa246873
-# ╠═d3e71671-8820-4133-bac9-d490adaeeae4
-# ╟─0c31d89f-d58d-4c00-9b77-fde91a60a88a
-# ╟─4b0b97c7-1c10-4e88-9286-7d9da8920855
-# ╟─b2d02055-6966-4d4e-a171-21b745a03e6d
-# ╟─87b22644-5856-4415-b813-f5263e17336d
-# ╟─4f6d5592-208e-485d-8db7-94fb708fc8fc
-# ╟─8c89e505-4cf4-4ac1-8d8d-27e2ac547f4f
-# ╟─0d251455-4aba-418f-97b0-185f6245bf27
-# ╟─36349379-1ca0-40ef-9a4d-efb1bf7fced5
-# ╟─4e5cf153-d22e-48e7-83e6-4f3b74d04e31
-# ╟─c943b623-80b9-4eba-9559-375b578aac9c
-# ╟─82471256-da9d-46fa-a755-b3d4268947d0
-# ╟─1084bd0a-920f-45b6-9ad1-cd65682d17a7
-# ╟─f70b185c-8058-4556-b943-6ce4f984ee54
-# ╟─e472c5b6-cc51-4a80-bd53-d464a46ac859
-# ╟─4c1208b2-0549-4e79-a9bd-9a68509fa32c
-# ╟─448fb2e9-c31d-4f13-8c54-089df9c9e45c
-# ╟─8f39aa1f-3a4d-471a-a322-718d1ef0b355
-# ╟─985caeaa-ffdf-4525-a8ea-566dcc149951
+# ╠═deb45544-d939-4a7c-9f1d-c87995c7be35
+# ╠═d6f85947-d92c-4d63-b2d2-aac9730feece
+# ╠═b2444365-05b3-4c94-a2ba-6920f6b33264
+# ╠═fb00755d-6ea3-49a0-9f44-b554ad7d17fc
+# ╠═0b752454-b7cc-431c-ac3d-9bc3046e30c9
+# ╠═fe308ed9-5c48-44c3-ad82-cd1b2eaa057b
+# ╠═ee3da302-fd84-4aa3-b978-425cf98a85cc
+# ╟─94f64e24-59ba-4581-85a8-dbaf690c26f6
+# ╟─07c3f41e-1703-440e-af16-b9151d24cb63
+# ╟─6ba05a05-de12-4126-aecb-9b87c23cdb0c
+# ╟─9f76a41a-e8c1-4167-99ea-2526e4e3ded0
+# ╟─3f6ac7d4-9c63-438f-b72b-756e515d03df
+# ╟─ffb4e101-31a3-4031-8eca-524a0d3510f5
+# ╟─c0bd6dc4-e9c5-4454-bcf4-4810b64f95e3
+# ╟─3f3742ae-1bf3-4f1c-b6d6-75455c969c58
+# ╟─8a854f6e-f1e8-45f2-a0b4-84cc189cdd2a
+# ╟─4359ad1b-5128-4bdc-9dba-99249dc5d553
+# ╟─2adb26b3-3762-4a9f-974a-ed9fa3780bfd
+# ╠═e1a418f0-b923-4cd3-8ce8-d5b37537cd07
+# ╠═a8ae2f79-5eb1-43a7-b414-daea872901ba
+# ╟─c0fc3fdc-6e17-4323-99aa-21e989c27883
+# ╟─ef773fb9-252c-4fea-b217-d4d8749240f0
+# ╠═d26891a4-8a88-4209-b495-7019072671ea
+# ╠═fbc3d9b3-2723-417e-93be-31b50fc7d31b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
