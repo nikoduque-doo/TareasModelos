@@ -10,21 +10,6 @@ using PlutoUI, FileIO, Images
 # ╔═╡ d6f85947-d92c-4d63-b2d2-aac9730feece
 using DifferentialEquations, Plots, LinearAlgebra, CalculusWithJulia, SymPy, ForwardDiff
 
-# ╔═╡ b2444365-05b3-4c94-a2ba-6920f6b33264
-load("img/1.1.png")
-
-# ╔═╡ fb00755d-6ea3-49a0-9f44-b554ad7d17fc
-load("img/2.1.png")
-
-# ╔═╡ 0b752454-b7cc-431c-ac3d-9bc3046e30c9
-load("img/2.2.png")
-
-# ╔═╡ fe308ed9-5c48-44c3-ad82-cd1b2eaa057b
-load("img/3.1.png")
-
-# ╔═╡ ee3da302-fd84-4aa3-b978-425cf98a85cc
-load("img/3.2.png")
-
 # ╔═╡ 94f64e24-59ba-4581-85a8-dbaf690c26f6
 md"""
 # Tarea Método de Euler implicíto
@@ -127,16 +112,6 @@ load("img/3.2.png")
 md"""
 como se puede notar, la pendiente real daria para un metodo más periodico, similar al explicito, pero al tener una pendiente alterada, puede variar respecto a lo que realmente buscamos.
 """
-
-# ╔═╡ d26891a4-8a88-4209-b495-7019072671ea
-md"""
-#### Conclusión
-
-El método de Euler implícito es una herramienta poderosa para resolver EDOs, especialmente cuando la estabilidad es un factor crítico. Su interpretación gráfica muestra cómo la solución avanza utilizando información del punto futuro, lo que lo hace más robusto pero también más complejo de calcular. La resolución de la ecuación implícita es clave para su implementación práctica.
-"""
-
-# ╔═╡ fbc3d9b3-2723-417e-93be-31b50fc7d31b
-
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3337,11 +3312,6 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╠═deb45544-d939-4a7c-9f1d-c87995c7be35
 # ╠═d6f85947-d92c-4d63-b2d2-aac9730feece
-# ╠═b2444365-05b3-4c94-a2ba-6920f6b33264
-# ╠═fb00755d-6ea3-49a0-9f44-b554ad7d17fc
-# ╠═0b752454-b7cc-431c-ac3d-9bc3046e30c9
-# ╠═fe308ed9-5c48-44c3-ad82-cd1b2eaa057b
-# ╠═ee3da302-fd84-4aa3-b978-425cf98a85cc
 # ╟─94f64e24-59ba-4581-85a8-dbaf690c26f6
 # ╟─07c3f41e-1703-440e-af16-b9151d24cb63
 # ╟─6ba05a05-de12-4126-aecb-9b87c23cdb0c
@@ -3357,7 +3327,5 @@ version = "1.4.1+1"
 # ╠═a8ae2f79-5eb1-43a7-b414-daea872901ba
 # ╟─c0fc3fdc-6e17-4323-99aa-21e989c27883
 # ╟─ef773fb9-252c-4fea-b217-d4d8749240f0
-# ╠═d26891a4-8a88-4209-b495-7019072671ea
-# ╠═fbc3d9b3-2723-417e-93be-31b50fc7d31b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
