@@ -14,373 +14,179 @@ Actividad realizada por Alan Acero, Johan López y Nicolás Duque
 Se utilizarán las siguientes librerías:
 """
 
-# ╔═╡ 1775cf34-9368-4b4a-9827-f430305b3ca6
-begin
-	df = DateFormat("d/m/y");
-	
-	Datos = [
-		Date("1/01/2022", df) 	222
-		Date("2/01/2022", df) 	209
-		Date("3/01/2022", df) 	217
-		Date("4/01/2022", df) 	245
-		Date("5/01/2022", df) 	252
-		Date("6/01/2022", df) 	278
-		Date("7/01/2022", df) 	291
-		Date("8/01/2022", df) 	299
-		Date("9/01/2022", df) 	302
-		Date("10/01/2022", df) 	292
-		Date("11/01/2022", df) 	311
-		Date("12/01/2022", df) 	306
-		Date("13/01/2022", df) 	326
-		Date("14/01/2022", df) 	332
-		Date("15/01/2022", df) 	368
-		Date("16/01/2022", df) 	356
-		Date("17/01/2022", df) 	373
-		Date("18/01/2022", df) 	397
-		Date("19/01/2022", df) 	410
-		Date("20/01/2022", df) 	431
-	];
-
-	fechas = Datos[:,1];
-	dias = collect(1:size(fechas, 1));
-	camas = Datos[:,2]
-	arrAux = fill(1, size(dias));
-	Datos
-	# Dates.value(fechas[1])
-end
-
-# ╔═╡ 44d043ce-c2e8-4ba2-8278-e4ab571ee244
-md"""
-# Modelos basados en Ecuaciones Diferenciales
-Con el fin de analizar algunos modelos basados en EDO, analizaremos la aproximación que nos genera dos de estos modelos y loss ilustraremos. De esta manera, tendremos en cuenta los siguientes modelamientos: 
-"""
-
-# ╔═╡ aa7176a0-48d0-4cc7-983c-38929282f3cb
-md"""
-## Modelo de von Bertalanffy
-Asumamos que nuestro método tiene siguiente forma:
-
-$V'=aV^{\frac{2}{3}}-bV$
-
-Donde $V$ corresponde al valor de los datos y $a, b \in \mathbb{R}$ los parámetros a ser optmizados.
-Definimos una función para calcular la magnitud del residuo, el cual se realiza utilizando la norma euclidiana, aplicada a la diferenciaentre los valores predichos por el modelo y los valores reales de los datos. Así:
-"""
-
-# ╔═╡ 72aa94d7-2d7b-46a3-9da9-081ae7137ac6
-modeloVB(vDatos, tupla, tiempo) = tupla[1] * (vDatos ^ (2/3)) - tupla[2] * vDatos
-
-# ╔═╡ 41c5ff90-6a29-4b46-a145-c3dfc26c234e
-function residuoVB(tupla,vDatos,tiempo)
-   	dominioTiempo = (0,30);
-  	V0 = 222;
- 	EDO = ODEProblem(modeloVB, V0, dominioTiempo, tupla);
-  	Sol = solve(EDO);
-  	vModelo = [Sol(t) for t in tiempo];
-  	res = vDatos - vModelo;
-  	nRes = norm(res);
-	return nRes;
-end
-
-# ╔═╡ a95f37e0-f13e-4e5b-86c7-19aff3e633f7
-md"""
-Así, tomamos una función que tome como valor principal un vector con los parametros para luego ser optimizado.
-"""
-
-# ╔═╡ e6019a5a-83e0-41de-be82-3d5c71bbc047
-rVB(tupla) = residuoVB(tupla, camas, dias)
-
-# ╔═╡ bd9ca7ec-35e1-452c-89a6-0823df747e12
-oVB = Optim.optimize(rVB, [.01,.01], NelderMead())
-
-# ╔═╡ 9c9a62f8-4719-4c35-89a0-c6142fa2fa57
-oVB.minimizer
-
-# ╔═╡ 001ff16c-b315-4b92-bd57-06a869b5f7ff
-oVB.minimum
-
-# ╔═╡ e006189b-1077-4049-a489-5f918f3727fa
-md"""
-De tal manera, obtenemos una función óptima que se acerca más a los datos deseados. 
-
-$V'=(-0.334623)V^{\frac{2}{3}}-(-0.0824633)V$
-
-Veamos su gráfica:
-"""
-
-# ╔═╡ 69a7a377-6df6-4378-8573-767525c06ac6
-begin
-	dominioTiempo=(Dates.value(Date("01/01/2022", df)), Dates.value(Date("25/01/2022", df)))
-	V0=222
-	oVBtupla=oVB.minimizer
-	EDOoptima=ODEProblem(modeloVB,V0,dominioTiempo,oVBtupla)
-	VEDOoptima=solve(EDOoptima)
-	plot(VEDOoptima,lw=5,label="EDO optima")
-	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de von Bertalanffy óptimo")
-end
-
-# ╔═╡ 3d48e22c-4bd0-4384-ae18-0fc88344a0aa
-md"""
-## Modelo de Crecimiento Logístico
-Asumamos que nuestro método tiene siguiente forma:
-
-$V' = aV\left(1 - \frac{V}{b}\right)$
-
-Donde $V$ corresponde al valor de los datos y $a, b \in \mathbb{R}$ los parámetros a ser optmizados.
-Definimos una función para calcular la magnitud del residuo, el cual se realiza utilizando la norma euclidiana, aplicada a la diferenciaentre los valores predichos por el modelo y los valores reales de los datos. Así:
-"""
-
-# ╔═╡ 5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
-modeloCL(vDatos, tupla, tiempo) = tupla[1] * vDatos * (1 - (vDatos / tupla[2]))
-
-# ╔═╡ 42a046bc-38ad-4193-9185-c1eab591d036
-
-
-# ╔═╡ a4fa1201-9189-45b2-be4b-fa92a76c8930
-function residuoCL(tupla,vDatos,tiempo)
-   	dominioTiempo = (0,30);
-  	V0 = 222;
- 	EDO = ODEProblem(modeloCL, V0, dominioTiempo, tupla);
-  	Sol = solve(EDO);
-  	vModelo = [Sol(t) for t in tiempo];
-  	res = vDatos - vModelo;
-  	nRes = norm(res);
-	return nRes;
-end
-
-# ╔═╡ b1d6b843-2129-4109-98c7-ff7b8e50a1dd
-md"""
-Así, tomamos una función que tome como valor principal un vector con los parametros para luego ser optimizado.
-"""
-
-# ╔═╡ d802b272-cbf4-41e6-ab4e-ae786246c86c
-rCL(tupla) = residuoCL(tupla, camas, dias)
-
-# ╔═╡ fc71ce48-b773-4cbc-9f96-80e442ba85d0
-# ╠═╡ show_logs = false
-oCL = Optim.optimize(rCL, [.01,.01], NelderMead())
-
-# ╔═╡ 428ab073-94f6-45ef-9171-ee69f057ff5a
-oCL.minimizer
-
-# ╔═╡ ddb395d5-3b82-4d4b-9483-ece75294857f
-oCL.minimum
-
-# ╔═╡ 784f5f92-1f04-4fcf-8b45-1524c3972d03
-md"""
-De tal manera, obtenemos una función óptima que se acerca más a los datos deseados. 
-
-$V' = (0.0150148)V\left(1 - \frac{V}{(-262.515)}\right)$
-
-Veamos su gráfica:
-"""
-
-# ╔═╡ 4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
-begin
-	oCLtupla=oCL.minimizer
-	EDOoptima2=ODEProblem(modeloCL,V0,dominioTiempo,oCLtupla)
-	VEDOoptima2=solve(EDOoptima2)
-	plot(VEDOoptima2,lw=5,label="EDO optima")
-	scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
-end
-
-# ╔═╡ f657bd01-9c11-4416-a98e-73541c88ef73
-md"""
-Es importante observar que los dos modelos no presentan diferencias notables a simple vista, si bien su funcionamiento y los parámetros optimizados difieren.
-
-# Bibliografía
-[1] "Optim.jl", Sciml.ai, 2024. https://docs.sciml.ai/Optimization/stable/optimization_packages/optim/ Accedido 20 de Noviembre de 2024
-
-[2] J. Galvis, F. Gómez y Y. Trujillo, "Ajuste de curvas", Laboratorio de matemáticas, Material de acompañamiento para los cursos del Departamento de Matemáticas y Ciencias de la Computación de la Universidad Nacional de Colombia, sede Bogotá, 2022. https://labmatecc.github.io/Notebooks/AnalisisNumerico/AjusteDeCurvas/ Accedido 21 de Noviembre de 2024
-"""
-
-# ╔═╡ 331529af-4b06-4f04-8835-fbd115064c59
-begin
-	function lorenz!(du,u,p,t)
-	 du[1] = 10.0(u[2]-u[1])
-	 du[2] = u[1]*(28.0-u[3]) - u[2]
-	 du[3] = u[1]*u[2] - (8/3)*u[3]
-	end
-	u0 = [1.0;0.0;0.0]
-	tspan = (0.0,100.0)
-	prob = ODEProblem(lorenz!,u0,tspan)
-	
-	# Test that it worked
-	sol = solve(prob,Tsit5())
-end
-
 # ╔═╡ 477613ea-5cd1-4ddd-b53b-4c600097ece7
 # ╠═╡ show_logs = false
 begin
 datosClima =
 	[
-		"2009-01"	14.05	744.40	31.00
-		"2009-02"	14.22	744.17	48.00
-		"2009-03"	14.32	745.84	79.00
-		"2009-04"	14.71	744.13	96.00
-		"2009-05"	14.58	744.24	77.00
-		"2009-06"	14.35	744.21	60.00
-		"2009-07"	13.92	744.82	34.00
-		"2009-08"	14.47	744.56	30.00
-		"2009-09"	14.56	744.83	35.00
-		"2009-10"	14.34	743.30	104.00
-		"2009-11"	14.70	743.27	88.00
-		"2009-12"	14.64	744.79	63.00
-		"2010-01"	14.67	743.89	14.00
-		"2010-02"	15.62	743.49	21.00
-		"2010-03"	15.92	744.00	20.00
-		"2010-04"	15.09	744.40	152.00
-		"2010-05"	15.17	744.75	163.00
-		"2010-06"	14.55	744.20	76.00
-		"2010-07"	14.39	746.78	91.00
-		"2010-08"	14.35	748.06	32.00
-		"2010-09"	14.33	747.68	45.00
-		"2010-10"	14.50	747.48	132.00
-		"2010-11"	14.30	746.66	179.00
-		"2010-12"	13.72	746.15	123.00
-		"2011-01"	13.83	746.24	44.00
-		"2011-02"	14.11	746.99	58.00
-		"2011-03"	14.01	744.20	85.00
-		"2011-04"	14.33	741.82	170.00
-		"2011-05"	14.76	741.86	122.00
-		"2011-06"	14.63	742.32	48.00
-		"2011-07"	13.93	743.03	39.00
-		"2011-08"	14.21	744.47	32.00
-		"2011-09"	13.96	744.88	36.00
-		"2011-10"	13.80	743.67	111.00
-		"2011-11"	13.97	743.44	145.00
-		"2011-12"	14.27	743.20	97.00
-		"2012-01"	14.29	744.02	49.00
-		"2012-02"	14.00	746.28	36.00
-		"2012-03"	14.10	746.93	80.00
-		"2012-04"	13.95	747.55	144.00
-		"2012-05"	14.40	747.51	33.00
-		"2012-06"	14.22	747.90	30.00
-		"2012-07"	13.70	744.77	45.00
-		"2012-08"	13.74	744.85	40.00
-		"2012-09"	13.95	745.14	21.00
-		"2012-10"	14.41	743.94	103.00
-		"2012-11"	14.40	743.96	52.00
-		"2012-12"	14.04	743.42	54.00
-		"2013-01"	14.46	701.26	8.00
-		"2013-02"	14.35	695.84	97.00
-		"2013-03"	14.84	693.66	57.00
-		"2013-04"	14.91	696.67	119.00
-		"2013-05"	14.61	705.72	101.00
-		"2013-06"	14.48	744.50	24.00
-		"2013-07"	13.59	744.80	37.00
-		"2013-08"	13.94	744.31	46.00
-		"2013-09"	14.30	744.33	29.00
-		"2013-10"	14.03	744.01	73.00
-		"2013-11"	13.98	743.02	129.00
-		"2013-12"	14.04	745.37	72.00
-		"2014-01"	14.31	746.11	49.00
-		"2014-02"	14.52	745.87	94.00
-		"2014-03"	14.67	746.52	96.00
-		"2014-04"	14.71	746.89	62.00
-		"2014-05"	14.76	747.24	77.00
-		"2014-06"	14.23	747.34	44.00
-		"2014-07"	14.04	748.46	30.00
-		"2014-08"	13.66	750.29	19.00
-		"2014-09"	14.12	750.93	36.00
-		"2014-10"	14.30	750.54	48.00
-		"2014-11"	14.36	750.12	117.00
-		"2014-12"	13.97	750.17	132.00
-		"2015-01"	14.03	750.43	40.00
-		"2015-02"	14.63	750.83	32.00
-		"2015-03"	14.81	750.85	98.00
-		"2015-04"	14.92	750.98	53.00
-		"2015-05"	15.08	751.50	20.00
-		"2015-06"	14.08	751.77	66.00
-		"2015-07"	14.33	751.77	34.00
-		"2015-08"	14.52	751.51	22.00
-		"2015-09"	14.62	751.56	32.00
-		"2015-10"	14.85	751.45	45.00
-		"2015-11"	14.99	750.29	72.00
-		"2015-12"	14.50	750.68	2.00
-		"2016-01"	15.40	750.70	6.00
-		"2016-02"	15.93	750.21	19.00
-		"2016-03"	16.19	751.28	84.00
-		"2016-04"	15.41	750.89	142.00
-		"2016-05"	15.12	751.90	80.00
-		"2016-06"	14.35	752.36	27.00
-		"2016-07"	14.26	715.36	34.00
-		"2016-08"	14.32	716.54	45.00
-		"2016-09"	14.37	717.31	68.00
-		"2016-10"	14.84	750.73	83.00
-		"2016-11"	14.45	750.55	184.00
-		"2016-12"	14.30	750.69	59.00
-		"2017-01"	14.06	750.91	50.00
-		"2017-02"	14.41	751.18	74.00
-		"2017-03"	14.34	751.25	177.00
-		"2017-04"	14.88	751.50	75.00
-		"2017-05"	14.78	752.05	175.00
-		"2017-06"	14.60	752.03	96.00
-		"2017-07"	14.09	752.55	24.00
-		"2017-08"	14.44	751.95	70.00
-		"2017-09"	14.82	751.66	33.00
-		"2017-10"	14.41	751.18	84.00
-		"2017-11"	14.29	750.43	162.00
-		"2017-12"	14.35	729.48	85.00
-		"2018-01"	13.92	750.47	46.00
-		"2018-02"	14.72	750.86	34.00
-		"2018-03"	14.63	750.91	93.00
-		"2018-04"	13.94	751.72	120.00
-		"2018-05"	14.35	751.94	90.00
-		"2018-06"	14.08	752.11	32.00
-		"2018-07"	14.16	752.09	36.00
-		"2018-08"	13.85	752.36	29.00
-		"2018-09"	14.52	751.10	22.00
-		"2018-10"	14.85	740.15	49.00
-		"2018-11"	14.98	717.33	83.00
-		"2018-12"	14.34	718.47	3.00
-		"2019-01"	14.63	714.78	18.00
-		"2019-02"	15.45	717.84	46.00
-		"2019-03"	15.42	712.69	84.00
-		"2019-04"	15.43	715.21	138.00
-		"2019-05"	15.09	715.54	120.00
-		"2019-06"	14.79	716.18	74.00
-		"2019-07"	14.63	715.84	43.00
-		"2019-08"	14.36	715.27	38.00
-		"2019-09"	15.01	718.93	62.00
-		"2019-10"	14.55	715.88	94.00
-		"2019-11"	15.13	715.95	231.00
-		"2019-12"	15.25	716.11	50.00
-		"2020-01"	15.15	716.94	53.00
-		"2020-02"	15.36	718.87	94.00
-		"2020-03"	15.84	718.96	84.00
-		"2020-04"	15.64	711.68	64.00
-		"2020-05"	15.39	713.26	70.00
-		"2020-06"	14.89	712.01	79.00
-		"2020-07"	14.57	707.52	90.00
-		"2020-08"	14.85	712.94	41.00
-		"2020-09"	14.54	714.08	86.00
-		"2020-10"	14.93	713.49	35.00
-		"2020-11"	14.65	719.23	240.00
-		"2020-12"	14.69	715.31	94.00
-		"2021-01"	14.40	751.63	18.00
-		"2021-02"	15.20	707.81	51.00
-		"2021-03"	14.20	717.23	112.00
-		"2021-04"	15.30	716.60	103.00
-		"2021-05"	15.10	716.64	161.00
-		"2021-06"	14.59	718.41	143.00
-		"2021-07"	14.50	718.77	49.00
-		"2021-08"	14.52	718.35	123.00
-		"2021-09"	14.47	728.30	61.00
-		"2021-10"	14.90	751.19	191.00
-		"2021-11"	14.82	717.08	163.00
-		"2021-12"	15.49	712.17	48.00
-		"2022-01"	14.94	701.73	23.00
-		"2022-02"	14.77	712.01	140.00
-		"2022-03"	15.06	751.67	100.00
-		"2022-04"	14.92	750.80	161.00
-		"2022-05"	15.06	751.99	96.00
-		"2022-06"	13.95	751.60	159.00
-		"2022-07"	14.70	751.85	71.00
-		"2022-08"	14.39	751.88	58.00
-		"2022-09"	14.21	751.81	77.00
-		"2022-10"	14.61	751.48	216.00
-		"2022-11"	14.56	752.15	164.00
-		"2022-12"	14.30	750.73	67.00
+		"2009-01"	744.40	14.05	31.00
+		"2009-02"	744.17	14.22	48.00
+		"2009-03"	745.84	14.32	79.00
+		"2009-04"	744.13	14.71	96.00
+		"2009-05"	744.24	14.58	77.00
+		"2009-06"	744.21	14.35	60.00
+		"2009-07"	744.82	13.92	34.00
+		"2009-08"	744.56	14.47	30.00
+		"2009-09"	744.83	14.56	35.00
+		"2009-10"	743.30	14.34	104.00
+		"2009-11"	743.27	14.70	88.00
+		"2009-12"	744.79	14.64	63.00
+		"2010-01"	743.89	14.67	14.00
+		"2010-02"	743.49	15.62	21.00
+		"2010-03"	744.00	15.92	20.00
+		"2010-04"	744.40	15.09	152.00
+		"2010-05"	744.75	15.17	163.00
+		"2010-06"	744.20	14.55	76.00
+		"2010-07"	746.78	14.39	91.00
+		"2010-08"	748.06	14.35	32.00
+		"2010-09"	747.68	14.33	45.00
+		"2010-10"	747.48	14.50	132.00
+		"2010-11"	746.66	14.30	179.00
+		"2010-12"	746.15	13.72	123.00
+		"2011-01"	746.24	13.83	44.00
+		"2011-02"	746.99	14.11	58.00
+		"2011-03"	744.20	14.01	85.00
+		"2011-04"	741.82	14.33	170.00
+		"2011-05"	741.86	14.76	122.00
+		"2011-06"	742.32	14.63	48.00
+		"2011-07"	743.03	13.93	39.00
+		"2011-08"	744.47	14.21	32.00
+		"2011-09"	744.88	13.96	36.00
+		"2011-10"	743.67	13.80	111.00
+		"2011-11"	743.44	13.97	145.00
+		"2011-12"	743.20	14.27	97.00
+		"2012-01"	744.02	14.29	49.00
+		"2012-02"	746.28	14.00	36.00
+		"2012-03"	746.93	14.1	80.00
+		"2012-04"	747.55	13.95	144.00
+		"2012-05"	747.51	14.40	33.00
+		"2012-06"	747.90	14.22	30.00
+		"2012-07"	744.77	13.70	45.00
+		"2012-08"	744.85	13.74	40.00
+		"2012-09"	745.14	13.95	21.00
+		"2012-10"	743.94	14.41	103.00
+		"2012-11"	743.96	14.40	52.00
+		"2012-12"	743.42	14.04	54.00
+		"2013-01"	701.26	14.46	8.00
+		"2013-02"	695.84	14.35	97.00
+		"2013-03"	693.66	14.84	57.00
+		"2013-04"	696.67	14.91	119.00
+		"2013-05"	705.72	14.61	101.00
+		"2013-06"	744.50	14.48	24.00
+		"2013-07"	744.80	13.59	37.00
+		"2013-08"	744.31	13.94	46.00
+		"2013-09"	744.33	14.30	29.00
+		"2013-10"	744.01	14.03	73.00
+		"2013-11"	743.02	13.98	129.00
+		"2013-12"	745.37	14.04	72.00
+		"2014-01"	746.11	14.31	49.00
+		"2014-02"	745.87	14.52	94.00
+		"2014-03"	746.52	14.67	96.00
+		"2014-04"	746.89	14.71	62.00
+		"2014-05"	747.24	14.76	77.00
+		"2014-06"	747.34	14.23	44.00
+		"2014-07"	748.46	14.04	30.00
+		"2014-08"	750.29	13.66	19.00
+		"2014-09"	750.93	14.12	36.00
+		"2014-10"	750.54	14.30	48.00
+		"2014-11"	750.12	14.36	117.00
+		"2014-12"	750.17	13.97	132.00
+		"2015-01"	750.43	14.03	40.00
+		"2015-02"	750.83	14.63	32.00
+		"2015-03"	750.85	14.81	98.00
+		"2015-04"	750.98	14.92	53.00
+		"2015-05"	751.50	15.08	20.00
+		"2015-06"	751.77	14.08	66.00
+		"2015-07"	751.77	14.33	34.00
+		"2015-08"	751.51	14.52	22.00
+		"2015-09"	751.56	14.62	32.00
+		"2015-10"	751.45	14.85	45.00
+		"2015-11"	750.29	14.99	72.00
+		"2015-12"	750.68	14.50	2.00
+		"2016-01"	750.70	15.40	6.00
+		"2016-02"	750.21	15.93	19.00
+		"2016-03"	751.28	16.19	84.00
+		"2016-04"	750.89	15.41	142.00
+		"2016-05"	751.90	15.12	80.00
+		"2016-06"	752.36	14.35	27.00
+		"2016-07"	715.36	14.26	34.00
+		"2016-08"	716.54	14.32	45.00
+		"2016-09"	717.31	14.37	68.00
+		"2016-10"	750.73	14.84	83.00
+		"2016-11"	750.55	14.45	184.00
+		"2016-12"	750.69	14.30	59.00
+		"2017-01"	750.91	14.06	50.00
+		"2017-02"	751.18	14.41	74.00
+		"2017-03"	751.25	14.34	177.00
+		"2017-04"	751.50	14.88	75.00
+		"2017-05"	752.05	14.78	175.00
+		"2017-06"	752.03	14.60	96.00
+		"2017-07"	752.55	14.09	24.00
+		"2017-08"	751.95	14.44	70.00
+		"2017-09"	751.66	14.82	33.00
+		"2017-10"	751.18	14.41	84.00
+		"2017-11"	750.43	14.29	162.00
+		"2017-12"	729.48	14.35	85.00
+		"2018-01"	750.47	13.92	46.00
+		"2018-02"	750.86	14.72	34.00
+		"2018-03"	750.91	14.63	93.00
+		"2018-04"	751.72	13.94	120.00
+		"2018-05"	751.94	14.35	90.00
+		"2018-06"	752.11	14.08	32.00
+		"2018-07"	752.09	14.16	36.00
+		"2018-08"	752.36	13.85	29.00
+		"2018-09"	751.10	14.52	22.00
+		"2018-10"	740.15	14.85	49.00
+		"2018-11"	717.33	14.98	83.00
+		"2018-12"	718.47	14.34	3.00
+		"2019-01"	714.78	14.63	18.00
+		"2019-02"	717.84	15.45	46.00
+		"2019-03"	712.69	15.42	84.00
+		"2019-04"	715.21	15.43	138.00
+		"2019-05"	715.54	15.09	120.00
+		"2019-06"	716.18	14.79	74.00
+		"2019-07"	715.84	14.63	43.00
+		"2019-08"	715.27	14.36	38.00
+		"2019-09"	718.93	15.01	62.00
+		"2019-10"	715.88	14.55	94.00
+		"2019-11"	715.95	15.13	231.00
+		"2019-12"	716.11	15.25	50.00
+		"2020-01"	716.94	15.15	53.00
+		"2020-02"	718.87	15.36	94.00
+		"2020-03"	718.96	15.84	84.00
+		"2020-04"	711.68	15.64	64.00
+		"2020-05"	713.26	15.39	70.00
+		"2020-06"	712.01	14.89	79.00
+		"2020-07"	707.52	14.57	90.00
+		"2020-08"	712.94	14.85	41.00
+		"2020-09"	714.08	14.54	86.00
+		"2020-10"	713.49	14.93	35.00
+		"2020-11"	719.23	14.65	240.00
+		"2020-12"	715.31	14.69	94.00
+		"2021-01"	751.63	14.40	18.00
+		"2021-02"	707.81	15.20	51.00
+		"2021-03"	717.23	14.20	112.00
+		"2021-04"	716.60	15.30	103.00
+		"2021-05"	716.64	15.1	161.00
+		"2021-06"	718.41	14.59	143.00
+		"2021-07"	718.77	14.50	49.00
+		"2021-08"	718.35	14.52	123.00
+		"2021-09"	728.30	14.47	61.00
+		"2021-10"	751.19	14.90	191.00
+		"2021-11"	717.08	14.82	163.00
+		"2021-12"	712.17	15.49	48.00
+		"2022-01"	701.73	14.94	23.00
+		"2022-02"	712.01	14.77	140.00
+		"2022-03"	751.67	15.06	100.00
+		"2022-04"	750.80	14.92	161.00
+		"2022-05"	751.99	15.06	96.00
+		"2022-06"	751.60	13.95	159.00
+		"2022-07"	751.85	14.70	71.00
+		"2022-08"	751.88	14.39	58.00
+		"2022-09"	751.81	14.21	77.00
+		"2022-10"	751.48	14.61	216.00
+		"2022-11"	752.15	14.56	164.00
+		"2022-12"	750.73	14.30	67.00
 	];
 
 	years = collect(1:size(datosClima[:,1], 1));
@@ -389,9 +195,9 @@ end
 
 # ╔═╡ 81953c25-7fdf-4ff4-865f-3c4993e319b1
 function lorenz(du, u, params, tiempo)
-	du[1] = params[1]*(u[2]-u[1]);
-	du[2] = u[1]*(params[2]-u[3]) - u[2];
-	du[3] = u[1]*u[2] - params[3]*u[3];
+	du[1] = params[1]*u[2] - u[1];
+	du[2] = params[2]*u[1] - u[2] - params[3]*u[1]*u[3];
+	du[3] = params[4]*u[1]*u[2] - u[3];
 end
 
 # ╔═╡ 90588eb2-451a-4551-a4c5-14024c879a52
@@ -400,7 +206,7 @@ function residuoLorenz(params, vDatos, tiempo)
     dominioTiempo = (0.0, 168.0)
     
     # Initial conditions for the Lorenz system
-    V0 = [14.05, 744.40, 31.00]
+    V0 = [738.47, 14.55, 75.80]
     
     # Define and solve the ODE problem
     EDO = ODEProblem(lorenz, V0, dominioTiempo, params)
@@ -408,6 +214,9 @@ function residuoLorenz(params, vDatos, tiempo)
     
     # Extract model data at specified time points
     vModelo = hcat(Sol.u...)'
+
+	println("Dimensiones de vDatos: ", size(vDatos))
+	println("Dimensiones de vModelo: ", size(vModelo))
     
     # Calculate residuals
     res = vDatos .- vModelo
@@ -420,29 +229,105 @@ end
 rLorenz(params) = residuoLorenz(params, datosC , years)
 
 # ╔═╡ 094240e9-ce59-437d-b94c-594588e22d3a
-oLorenz = Optim.optimize(rLorenz, [.01,.01,.01], NelderMead())
+# ╠═╡ show_logs = false
+oLorenz = Optim.optimize(rLorenz, [10.0, 28.0, 8/3, 0.5], SimulatedAnnealing())
 
 # ╔═╡ 909cd9ad-e16e-4038-9b94-bd31624f9572
 oLorenzTupla = oLorenz.minimizer
 
 # ╔═╡ 0d1c2f64-7c49-4627-b607-dc76bdc15960
 begin
-	l0 = [14.05, 744.40, 31.00]
-	dominioTiempoLorenz = (0.0, 168.0)
+	l0 = [738.47, 14.55, 75.80]
+	dominioTiempoLorenz = (1.0, 168.0)
 	lorenzOptima1=ODEProblem(lorenz, l0, dominioTiempoLorenz, oLorenzTupla)
-	tablaLO1=solve(lorenzOptima1)
+	tablaLO1=solve(lorenzOptima1, Tsit5(), saveat=0:0.1:168)
 	plot(tablaLO1, idxs = (1, 2, 3))
 	##scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
 end
 
 # ╔═╡ 4236c331-7a85-41c1-81d9-1c65c2bb9765
-plot(tablaLO1, idxs = (0,1))
+begin
+	plot(tablaLO1, idxs = (0,1))
+	scatter!(years, datosC[:, 1])
+end
 
 # ╔═╡ 75746a62-dd7d-48c2-a8bd-34563e0aeeff
-plot(tablaLO1, idxs = (0,2))
+begin
+	plot(tablaLO1, idxs = (0,2))
+	scatter!(years, datosC[:, 2])
+end
 
 # ╔═╡ c4016740-e1ea-4ce7-8171-513c9d96b612
-plot(tablaLO1, idxs = (0,3))
+begin
+	plot(tablaLO1, idxs = (0,3))
+	scatter!(years, datosC[:, 3])
+end
+
+# ╔═╡ b75a48bb-c758-49cd-badb-da733898215e
+function lorenzL(du, u, params, tiempo)
+	du[1] = 10.0*u[2] - u[1];
+	du[2] = 28.0*u[1] - u[2] - (8/3)*u[1]*u[3];
+	du[3] = params[1]*u[1]*u[2] - u[3];
+end
+
+# ╔═╡ d05eec8c-dfa3-477a-a0a8-afcf11f33f07
+function residuoLorenzL(params, vDatos, tiempo)
+    # Time domain for the ODE
+    dominioTiempo = (0.0, 168.0)
+    
+    # Initial conditions for the Lorenz system
+    V0 = [738.47, 14.55, 75.80]
+    
+    # Define and solve the ODE problem
+    EDO = ODEProblem(lorenzL, V0, dominioTiempo, params)
+    Sol = solve(EDO, Tsit5(), saveat=tiempo)
+    
+    # Extract model data at specified time points
+    vModelo = hcat(Sol.u...)'
+    
+    # Calculate residuals
+    res = vDatos .- vModelo
+    nRes = norm(res)
+    
+    return nRes
+end
+
+# ╔═╡ f8ef97e3-e81c-45d0-b65a-1bc6dde480ee
+rLorenzL(params) = residuoLorenzL(params, datosC , years)
+
+# ╔═╡ 37169c8e-6ce8-4371-8719-74c0052f3fdd
+# ╠═╡ show_logs = false
+oLorenzL = Optim.optimize(rLorenzL, [0.5], NelderMead())
+
+# ╔═╡ 462d0d24-1603-42b2-bf85-dd7b41b70db2
+oLorenzTuplaL = oLorenzL.minimizer
+
+# ╔═╡ 76a1c795-4639-4edc-b851-dc50e5083348
+begin
+	l0L = [738.47, 14.55, 75.80]
+	dominioTiempoLorenzL = (168.0-24.0, 168.0)
+	lorenzOptima2=ODEProblem(lorenzL, l0L, dominioTiempoLorenzL, oLorenzTuplaL)
+	tablaLO2=solve(lorenzOptima2, Tsit5(), saveat=0:0.1:168)
+	plot(tablaLO2, idxs = (1, 2, 3))
+end
+
+# ╔═╡ 58c5f085-5b26-4841-afd8-fa3f60cd1c21
+begin
+	plot(tablaLO2, idxs = (0,1))
+	scatter!(years, datosC[:, 1])
+end
+
+# ╔═╡ 5ffafac9-4879-4131-9700-d58fee81171a
+begin
+	plot(tablaLO2, idxs = (0,2))
+	scatter!(years, datosC[:, 2])
+end
+
+# ╔═╡ adfeb9cc-8ab3-426a-9742-078fab486ac7
+begin
+	plot(tablaLO2, idxs = (0,3))
+	scatter!(years, datosC[:, 3])
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -3180,31 +3065,6 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╠═5d9909c7-e2d6-431a-90eb-16ad64c77254
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
-# ╠═1775cf34-9368-4b4a-9827-f430305b3ca6
-# ╟─44d043ce-c2e8-4ba2-8278-e4ab571ee244
-# ╟─aa7176a0-48d0-4cc7-983c-38929282f3cb
-# ╠═72aa94d7-2d7b-46a3-9da9-081ae7137ac6
-# ╠═41c5ff90-6a29-4b46-a145-c3dfc26c234e
-# ╟─a95f37e0-f13e-4e5b-86c7-19aff3e633f7
-# ╠═e6019a5a-83e0-41de-be82-3d5c71bbc047
-# ╠═bd9ca7ec-35e1-452c-89a6-0823df747e12
-# ╠═9c9a62f8-4719-4c35-89a0-c6142fa2fa57
-# ╠═001ff16c-b315-4b92-bd57-06a869b5f7ff
-# ╟─e006189b-1077-4049-a489-5f918f3727fa
-# ╟─69a7a377-6df6-4378-8573-767525c06ac6
-# ╟─3d48e22c-4bd0-4384-ae18-0fc88344a0aa
-# ╠═5f86fda8-72f1-4f1b-877b-b9cd207cfd7b
-# ╠═42a046bc-38ad-4193-9185-c1eab591d036
-# ╠═a4fa1201-9189-45b2-be4b-fa92a76c8930
-# ╟─b1d6b843-2129-4109-98c7-ff7b8e50a1dd
-# ╠═d802b272-cbf4-41e6-ab4e-ae786246c86c
-# ╠═fc71ce48-b773-4cbc-9f96-80e442ba85d0
-# ╠═428ab073-94f6-45ef-9171-ee69f057ff5a
-# ╠═ddb395d5-3b82-4d4b-9483-ece75294857f
-# ╟─784f5f92-1f04-4fcf-8b45-1524c3972d03
-# ╠═4cf3962e-b566-4a5f-ab70-0d6fa18ced8d
-# ╟─f657bd01-9c11-4416-a98e-73541c88ef73
-# ╠═331529af-4b06-4f04-8835-fbd115064c59
 # ╠═477613ea-5cd1-4ddd-b53b-4c600097ece7
 # ╠═81953c25-7fdf-4ff4-865f-3c4993e319b1
 # ╠═90588eb2-451a-4551-a4c5-14024c879a52
@@ -3215,5 +3075,14 @@ version = "1.4.1+1"
 # ╠═4236c331-7a85-41c1-81d9-1c65c2bb9765
 # ╠═75746a62-dd7d-48c2-a8bd-34563e0aeeff
 # ╠═c4016740-e1ea-4ce7-8171-513c9d96b612
+# ╠═b75a48bb-c758-49cd-badb-da733898215e
+# ╠═d05eec8c-dfa3-477a-a0a8-afcf11f33f07
+# ╠═f8ef97e3-e81c-45d0-b65a-1bc6dde480ee
+# ╠═37169c8e-6ce8-4371-8719-74c0052f3fdd
+# ╠═462d0d24-1603-42b2-bf85-dd7b41b70db2
+# ╠═76a1c795-4639-4edc-b851-dc50e5083348
+# ╠═58c5f085-5b26-4841-afd8-fa3f60cd1c21
+# ╠═5ffafac9-4879-4131-9700-d58fee81171a
+# ╠═adfeb9cc-8ab3-426a-9742-078fab486ac7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
