@@ -193,6 +193,28 @@ datosClima =
 	datosC = datosClima[:,[2,3,4]];
 end
 
+# ╔═╡ 11c888f6-a5fb-471f-a6a2-48cd1a8a018f
+years
+
+# ╔═╡ 8a6eca4a-3b89-4249-b567-0434310e3458
+begin
+	Datos1=Float64.(datosClima[:,[2]])
+	Datos2=Float64.(datosClima[:,[3]])
+	Datos3=Float64.(datosClima[:,[4]])
+
+	
+end
+
+# ╔═╡ ad9b2416-5c0a-46e6-8f1c-c9314f776792
+scatter(years, Datos1, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+#    plot!(DatosX, Eval_Best, lw=5, label="Modelo Best")
+
+# ╔═╡ e08c0eba-605d-451e-8b88-d34d31ad7eba
+scatter(years, Datos2, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+
+# ╔═╡ 6c4fa9af-aa24-4fbd-9fda-f03d1980be29
+scatter(years, Datos3, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+
 # ╔═╡ 81953c25-7fdf-4ff4-865f-3c4993e319b1
 function lorenz(du, u, params, tiempo)
 	du[1] = params[1]*u[2] - u[1];
@@ -3066,6 +3088,11 @@ version = "1.4.1+1"
 # ╠═5d9909c7-e2d6-431a-90eb-16ad64c77254
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
 # ╠═477613ea-5cd1-4ddd-b53b-4c600097ece7
+# ╠═11c888f6-a5fb-471f-a6a2-48cd1a8a018f
+# ╠═8a6eca4a-3b89-4249-b567-0434310e3458
+# ╠═ad9b2416-5c0a-46e6-8f1c-c9314f776792
+# ╠═e08c0eba-605d-451e-8b88-d34d31ad7eba
+# ╠═6c4fa9af-aa24-4fbd-9fda-f03d1980be29
 # ╠═81953c25-7fdf-4ff4-865f-3c4993e319b1
 # ╠═90588eb2-451a-4551-a4c5-14024c879a52
 # ╠═1f28b44f-d496-489d-8992-300d7f5f5cb7
