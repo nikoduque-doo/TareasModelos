@@ -198,22 +198,164 @@ years
 
 # ╔═╡ 8a6eca4a-3b89-4249-b567-0434310e3458
 begin
-	Datos1=Float64.(datosClima[:,[2]])
-	Datos2=Float64.(datosClima[:,[3]])
-	Datos3=Float64.(datosClima[:,[4]])
+	Datos1=Float64.(datosClima[:,[2]]) #presion
+	Datos2=Float64.(datosClima[:,[3]]) #temperatura
+	Datos3=Float64.(datosClima[:,[4]]) #precipitacion
 
 	
 end
 
+# ╔═╡ 32ac47f3-e51a-46b9-b1c0-93fb5c298cb7
+begin
+	num_filas = size(datosC, 1)	    
+	num_años = div(num_filas, 12)
+end
+
+# ╔═╡ b7134e0d-4224-4451-b532-326b90bcfa3e
+begin
+	function dividir_por_año(datos)
+	    # Determinar cuántos años hay en los datos
+	    # Crear un array vacío para almacenar las particiones
+	    particiones = []
+	    
+	    # Dividir los datos en bloques de 12 meses (por año)
+	    for i in 1:num_años
+	        inicio = (i - 1) * 12 + 1
+	        fin = i * 12
+	        push!(particiones, datos[inicio:fin, :])
+	    end
+	    
+	    return particiones
+	end
+	
+	# Uso de la función
+	particiones = dividir_por_año(datosC)
+	
+	# Ver el resultado
+	println("Número de particiones: ", length(particiones))
+	println("Primer año de datos: ", particiones[1])
+	
+end
+
+# ╔═╡ a6adcf66-c697-4524-b86f-592568109e67
+begin
+		Datos1x=Float64.(particiones[2][:,[1]]) #presion
+		Datos2x=Float64.(particiones[2][:,[2]]) #temperatura
+		Datos3x=Float64.(particiones[2][:,[3]]) #precipitacion
+end
+
+# ╔═╡ 95edef6d-b4ee-4186-b531-c7d5520b91b5
+# scatter(1:12, Datos2x, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+
+# ╔═╡ b8d11610-aab9-46e5-a3e6-447ea94c51c6
+#Datos2x
+
+# ╔═╡ b5bf5652-f668-47c6-a496-a81080ec5175
+#scatter(1:12, Datos1x, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+
+# ╔═╡ dac2e6d5-9518-413e-98ee-7b369df1a1d6
+#scatter(1:12, Datos3x, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+
 # ╔═╡ ad9b2416-5c0a-46e6-8f1c-c9314f776792
-scatter(years, Datos1, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+#scatter(years, Datos1, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
 #    plot!(DatosX, Eval_Best, lw=5, label="Modelo Best")
 
 # ╔═╡ e08c0eba-605d-451e-8b88-d34d31ad7eba
-scatter(years, Datos2, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+# scatter(years, Datos2, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
 
 # ╔═╡ 6c4fa9af-aa24-4fbd-9fda-f03d1980be29
-scatter(years, Datos3, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+# scatter(years, Datos3, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+
+# ╔═╡ cc3ccd77-e11a-4b36-91b4-954f0cde4de4
+begin
+# Función que modela la temperatura
+	function temperatura(x)
+	    A = 2   # Amplitud de la distribución normal
+	    μ = 6   # Mes más cálido (junio)
+	    σ = 2   # Controla el ancho de la campana de la distribución normal
+	    B = 0.05 # Pendiente de la tendencia lineal
+	    C = 12  # Temperatura base (en diciembre)
+	
+	    # Componente normal (distribución gaussiana centrada en junio)
+	    normal_part = A * exp(-((x - μ)^2) / (2 * σ^2))
+	
+	    # Componente lineal (tendencia de 0.5 grados por año)
+	    linear_part = B * (x - 1)
+	
+	    # Temperatura total
+	    return normal_part + linear_part + C
+	end
+	
+	# Generar los meses del año (1 a 12)
+	meses = 1:0.001:12
+	
+	# Calcular las temperaturas
+	temperaturas = [temperatura(m) for m in meses]
+	
+	# Graficar la temperatura a lo largo del año
+	plot(meses, temperaturas, label="Temperatura promedio anual", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Temperatura Promedio Anual", linewidth=2)
+
+end
+
+# ╔═╡ 426e474b-f51f-4bfa-84ff-1de54ff3a600
+begin
+	function presion(x)
+	    A = 2   # Amplitud de la distribución normal
+	    μ = 6   # Mes con la mayor presión
+	    σ = 3   # Controla el ancho de la campana de la distribución normal
+	    B = -0.05 # Tendencia lineal (ligera caída hacia los meses finales)
+	    C = 1010  # Presión base (aproximadamente en Bogotá)
+	
+	    # Componente normal (distribución gaussiana centrada en junio)
+	    normal_part = A * exp(-((x - μ)^2) / (2 * σ^2))
+	
+	    # Componente lineal (ligera caída de presión)
+	    linear_part = B * (x - 1)
+	
+	    # Presión total
+	    return normal_part + linear_part + C
+	end
+	
+	# Graficar la presión a lo largo del año
+	presiones = [presion(m) for m in meses]
+	
+	plot(meses, presiones, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
+
+end
+
+# ╔═╡ a8c524d5-6153-49d2-b529-3f0f0964e0b2
+begin
+	function precipitacion(x)
+	    A = 120   # Amplitud de la precipitación (mm)
+	    μ = 4    # Mes con mayor precipitación (abril)
+	    B = 160   # Precipitación mínima (seco)
+	    C = 0    # Valor base
+	
+	    # Componente coseno para modelar la estacionalidad
+	    cos_part = A * cos(3 * (x - μ) / π)
+	
+	    # Precipitación total
+	    return cos_part + B + C
+	end
+	
+	# Graficar la precipitación a lo largo del año
+	precipitaciones = [precipitacion(m) for m in meses]
+	
+	plot(meses, precipitaciones, label="Precipitación", xlabel="Meses", ylabel="Precipitación (mm)", title="Modelo de Precipitación en Bogotá", linewidth=2)
+	
+end
+
+# ╔═╡ 3d66dde5-bd78-496b-ab6f-1757e3271c63
+precipitaciones
+
+# ╔═╡ 76d4af8a-664e-4a23-b93b-cad40a28b363
+presiones
+
+# ╔═╡ f69d3715-770e-4211-9cca-0e59f1278855
+temperaturas
+
+# ╔═╡ d621245c-e24d-426b-a255-5b197f382b19
+datosD = hcat(presiones, temperaturas, precipitaciones)
 
 # ╔═╡ 81953c25-7fdf-4ff4-865f-3c4993e319b1
 function lorenz(du, u, params, tiempo)
@@ -225,10 +367,10 @@ end
 # ╔═╡ 90588eb2-451a-4551-a4c5-14024c879a52
 function residuoLorenz(params, vDatos, tiempo)
     # Time domain for the ODE
-    dominioTiempo = (0.0, 168.0)
+    dominioTiempo = (0.0, 12.0)
     
     # Initial conditions for the Lorenz system
-    V0 = [738.47, 14.55, 75.80]
+    V0 = [presiones[1], temperaturas[1] ,precipitaciones[1]]
     
     # Define and solve the ODE problem
     EDO = ODEProblem(lorenz, V0, dominioTiempo, params)
@@ -248,7 +390,7 @@ function residuoLorenz(params, vDatos, tiempo)
 end
 
 # ╔═╡ 1f28b44f-d496-489d-8992-300d7f5f5cb7
-rLorenz(params) = residuoLorenz(params, datosC , years)
+rLorenz(params) = residuoLorenz(params, datosD , meses)
 
 # ╔═╡ 094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═╡ show_logs = false
@@ -258,19 +400,42 @@ oLorenz = Optim.optimize(rLorenz, [10.0, 28.0, 8/3, 0.5], SimulatedAnnealing())
 oLorenzTupla = oLorenz.minimizer
 
 # ╔═╡ 0d1c2f64-7c49-4627-b607-dc76bdc15960
-begin
-	l0 = [738.47, 14.55, 75.80]
-	dominioTiempoLorenz = (1.0, 168.0)
-	lorenzOptima1=ODEProblem(lorenz, l0, dominioTiempoLorenz, oLorenzTupla)
-	tablaLO1=solve(lorenzOptima1, Tsit5(), saveat=0:0.1:168)
-	plot(tablaLO1, idxs = (1, 2, 3))
+#begin
+	#l0 = [presiones[1], temperaturas[1] ,precipitaciones[1]]
+	#dominioTiempoLorenz = (1.0, 12.0)
+	#lorenzOptima1=ODEProblem(lorenz, l0, dominioTiempoLorenz, oLorenzTupla)
+	#tablaLO1=solve(lorenzOptima1, Tsit5(), saveat=0:0.1:12)
+	#plot(tablaLO1, idxs = (1, 2, 3))
+	#view!(p, 45, 30)  # El primer valor es la rotación sobre el eje horizontal (azimut), el segundo sobre el eje vertical (elevación)
+
+	
 	##scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
+#end
+
+# ╔═╡ 5f5d22c1-5c5f-4bf3-812d-df5bf4c6bb67
+plotly()
+
+# ╔═╡ fa4400f9-de64-4af3-bce2-a3a4a1c457bc
+begin
+    l0 = [presiones[1], temperaturas[1], precipitaciones[1]]
+    dominioTiempoLorenz = (1.0, 12.0)
+    
+    # Definir el problema ODE
+    lorenzOptima1 = ODEProblem(lorenz, l0, dominioTiempoLorenz, oLorenzTupla)
+    
+    # Resolver el problema
+    tablaLO1 = solve(lorenzOptima1, Tsit5(), saveat=0:0.001:12)
+    
+    # Graficar la solución en 3D
+    p = plot(tablaLO1, idxs = (1, 2, 3))
+    
+    # Aquí puedes interactuar con la gráfica y moverla manualmente. El ángulo de vista 3D será interactivo.
 end
 
 # ╔═╡ 4236c331-7a85-41c1-81d9-1c65c2bb9765
 begin
-	plot(tablaLO1, idxs = (0,1))
-	scatter!(years, datosC[:, 1])
+	plot(*, idxs = (0,1))
+	scatter!(meses, datosD[:, 1])
 end
 
 # ╔═╡ 75746a62-dd7d-48c2-a8bd-34563e0aeeff
@@ -3090,15 +3255,31 @@ version = "1.4.1+1"
 # ╠═477613ea-5cd1-4ddd-b53b-4c600097ece7
 # ╠═11c888f6-a5fb-471f-a6a2-48cd1a8a018f
 # ╠═8a6eca4a-3b89-4249-b567-0434310e3458
-# ╠═ad9b2416-5c0a-46e6-8f1c-c9314f776792
-# ╠═e08c0eba-605d-451e-8b88-d34d31ad7eba
-# ╠═6c4fa9af-aa24-4fbd-9fda-f03d1980be29
+# ╠═32ac47f3-e51a-46b9-b1c0-93fb5c298cb7
+# ╠═b7134e0d-4224-4451-b532-326b90bcfa3e
+# ╠═a6adcf66-c697-4524-b86f-592568109e67
+# ╟─95edef6d-b4ee-4186-b531-c7d5520b91b5
+# ╟─b8d11610-aab9-46e5-a3e6-447ea94c51c6
+# ╟─b5bf5652-f668-47c6-a496-a81080ec5175
+# ╟─dac2e6d5-9518-413e-98ee-7b369df1a1d6
+# ╟─ad9b2416-5c0a-46e6-8f1c-c9314f776792
+# ╟─e08c0eba-605d-451e-8b88-d34d31ad7eba
+# ╟─6c4fa9af-aa24-4fbd-9fda-f03d1980be29
+# ╠═cc3ccd77-e11a-4b36-91b4-954f0cde4de4
+# ╠═426e474b-f51f-4bfa-84ff-1de54ff3a600
+# ╠═a8c524d5-6153-49d2-b529-3f0f0964e0b2
+# ╠═3d66dde5-bd78-496b-ab6f-1757e3271c63
+# ╠═76d4af8a-664e-4a23-b93b-cad40a28b363
+# ╠═f69d3715-770e-4211-9cca-0e59f1278855
+# ╠═d621245c-e24d-426b-a255-5b197f382b19
 # ╠═81953c25-7fdf-4ff4-865f-3c4993e319b1
 # ╠═90588eb2-451a-4551-a4c5-14024c879a52
 # ╠═1f28b44f-d496-489d-8992-300d7f5f5cb7
 # ╠═094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═909cd9ad-e16e-4038-9b94-bd31624f9572
-# ╠═0d1c2f64-7c49-4627-b607-dc76bdc15960
+# ╟─0d1c2f64-7c49-4627-b607-dc76bdc15960
+# ╠═5f5d22c1-5c5f-4bf3-812d-df5bf4c6bb67
+# ╠═fa4400f9-de64-4af3-bce2-a3a4a1c457bc
 # ╠═4236c331-7a85-41c1-81d9-1c65c2bb9765
 # ╠═75746a62-dd7d-48c2-a8bd-34563e0aeeff
 # ╠═c4016740-e1ea-4ce7-8171-513c9d96b612
