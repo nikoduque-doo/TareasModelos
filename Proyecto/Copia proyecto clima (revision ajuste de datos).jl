@@ -239,7 +239,7 @@ end
 
 # ╔═╡ a6adcf66-c697-4524-b86f-592568109e67
 begin
-		Datos1x=Float64.(particiones[12][:,[1]]) #presion
+		Datos1x=Float64.(particiones[2][:,[1]]) #presion
 		Datos2x=Float64.(particiones[12][:,[2]]) #temperatura
 		Datos3x=Float64.(particiones[14][:,[3]]) #precipitacion
 end
@@ -249,10 +249,10 @@ begin
 # Función que modela la temperatura
 	function temperatura(x)
 	    A = 2   # Amplitud de la distribución normal
-	    μ = 3   # Mes más cálido (junio)
+	    μ = 6   # Mes más cálido (junio)
 	    σ = 2   # Controla el ancho de la campana de la distribución normal
-	    B = 0.075 # Pendiente de la tendencia lineal
-	    C = 13.5  # Temperatura base (en diciembre)
+	    B = 0.5/12 # Pendiente de la tendencia lineal
+	    C = 12  # Temperatura base (en diciembre)
 	
 	    # Componente normal (distribución gaussiana centrada en junio)
 	    normal_part = A * exp(-((x - μ)^2) / (2 * σ^2))
@@ -273,29 +273,24 @@ begin
 	# Graficar la temperatura a lo largo del año
 	plot(meses, temperaturas, label="Temperatura promedio anual", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Temperatura Promedio Anual", linewidth=2)
 
-	x=[14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+	#x=[14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
 
-	plot!(1:24, x, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+	#plot!(1:24, x, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
 end
 
 # ╔═╡ 426e474b-f51f-4bfa-84ff-1de54ff3a600
 begin
 	function presion(x)
-	    A = 2   # Amplitud de la distribución normal
-	    μ = 8   # Mes con la mayor presión
-	    σ = 3   # Controla el ancho de la campana de la distribución normal
-	    B = -0.05 # Tendencia lineal (ligera caída hacia los meses finales)
-	    C = 710  #     Presión base (aproximadamente en Bogotá)
-	
-	    # Componente normal (distribución gaussiana centrada en junio)
-	    normal_part = A * exp(-((x - μ)^2) / (2 * σ^2))
-	
-	    # Componente lineal (ligera caída de presión)
-	    linear_part = B * (x - 1)
-	
-	    # Presión total
-	    return normal_part + linear_part + C
-	end
+		x = 12 - x # Para que vaya creciendo
+        P0 = 737   # Presión base (aproximadamente en Bogotá)
+        A = 5      # Amplitud de las oscilaciones
+        k = 0.1    # Coeficiente de amortiguación (controla la disminución de la amplitud)
+        omega = π / 3  # Frecuencia angular (asegura que la onda se repita cada 6 meses)
+        phi = 0    # Fase inicial (ajusta el desfase de la oscilación)
+    
+        # Componente sinusoidal amortiguada
+        return (P0 + A * exp(-k * x) * sin(omega * x + phi))
+    end
 	
 	# Graficar la presión a lo largo del año
 	presiones = [presion(m) for m in meses]
@@ -308,16 +303,15 @@ end
 # ╔═╡ a8c524d5-6153-49d2-b529-3f0f0964e0b2
 begin
 	function precipitacion(x)
-	    A = 120   # Amplitud de la precipitación (mm)
-	    μ = 4    # Mes con mayor precipitación (abril)
-	    B = 160   # Precipitación mínima (seco)
-	    C = 0    # Valor base
+	    A = 80   # Amplitud de la precipitación (mm)
+	    μ = 4    # Mes con mayor precipitación (abril) 
+	    B = 100   # Precipitación mínima
 	
 	    # Componente coseno para modelar la estacionalidad
 	    cos_part = A * cos(3 * (x - μ) / π)
 	
 	    # Precipitación total
-	    return cos_part + B + C
+	    return cos_part + B 
 	end
 	
 	# Graficar la precipitación a lo largo del año

@@ -198,8 +198,6 @@ begin
 	Datos1=Float64.(datosClima[:,[2]]) #presion
 	Datos2=Float64.(datosClima[:,[3]]) #temperatura
 	Datos3=Float64.(datosClima[:,[4]]) #precipitacion
-
-	
 end
 
 # ╔═╡ 32ac47f3-e51a-46b9-b1c0-93fb5c298cb7
@@ -356,8 +354,6 @@ function presion(x, parametros)
 
 # ╔═╡ f9a5a95c-18a7-4346-b3ca-7c7987621aaf
 begin
-
-	
 	# Función objetivo para ajuste
 	function ajuste_presion(params, meses2, datos)
 	    errores = 0.0
@@ -398,8 +394,16 @@ presiones = [presion(m,parbas_ajustados) for m in meses]
 
 # ╔═╡ bed63780-581d-4465-9b18-9b402f03d849
 function presion2(x)
-	return -x*sin(x)+presion(x, parbas_ajustados)
-end
+		x=12-x
+        P0 = 737   # Presión base (aproximadamente en Bogotá)
+        A = 5      # Amplitud de las oscilaciones
+        k = 0.1    # Coeficiente de amortiguación (controla la disminución de la amplitud)
+        omega = π / 3  # Frecuencia angular (asegura que la onda se repita cada 6 meses)
+        phi = 0    # Fase inicial (ajusta el desfase de la oscilación)
+    
+        # Componente sinusoidal amortiguada
+        return (P0 + A * exp(-k * x) * sin(omega * x + phi))
+    end
 
 # ╔═╡ c0868390-75b8-4221-8f3a-ac4583d9069e
 presiones2 = [presion2(m) for m in meses]
@@ -413,6 +417,7 @@ Prom=[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
 # ╔═╡ c019ba6f-b361-43e6-8ff4-718b541a5e75
 begin
 	plot(meses, presiones, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
+	plot!(meses, presiones2, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
 
 	#Prom=Float64.(particiones[1][:,[1]])
 
@@ -446,16 +451,15 @@ Prom
 
 # ╔═╡ 56f8344b-12e8-4e35-a435-2ac2f1b9b6a8
 function precipitacion(x)
-	    A = 120   # Amplitud de la precipitación (mm)
+	    A = 80   # Amplitud de la precipitación (mm)
 	    μ = 4    # Mes con mayor precipitación (abril)
-	    B = 160   # Precipitación mínima (seco)
-	    C = 0    # Valor base
+	    B = 100   # Precipitación mínima (seco)
 	
 	    # Componente coseno para modelar la estacionalidad
 	    cos_part = A * cos(3 * (x - μ) / π)
 	
 	    # Precipitación total
-	    return cos_part + B + C
+	    return cos_part + B 
 	end
 
 # ╔═╡ a8c524d5-6153-49d2-b529-3f0f0964e0b2
