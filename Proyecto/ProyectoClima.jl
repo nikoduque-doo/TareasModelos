@@ -7,11 +7,51 @@ using InteractiveUtils
 # ╔═╡ 8778b6d8-70e1-4698-9f96-497b4408e4cd
 using Plots, Dates, LinearAlgebra, Optim, DifferentialEquations;
 
+# ╔═╡ b6c26648-9b48-4f62-bba9-174171b7414c
+md"""
+# Análisis Climático de Bogotá mediante el Modelo de Lorenz
+"""
+
 # ╔═╡ 5d9909c7-e2d6-431a-90eb-16ad64c77254
 md"""
-Actividad realizada por Alan Acero, Johan López y Nicolás Duque
+Proyecto realizadao por Alan Acero, Johan López y Nicolás Duque para la clase Modelos Matemáticos I (2019082) del Semestre 2024-2 en la Universidad Nacional de Colombia.
 
-Se utilizarán las siguientes librerías:
+Las siguientes librerías fueron utilizadas para el desarrollo del proyecto:
+"""
+
+# ╔═╡ 878817a2-18b1-456e-baf0-561c548aa796
+md"""
+## 1. Introducción
+
+[WIP]
+"""
+
+# ╔═╡ 8e87310e-c44e-4092-87cb-73b113b4696d
+md"""
+## 2. Objetivos
+
+[WIP]
+"""
+
+# ╔═╡ ac3ee554-5ba2-48e9-8fa3-b57f53087ccd
+md"""
+## 3. Metodología
+
+[WIP]
+"""
+
+# ╔═╡ 52833a85-f26d-47c8-a6fe-c6a990f345a4
+md"""
+## 4. Resultados
+
+[WIP]
+"""
+
+# ╔═╡ 648dc8fd-4ac1-42c7-83e2-caf5f6ac0710
+md"""
+## 5. Conclusiones
+
+[WIP]
 """
 
 # ╔═╡ 477613ea-5cd1-4ddd-b53b-4c600097ece7
@@ -190,8 +230,14 @@ datosClima =
 	];
 
 	years = collect(1:size(datosClima[:,1], 1));
+	years2 = collect(1:size(datosClima[:,1], 2));
+
+	
 	datosC = datosClima[:,[2,3,4]];
 end
+
+# ╔═╡ 56999c9b-31c5-4bb7-8842-0416e1562a2f
+years2
 
 # ╔═╡ 81953c25-7fdf-4ff4-865f-3c4993e319b1
 function lorenz(du, u, params, tiempo)
@@ -230,103 +276,23 @@ rLorenz(params) = residuoLorenz(params, datosC , years)
 
 # ╔═╡ 094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═╡ show_logs = false
-oLorenz = Optim.optimize(rLorenz, [10.0, 28.0, 8/3, 0.5], SimulatedAnnealing())
+oLorenz = Optim.optimize(rLorenz, [10.0, 28.0, 8/3, 0.5], SimulatedAnnealing(), Optim.Options(iterations = 10000))
 
 # ╔═╡ 909cd9ad-e16e-4038-9b94-bd31624f9572
 oLorenzTupla = oLorenz.minimizer
+
+# ╔═╡ ee37f04d-cfc4-450e-9aa7-47a894f903e3
+# ╠═╡ show_logs = false
+plotly()
 
 # ╔═╡ 0d1c2f64-7c49-4627-b607-dc76bdc15960
 begin
 	l0 = [738.47, 14.55, 75.80]
 	dominioTiempoLorenz = (1.0, 168.0)
 	lorenzOptima1=ODEProblem(lorenz, l0, dominioTiempoLorenz, oLorenzTupla)
-	tablaLO1=solve(lorenzOptima1, Tsit5(), saveat=0:0.1:168)
+	tablaLO1=solve(lorenzOptima1, Tsit5(), saveat=0:0.001:168)
 	plot(tablaLO1, idxs = (1, 2, 3))
 	##scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
-end
-
-# ╔═╡ 4236c331-7a85-41c1-81d9-1c65c2bb9765
-begin
-	plot(tablaLO1, idxs = (0,1))
-	scatter!(years, datosC[:, 1])
-end
-
-# ╔═╡ 75746a62-dd7d-48c2-a8bd-34563e0aeeff
-begin
-	plot(tablaLO1, idxs = (0,2))
-	scatter!(years, datosC[:, 2])
-end
-
-# ╔═╡ c4016740-e1ea-4ce7-8171-513c9d96b612
-begin
-	plot(tablaLO1, idxs = (0,3))
-	scatter!(years, datosC[:, 3])
-end
-
-# ╔═╡ b75a48bb-c758-49cd-badb-da733898215e
-function lorenzL(du, u, params, tiempo)
-	du[1] = 10.0*u[2] - u[1];
-	du[2] = 28.0*u[1] - u[2] - (8/3)*u[1]*u[3];
-	du[3] = params[1]*u[1]*u[2] - u[3];
-end
-
-# ╔═╡ d05eec8c-dfa3-477a-a0a8-afcf11f33f07
-function residuoLorenzL(params, vDatos, tiempo)
-    # Time domain for the ODE
-    dominioTiempo = (0.0, 168.0)
-    
-    # Initial conditions for the Lorenz system
-    V0 = [738.47, 14.55, 75.80]
-    
-    # Define and solve the ODE problem
-    EDO = ODEProblem(lorenzL, V0, dominioTiempo, params)
-    Sol = solve(EDO, Tsit5(), saveat=tiempo)
-    
-    # Extract model data at specified time points
-    vModelo = hcat(Sol.u...)'
-    
-    # Calculate residuals
-    res = vDatos .- vModelo
-    nRes = norm(res)
-    
-    return nRes
-end
-
-# ╔═╡ f8ef97e3-e81c-45d0-b65a-1bc6dde480ee
-rLorenzL(params) = residuoLorenzL(params, datosC , years)
-
-# ╔═╡ 37169c8e-6ce8-4371-8719-74c0052f3fdd
-# ╠═╡ show_logs = false
-oLorenzL = Optim.optimize(rLorenzL, [0.5], NelderMead())
-
-# ╔═╡ 462d0d24-1603-42b2-bf85-dd7b41b70db2
-oLorenzTuplaL = oLorenzL.minimizer
-
-# ╔═╡ 76a1c795-4639-4edc-b851-dc50e5083348
-begin
-	l0L = [738.47, 14.55, 75.80]
-	dominioTiempoLorenzL = (168.0-24.0, 168.0)
-	lorenzOptima2=ODEProblem(lorenzL, l0L, dominioTiempoLorenzL, oLorenzTuplaL)
-	tablaLO2=solve(lorenzOptima2, Tsit5(), saveat=0:0.1:168)
-	plot(tablaLO2, idxs = (1, 2, 3))
-end
-
-# ╔═╡ 58c5f085-5b26-4841-afd8-fa3f60cd1c21
-begin
-	plot(tablaLO2, idxs = (0,1))
-	scatter!(years, datosC[:, 1])
-end
-
-# ╔═╡ 5ffafac9-4879-4131-9700-d58fee81171a
-begin
-	plot(tablaLO2, idxs = (0,2))
-	scatter!(years, datosC[:, 2])
-end
-
-# ╔═╡ adfeb9cc-8ab3-426a-9742-078fab486ac7
-begin
-	plot(tablaLO2, idxs = (0,3))
-	scatter!(years, datosC[:, 3])
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -3063,26 +3029,22 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
+# ╠═b6c26648-9b48-4f62-bba9-174171b7414c
 # ╠═5d9909c7-e2d6-431a-90eb-16ad64c77254
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
+# ╠═878817a2-18b1-456e-baf0-561c548aa796
+# ╠═8e87310e-c44e-4092-87cb-73b113b4696d
+# ╠═ac3ee554-5ba2-48e9-8fa3-b57f53087ccd
+# ╠═52833a85-f26d-47c8-a6fe-c6a990f345a4
+# ╠═648dc8fd-4ac1-42c7-83e2-caf5f6ac0710
 # ╠═477613ea-5cd1-4ddd-b53b-4c600097ece7
+# ╠═56999c9b-31c5-4bb7-8842-0416e1562a2f
 # ╠═81953c25-7fdf-4ff4-865f-3c4993e319b1
 # ╠═90588eb2-451a-4551-a4c5-14024c879a52
 # ╠═1f28b44f-d496-489d-8992-300d7f5f5cb7
 # ╠═094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═909cd9ad-e16e-4038-9b94-bd31624f9572
+# ╟─ee37f04d-cfc4-450e-9aa7-47a894f903e3
 # ╠═0d1c2f64-7c49-4627-b607-dc76bdc15960
-# ╠═4236c331-7a85-41c1-81d9-1c65c2bb9765
-# ╠═75746a62-dd7d-48c2-a8bd-34563e0aeeff
-# ╠═c4016740-e1ea-4ce7-8171-513c9d96b612
-# ╠═b75a48bb-c758-49cd-badb-da733898215e
-# ╠═d05eec8c-dfa3-477a-a0a8-afcf11f33f07
-# ╠═f8ef97e3-e81c-45d0-b65a-1bc6dde480ee
-# ╠═37169c8e-6ce8-4371-8719-74c0052f3fdd
-# ╠═462d0d24-1603-42b2-bf85-dd7b41b70db2
-# ╠═76a1c795-4639-4edc-b851-dc50e5083348
-# ╠═58c5f085-5b26-4841-afd8-fa3f60cd1c21
-# ╠═5ffafac9-4879-4131-9700-d58fee81171a
-# ╠═adfeb9cc-8ab3-426a-9742-078fab486ac7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -244,25 +244,6 @@ begin
 		Datos3x=Float64.(particiones[14][:,[3]]) #precipitacion
 end
 
-# ╔═╡ 95edef6d-b4ee-4186-b531-c7d5520b91b5
-# scatter(1:12, Datos2x, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-# ╔═╡ b8d11610-aab9-46e5-a3e6-447ea94c51c6
-#Datos2x
-
-# ╔═╡ b5bf5652-f668-47c6-a496-a81080ec5175
-#scatter(1:12, Datos1x, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-# ╔═╡ ad9b2416-5c0a-46e6-8f1c-c9314f776792
-#scatter(years, Datos1, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-#    plot!(DatosX, Eval_Best, lw=5, label="Modelo Best")
-
-# ╔═╡ e08c0eba-605d-451e-8b88-d34d31ad7eba
-# scatter(years, Datos2, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-# ╔═╡ 6c4fa9af-aa24-4fbd-9fda-f03d1980be29
-# scatter(years, Datos3, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
 # ╔═╡ cc3ccd77-e11a-4b36-91b4-954f0cde4de4
 begin
 # Función que modela la temperatura
@@ -291,50 +272,10 @@ begin
 	
 	# Graficar la temperatura a lo largo del año
 	plot(meses, temperaturas, label="Temperatura promedio anual", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Temperatura Promedio Anual", linewidth=2)
-	scatter!(1:12, Datos2x, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[1][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[2][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[3][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[4][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[5][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[6][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[7][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[8][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[9][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[10][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[11][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	Dat=Float64.(particiones[12][:,[2]]) #temperatura
-	scatter!(1:12, Dat, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
 
 	x=[14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
 
 	plot!(1:24, x, label="Datos i", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	
-	
 end
 
 # ╔═╡ 426e474b-f51f-4bfa-84ff-1de54ff3a600
@@ -3301,12 +3242,6 @@ version = "1.4.1+1"
 # ╠═32ac47f3-e51a-46b9-b1c0-93fb5c298cb7
 # ╠═b7134e0d-4224-4451-b532-326b90bcfa3e
 # ╠═a6adcf66-c697-4524-b86f-592568109e67
-# ╠═95edef6d-b4ee-4186-b531-c7d5520b91b5
-# ╟─b8d11610-aab9-46e5-a3e6-447ea94c51c6
-# ╟─b5bf5652-f668-47c6-a496-a81080ec5175
-# ╟─ad9b2416-5c0a-46e6-8f1c-c9314f776792
-# ╟─e08c0eba-605d-451e-8b88-d34d31ad7eba
-# ╟─6c4fa9af-aa24-4fbd-9fda-f03d1980be29
 # ╠═cc3ccd77-e11a-4b36-91b4-954f0cde4de4
 # ╠═426e474b-f51f-4bfa-84ff-1de54ff3a600
 # ╠═a8c524d5-6153-49d2-b529-3f0f0964e0b2
