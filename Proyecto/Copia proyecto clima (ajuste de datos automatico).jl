@@ -24,17 +24,27 @@ A continuación se presentará la notación usada en el código para facilitar s
 
 ##### Datos:
 
-- **datosClima**: Corresponde a nuestros datos base, que cada una de sus columnas: 1. Mes y año en cuestion; 2. Presión promedio en ese mes; 3. temperatura promedio en ese mes; 4. y precipitación promedio en ese mes.
+- **datosClima**: Corresponde a nuestros datos base, donde cada una de sus columnas representa: $1.$ Mes y año en cuestion; $2.$ Presión promedio en ese mes; $3.$ temperatura promedio en ese mes; $4.$ y precipitación promedio en ese mes.
+
+- **years**: es un vector con el tamaño de la primera columna de datosClima, y aumenta de a 1. En particular indexa los meses dentro de los cuales trataremos los datos
+
+- **datosC**: Es una matriz cuyas columnas son las correspondientes a la presion, temperatura y precipitacion en datosClima, guardado como Float64.
+
+- **P**, **T**, **R**: estos funcionaran como prefijo a funciones o datos correspondientes a presión (**P**), temperatura (**T**) y precipitación (**R** por *Rain*)
+
+- **XPorAños**: corresponde a la columna con el tipo de datos **X**, donde **X** puede ser **P**, **T** o **R**
+
+- **Con**, **Dis**: sufijos relacionados a si un tipo de datos sera continuo (**Con**) o discreto (**Dis**)
+
+- **meses**: prefijo correspondiente a el eje x de muchas de nuestras funciónes, donde se toma el intervalo de $0$ a $12$ de manera continua o discreta (caso particular **mesesDis2** es la repeticion de tomar datos cada $1$ unidad, y repetirlo iteradamente para poder mapearlos repetidamente)
+
+- **DatosP**: **DatosC** pero particionado por años, así en cada coordenada del vector se guardara una matriz $12 \times 3$ con los datos de ese año.
+
+##### funciones de ajuste:
+
+Para 
 
 ##### Prefijos:
-
-###### Prefijos respecto al tipo de datos:
-
-- **P**: Corresponde a la Presión
-
-- **T**: Corresponde a las temperaturas
-
-- **R**: Corresponde a la precipitación (viene de *rain* en ingles)
 
 ###### Prefijos de funciones:
 
@@ -50,10 +60,6 @@ Para las funciones que serán utilizadas:
 
 Se usarán $4$ sufijos principales, cada uno acorde a un modelo para ajuste de datos diferente (para las funciones genéricas respecto a los modelos se usará el término **Modelo**); estos serán conectados con los prefijos a través del símbolo "$\_$":
 
-- **Best**: Aquella que usa los valores dados en el enunciado del ejercicio como óptimos.
-- **Optim**: usa el comando *Optim* de la librería correspondiente para hallar una estimación, usa métodos ajenos al curso, pero útiles al comparar.
-- **MC**: Abreviatura de Mínimos cuadrados, corresponde a tal método.
-- **QR**: Usando la factorización $QR$ para la solución del problema de ajuste.
 
 ---
 
@@ -239,36 +245,40 @@ datosClima =
 	years = collect(1:size(datosClima[:,1], 1));
 	datosC = Float64.(datosClima[:,[2,3,4]])
 
-	PresionPorAños=datosClima[:,[2]] #presion
-	TempPorAños=Float64.(datosClima[:,[3]]) #temperatura
-	PrecipPorAños=Float64.(datosClima[:,[4]]) #precipitacion
+	PPorAños=datosClima[:,[2]] #presion
+	TPorAños=Float64.(datosClima[:,[3]]) #temperatura
+	RPorAños=Float64.(datosClima[:,[4]]) #precipitacion
 
-	meses = 1:0.001:12
-	meses2 = repeat(1:12, 14) # Eje X para las temperaturas por año
+	mesesCon = 1:0.001:12
+	mesesDis2 = repeat(1:12, 14) # Eje X para las temperaturas por año
 end
 
 # ╔═╡ b7134e0d-4224-4451-b532-326b90bcfa3e
 begin
-	num_filas = size(datosC, 1)	    
-	num_años = div(num_filas, 12)
+	num_filas = size(datosC, 1)	 # Cantidad de filas   
+	num_años = div(num_filas, 12) # Cantidad de años
 	
 	function dividir_por_año(datos)
-	    # Determinar cuántos años hay en los datos
-	    # Crear un array vacío para almacenar las particiones
-	    particiones = []
+	    DatosP = [] # Particionar los datos de tal manera que queden por años
 	    
 	    # Dividir los datos en bloques de 12 meses (por año)
 	    for i in 1:num_años
 	        inicio = (i - 1) * 12 + 1
 	        fin = i * 12
-	        push!(particiones, datos[inicio:fin, :])
+	        push!(DatosP, datos[inicio:fin, :])
 	    end
 	    
-	    return particiones
+	    return DatosP
 	end
 	
-	particiones = dividir_por_año(datosC)
+	DatosP = dividir_por_año(datosC)
 end
+
+# ╔═╡ 5e3e7bc7-14e8-4f4c-b46e-4f9250f9eaee
+
+
+# ╔═╡ f31f5718-9844-47c7-843a-2e2f80d63567
+
 
 # ╔═╡ a5a3f1f9-7f80-4605-8688-22216307647d
 function temperatura(x, parametros)
@@ -286,12 +296,12 @@ end
 # ╔═╡ fcc47638-8ae2-49a0-8dc0-32920b7528c0
 begin
 	# Función objetivo para ajuste
-	function ajuste_temperatura(params, meses2, datos)
+	function ajuste_temperatura(params, mesesDis2, datos)
 	    error = 0.0
 	
-	    for i in 1:length(meses2)
+	    for i in 1:length(mesesDis2)
 	        # Evaluar la temperatura predicha para cada mes
-	        prediccion = temperatura(meses2[i], params)
+	        prediccion = temperatura(mesesDis2[i], params)
 	        # Calcular el error cuadrado entre la predicción y el dato real
 	        error += (prediccion - datos[i]).^2
 	    end
@@ -302,7 +312,7 @@ begin
 	# Inicializamos parámetros para el ajuste
 	params_iniciales = [2.0, 6.0, 2.0, 0.075, 13.5]  # Valores iniciales (pueden ajustarse)
 	
-	resultado = optimize(p -> ajuste_temperatura(p, meses2, TempPorAños), params_iniciales, NelderMead())
+	resultado = optimize(p -> ajuste_temperatura(p, mesesDis2, TPorAños), params_iniciales, NelderMead())
 	
 	# Extraemos los parámetros ajustados
 	params_ajustados = resultado.minimizer
@@ -315,14 +325,14 @@ begin
 	# Generar los meses del año (1 a 12)
 	
 	# Calcular las temperaturas
-	temperaturas_ajuste = [temperatura(m,params_ajustados) for m in meses]
+	temperaturas = [temperatura(m,params_ajustados) for m in mesesCon]
 	
 	# Graficar la temperatura a lo largo del año
-	plot(meses, temperaturas, label="Temperatura promedio anual", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Temperatura Promedio Anual", linewidth=2)
+	plot(mesesCon, temperaturas, label="Temperatura promedio anual", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Temperatura Promedio Anual", linewidth=2)
 
 	for i in 1:14
 		k=2007+i
-		Dat=Float64.(particiones[i][:,[2]]) #temperatura
+		Dat=Float64.(DatosP[i][:,[2]]) #temperatura
 		scatter!(1:12, Dat, label="Datos año $k", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
 	end
 
@@ -359,12 +369,12 @@ function presion(x, parametros)
 # ╔═╡ f9a5a95c-18a7-4346-b3ca-7c7987621aaf
 begin
 	# Función objetivo para ajuste
-	function ajuste_presion(params, meses2, datos)
+	function ajuste_presion(params, mesesDis2, datos)
 	    errores = 0.0
 	
-	    for i in 1:length(meses2)
+	    for i in 1:length(mesesDis2)
 	        # Evaluar la temperatura predicha para cada mes
-	        prediccion = presion(meses2[i], params)
+	        prediccion = presion(mesesDis2[i], params)
 	        # Calcular el error cuadrado entre la predicción y el dato real
 	        errores += (prediccion - datos[i]).^2
 	    end
@@ -378,7 +388,7 @@ begin
 	
 	# Suponiendo que tienes los meses y los datos de temperatura a lo largo de los 14 años
 	#meses2 = repeat(1:12, 14)  # Repetimos 1:12 durante 14 años
-	datos_presion = vcat(PresionPorAños...)  # Concatenamos los datos de temperatura para los 14 años, convertidos a Float64
+	datos_presion = vcat(PPorAños...)  # Concatenamos los datos de temperatura para los 14 años, convertidos a Float64
 
 	#Datos temperatura son los datos iniciales de temperatura que tenemos
 	
@@ -386,7 +396,7 @@ begin
 	parbas  # Valores iniciales (pueden ajustarse)
 	
 	# Ajustamos la función a los datos
-	resultadopres = optimize(p -> ajuste_presion(p, meses2, datos_presion), parbas, NelderMead())
+	resultadopres = optimize(p -> ajuste_presion(p, mesesDis2, datos_presion), parbas, NelderMead())
 	
 	# Extraemos los parámetros ajustados
 	parbas_ajustados = resultadopres.minimizer
@@ -394,7 +404,7 @@ begin
 end
 
 # ╔═╡ 8135c146-d9d2-40ac-92aa-4637011de415
-presiones = [presion(m,parbas_ajustados) for m in meses]
+presiones = [presion(m,parbas_ajustados) for m in mesesCon]
 
 # ╔═╡ bed63780-581d-4465-9b18-9b402f03d849
 function presion2(x)
@@ -410,36 +420,32 @@ function presion2(x)
     end
 
 # ╔═╡ c0868390-75b8-4221-8f3a-ac4583d9069e
-presiones2 = [presion2(m) for m in meses]
+presiones2 = [presion2(m) for m in mesesCon]
 
 # ╔═╡ 06521bf3-557a-4cce-99c7-1b6e4e212e29
-plot(meses, presiones2, label="Datos año ", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
+plot(mesesCon, presiones2, label="Datos año ", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
 
 # ╔═╡ 69687b21-2ec0-4607-a718-e79c2bb67a37
 Prom=[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
 
 # ╔═╡ c019ba6f-b361-43e6-8ff4-718b541a5e75
 begin
-	plot(meses, presiones, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
-	plot!(meses, presiones2, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
+	plot(mesesCon, presiones, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
+	plot!(mesesCon, presiones2, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
 
 	#Prom=Float64.(particiones[1][:,[1]])
 
 	
 	for i in 1:14
 		k=2007+i
-		Dat=Float64.(particiones[i][:,[1]]) #presion
+		Dat=Float64.(DatosP[i][:,[1]]) #presion
 		scatter!(1:12, Dat, label="Datos año$k", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
 		Prom+=Dat
-		println(Dat)
-		println(Prom)
 	end
 
 	for i in 1:12
 		Prom[i]/=14
 	end
-
-	println("Promedio final:", Prom)
 
 	plot!(1:12, Prom, label="Datos año ", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
 
@@ -471,21 +477,23 @@ begin
 	
 	
 	# Graficar la precipitación a lo largo del año
-	precipitaciones = [precipitacion(m) for m in meses]
+	precipitaciones = [precipitacion(m) for m in mesesCon]
 	
-	plot(meses, precipitaciones, label="Precipitación", xlabel="Meses", ylabel="Precipitación (mm)", title="Modelo de Precipitación en Bogotá", linewidth=2)
+	plot(mesesCon, precipitaciones, label="Precipitación", xlabel="Meses", ylabel="Precipitación (mm)", title="Modelo de Precipitación en Bogotá", linewidth=2)
 
 	dprom=[]
 
 	for i in 1:14
 		k=2007+i
-		Dat=Float64.(particiones[i][:,[3]]) #presion
+		Dat=Float64.(DatosP[i][:,[3]]) #presion
 		scatter!(1:12, Dat, label="Datos año $k", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
 	end
 
-	x3=[150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150]
+	plot!(mesesCon, precipitaciones, label="Precipitación", xlabel="Meses", ylabel="Precipitación (mm)", title="Modelo de Precipitación en Bogotá", linewidth=2)
 
-	plot!(1:24, x3, label="Datos", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+	#x3=[150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150]
+
+	#plot!(1:24, x3, label="Datos", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
 	
 end
 
@@ -525,7 +533,7 @@ function residuoLorenz(params, vDatos, tiempo)
 end
 
 # ╔═╡ 1f28b44f-d496-489d-8992-300d7f5f5cb7
-rLorenz(params) = residuoLorenz(params, datosD , meses)
+rLorenz(params) = residuoLorenz(params, datosD , mesesCon)
 
 # ╔═╡ 094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═╡ show_logs = false
@@ -574,19 +582,19 @@ tablaLO1
 # ╔═╡ 4236c331-7a85-41c1-81d9-1c65c2bb9765
 begin
 	plot(tablaLO1, idxs = (0,1))
-	plot!(meses, datosD[:, 1])
+	plot!(mesesCon, datosD[:, 1])
 end
 
 # ╔═╡ 75746a62-dd7d-48c2-a8bd-34563e0aeeff
 begin
 	plot(tablaLO1, idxs = (0,2))
-	plot!(meses, datosD[:, 2])
+	plot!(mesesCon, datosD[:, 2])
 end
 
 # ╔═╡ c4016740-e1ea-4ce7-8171-513c9d96b612
 begin
 	plot(tablaLO1, idxs = (0,3))
-	plot!(meses, datosD[:, 1])
+	plot!(mesesCon, datosD[:, 1])
 end
 
 # ╔═╡ b75a48bb-c758-49cd-badb-da733898215e
@@ -3392,8 +3400,10 @@ version = "1.4.1+1"
 # ╟─5d9909c7-e2d6-431a-90eb-16ad64c77254
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
 # ╠═1bae8af4-b91f-4fa8-b2e0-226fefc2ec73
-# ╠═477613ea-5cd1-4ddd-b53b-4c600097ece7
-# ╠═b7134e0d-4224-4451-b532-326b90bcfa3e
+# ╟─477613ea-5cd1-4ddd-b53b-4c600097ece7
+# ╟─b7134e0d-4224-4451-b532-326b90bcfa3e
+# ╠═5e3e7bc7-14e8-4f4c-b46e-4f9250f9eaee
+# ╠═f31f5718-9844-47c7-843a-2e2f80d63567
 # ╠═a5a3f1f9-7f80-4605-8688-22216307647d
 # ╠═fcc47638-8ae2-49a0-8dc0-32920b7528c0
 # ╠═cc3ccd77-e11a-4b36-91b4-954f0cde4de4
@@ -3416,7 +3426,7 @@ version = "1.4.1+1"
 # ╠═094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═909cd9ad-e16e-4038-9b94-bd31624f9572
 # ╟─0d1c2f64-7c49-4627-b607-dc76bdc15960
-# ╟─5f5d22c1-5c5f-4bf3-812d-df5bf4c6bb67
+# ╠═5f5d22c1-5c5f-4bf3-812d-df5bf4c6bb67
 # ╠═fa4400f9-de64-4af3-bce2-a3a4a1c457bc
 # ╠═133104e6-fcb9-4848-9afa-de6088858b1b
 # ╠═4236c331-7a85-41c1-81d9-1c65c2bb9765
