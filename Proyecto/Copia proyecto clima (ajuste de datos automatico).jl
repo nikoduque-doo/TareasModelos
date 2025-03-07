@@ -14,6 +14,10 @@ Actividad realizada por Alan Acero, Johan López y Nicolás Duque
 Se utilizarán las siguientes librerías:
 """
 
+# ╔═╡ 5f5d22c1-5c5f-4bf3-812d-df5bf4c6bb67
+# ╠═╡ show_logs = false
+plotly()
+
 # ╔═╡ 1bae8af4-b91f-4fa8-b2e0-226fefc2ec73
 md"""
 ### Notación estándar:
@@ -40,30 +44,11 @@ A continuación se presentará la notación usada en el código para facilitar s
 
 - **DatosP**: **DatosC** pero particionado por años, así en cada coordenada del vector se guardara una matriz $12 \times 3$ con los datos de ese año.
 
-##### funciones de ajuste:
+- **Param**: se usa para representar en un vector los parametros de ciertas funciones particulares.
 
-Para 
+- **Prom**: referente al promedio
 
-##### Prefijos:
-
-###### Prefijos de funciones:
-
-Para las funciones que serán utilizadas:
-
-- **Res** y **NRes**: toda función que comience con **Res** será una función de residuo entre nuestro valor ideal y el dado por los datos; en caso de ser **NRes**, es la norma del residuo.
-- **Dif** y **NDif**: dado que se nos da la respuesta exacta del problema, las funciones que comienzan por **Dif** mostrarán la diferencia entre el valor objetivo y el obtenido por el método en cuestión; **NDif** representará la norma de esta diferencia. Téngase en cuenta que los valores certificados son $1$ en cada coeficiente; por lo tanto, la diferencia relativa será igual a la diferencia entre los valores.
-- **Eval**: función de evaluación del polinomio de grado quíntico, dados los coeficientes en $C_i$, esto se hará evaluando la función respectiva; en caso de que sea la multiplicación de alguna matriz de ajuste con $C$, se usará **Eval2**.
-
----
-
-##### Sufijos:
-
-Se usarán $4$ sufijos principales, cada uno acorde a un modelo para ajuste de datos diferente (para las funciones genéricas respecto a los modelos se usará el término **Modelo**); estos serán conectados con los prefijos a través del símbolo "$\_$":
-
-
----
-
-Vale aclarar que algunos de estos métodos requieren sus propias derivaciones; en tal caso se planteará la notación adicional requerida al inicio de cada problema.
+más adelante se definiran otros.
 
 """
 
@@ -241,7 +226,11 @@ datosClima =
 		"2022-11"	752.15	14.56	164.00
 		"2022-12"	750.73	14.30	67.00
 	];
+	
+end
 
+# ╔═╡ 50db266f-d874-4de9-9bae-2df095426060
+begin
 	years = collect(1:size(datosClima[:,1], 1));
 	datosC = Float64.(datosClima[:,[2,3,4]])
 
@@ -249,8 +238,8 @@ datosClima =
 	TPorAños=Float64.(datosClima[:,[3]]) #temperatura
 	RPorAños=Float64.(datosClima[:,[4]]) #precipitacion
 
-	mesesCon = 1:0.001:12
 	mesesDis2 = repeat(1:12, 14) # Eje X para las temperaturas por año
+	mesesCon = 1:0.001:12
 end
 
 # ╔═╡ b7134e0d-4224-4451-b532-326b90bcfa3e
@@ -272,25 +261,161 @@ begin
 	end
 	
 	DatosP = dividir_por_año(datosC)
+
+	PProm=[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
+	TProm=PProm
+	RProm=PProm
+
+	for i in 1:14
+		PDat=DatosP[i][:,[1]] #presion
+		TDat=DatosP[i][:,[2]]
+		RDat=DatosP[i][:,[3]]
+		global PProm+=PDat
+		global TProm+=TDat
+		global RProm+=RDat
+	end
+
+	PProm/=14
+	TProm/=14
+	RProm/=14
+
 end
 
+# ╔═╡ d4e2f3ac-9b40-412b-927b-390e85ffd828
+md"""
+#### Datos sinteticos:
+"""
+
 # ╔═╡ 5e3e7bc7-14e8-4f4c-b46e-4f9250f9eaee
+md"""
+Nuestro primer acercamiento para los datos que se usaran en presion, temperatura y precipitacion sera a travez de ciertas funciones, que como hipotesis modelaran estos parametros, con cierto sentido fisico a lo largo de un año, para ello le consultamos a algunos fisicos y meteorologos para desarrollar una mejor intuacion sobre el tipo de funciones. Para estas funciones sinteticas se usara el sufijo **Sint**:
+"""
+
+# ╔═╡ cf3c13d0-dd38-4c92-a3cd-02e64d0ab5d4
+md"""
+##### Presión: 
+
+La función que modela la presión utiliza una **sinusoidal amortiguada** para representar la variabilidad de la presión en función del tiempo. Este tipo de función es útil cuando se busca modelar fenómenos periódicos cuya amplitud generalmente disminuye con el tiempo. Sin embargo, en este caso particular, debido a los comportamientos de **mayor presión característicos hacia el final del año**, la función ha sido ajustada para que la amplitud crezca en lugar de decaer. La **frecuencia angular**  ($\omega$) controla la periodicidad de la oscilación, asegurando que se repita cada seis meses, mientras que el término $e^{-k \cdot (12 - x)}$ refleja un comportamiento donde la presión aumenta a medida que se acerca el final del ciclo anual. El parámetro $k$ aún regula la rapidez con la que esta "expansión" de la presión ocurre. De esta manera, la función no solo refleja la periodicidad inherente al comportamiento de la presión, sino también su crecimiento hacia el final del año, lo cual es consistente con los aumentos de presión típicos en ciertas épocas del año, como es el caso en ciudades como Bogotá.
+
+A continuación se presenta la función que modela esta relación:
+
+$$P(x) = P_0 + A \cdot e^{-k \cdot (12 - x)} \cdot \sin\left(\omega \cdot (12 - x) + \phi\right)$$
+
+donde:
 
 
-# ╔═╡ f31f5718-9844-47c7-843a-2e2f80d63567
+$$\begin{aligned}
+    P_0 &= 737 \quad \text{(Presión base, aproximadamente en Bogotá)} \\
+    A &= 5 \quad \text{(Amplitud de las oscilaciones)} \\
+    k &= 0.1 \quad \text{(Coeficiente de amortiguación)} \\
+    \omega &= \frac{\pi}{3} \quad \text{(Frecuencia angular, asegura que la onda se repita cada 6 meses)} \\
+    \phi &= 0 \quad \text{(Fase inicial)}
+\end{aligned}$$
 
+
+"""
+
+# ╔═╡ c64d577e-2624-4271-8d11-99378fcf2b6f
+PParamSint = [737., 5., .1 , 0.] # P0, A, k, omega, phi , omega = π / 3
+
+# ╔═╡ f1d3eae1-2f62-4d86-b9c2-6d8da5536b66
+function PDatos(x, parametros)
+	P0, A, k, phi = parametros
+	omega = π / 3
+	
+    return (P0 + A * exp(-k * (12-x)) * sin(omega * (12-x) + phi*x))
+	
+end	
+
+# ╔═╡ 83dcd14f-280b-445d-89de-b29f977b1748
+PSint = [PDatos(m, PParamSint) for m in mesesCon]
+
+# ╔═╡ 06521bf3-557a-4cce-99c7-1b6e4e212e29
+begin
+	plot(mesesCon, PSint, label="Datos siteticos", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Datos sinteticos presión")
+	
+	plot!(1:12, PProm, label="Datos promedio por mes", lw=4, xlabel="Datos X", yaxis="Datos Y")
+end
+
+# ╔═╡ 3952643b-bd97-4627-93e9-64c5529e7677
+md"""
+Comparando con los datos, tenemos que es una aproximacion, nuestra hipotesis entonces es que con estos parametros se "acercan" lo suficiente. Ahora repetiremos esto con la temperatura y las precipitaciones.
+"""
+
+# ╔═╡ c0868390-75b8-4221-8f3a-ac4583d9069e
+presiones2 = [PDatos(m, PParamSint) for m in mesesCon]
+
+# ╔═╡ c019ba6f-b361-43e6-8ff4-718b541a5e75
+begin
+	#plot(mesesCon, presiones, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
+	#plot!(mesesCon, presiones2, label="Presión Atmosférica 2", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
+
+
+	
+	for i in 1:14
+		k=2007+i
+		Dat=DatosP[i][:,[1]] #presion
+		#scatter!(1:12, Dat, label="Datos año$k", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
+	end
+
+	#plot!(1:12, Prom, label="Datos año ", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
+
+	x2=[710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25].*1.02
+
+	#plot!(1:24, x2, label="Datos", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+
+	
+end
+
+# ╔═╡ 14e567bd-61a5-4f78-913f-1f4b308509f1
+md"""
+##### Temperatura: 
+
+La función que modela la temperatura utiliza una distribución normal para representar las fluctuaciones anuales de temperatura, con un componente adicional lineal para capturar la tendencia de cambio a largo plazo. En zonas tropicales como Bogotá, las variaciones de temperatura no son tan extremas como en otras latitudes, pero todavía siguen un patrón estacional, donde las temperaturas suelen ser más altas durante los meses cercanos a la mitad del año. La distribución normal se utiliza para modelar estas fluctuaciones suaves en torno al valor central (en este caso, el mes de mayor temperatura), mientras que el componente lineal se agrega para el incremento gradual de temperatura a lo largo de los años por el cambio climatico.
+
+La ecuación que describe esta relación es la siguiente:
+
+$$T(x) = A \cdot e^{-\frac{(x - \mu)^2}{2 \sigma^2}} + B \cdot (x - 1) + C$$
+
+donde:
+
+$$\begin{aligned}
+    A &= 1 & \text{ (Amplitud de la distribución normal)} \\
+    \mu &= 6 & \text{ (Mes de máxima temperatura, centrado en junio)} \\
+    \sigma &= 2 &\text{ (Desviación estándar de la distribución normal)} \\
+    B &= \frac{1}{12} \quad& \text{(aumento de temperatura por año)} \\
+    C &= 14 &\text{ (temperatura base en diciembre)}
+\end{aligned}$$
+
+Donde la amplitud refleja las fluctuaciones de temperatura y la desviación estándar refleja cuán amplias o estrechas son las fluctuaciones de temperatura respecto al mes central
+
+"""
+
+# ╔═╡ b4759fad-520a-42fb-a5f7-8da5c9b140be
+TParamSint = [1., 6., 2., 1/12, 14.] # corresponde a A, μ, σ, B, C 
 
 # ╔═╡ a5a3f1f9-7f80-4605-8688-22216307647d
-function temperatura(x, parametros)
+function TDatos(x, parametros)
 	A, μ, σ, B, C = parametros
+	
 	# Componente normal (distribución gaussiana centrada en junio)
 	normal_part = A * exp(-((x - μ)^2) / (2 * σ^2))
 	
-	# Componente lineal (tendencia de 0.5 grados por año)
+	# Componente lineal (tendencia de 1.0 grados por año)
 	linear_part = B * (x - 1)
 	
 	# Temperatura total
 	return normal_part + linear_part + C
+end
+
+# ╔═╡ b2b89863-353b-4d87-8469-12fc6ec3938c
+TSint = [TDatos(m, TParamSint) for m in mesesCon]
+
+# ╔═╡ 85144a50-2279-4722-a47b-c6795c7175b6
+begin
+	plot(mesesCon, TSint, label="Datos siteticos", lw=4, xlabel="Meses", yaxis="Datos Y", title="Datos sinteticos temperatura")
+	
+	plot!(1:12, TProm, label="Datos promedio por mes", lw=4)
 end
 
 # ╔═╡ fcc47638-8ae2-49a0-8dc0-32920b7528c0
@@ -301,7 +426,7 @@ begin
 	
 	    for i in 1:length(mesesDis2)
 	        # Evaluar la temperatura predicha para cada mes
-	        prediccion = temperatura(mesesDis2[i], params)
+	        prediccion = TDatos(mesesDis2[i], params)
 	        # Calcular el error cuadrado entre la predicción y el dato real
 	        error += (prediccion - datos[i]).^2
 	    end
@@ -310,13 +435,13 @@ begin
 	end
 		
 	# Inicializamos parámetros para el ajuste
-	params_iniciales = [2.0, 6.0, 2.0, 0.075, 13.5]  # Valores iniciales (pueden ajustarse)
+	# params_iniciales = [2.0, 6.0, 2.0, 0.075, 13.5]  # Valores iniciales (pueden ajustarse)
 	
-	resultado = optimize(p -> ajuste_temperatura(p, mesesDis2, TPorAños), params_iniciales, NelderMead())
+	resultado = optimize(p -> ajuste_temperatura(p, mesesDis2, TPorAños), TParamSint, NelderMead())
 	
 	# Extraemos los parámetros ajustados
 	params_ajustados = resultado.minimizer
-	println("Parámetros ajustados: ", params_ajustados)
+	#println("Parámetros ajustados: ", params_ajustados)
 end
 
 # ╔═╡ cc3ccd77-e11a-4b36-91b4-954f0cde4de4
@@ -325,46 +450,33 @@ begin
 	# Generar los meses del año (1 a 12)
 	
 	# Calcular las temperaturas
-	temperaturas = [temperatura(m,params_ajustados) for m in mesesCon]
+	temperaturas = [TDatos(m,params_ajustados) for m in mesesCon]
+
+	# plot(mesesCon, TSint, label="Datos siteticos", lw=4)
+
+	# plot!(1:12, TProm, label="Datos promedio por mes", lw=4)
 	
 	# Graficar la temperatura a lo largo del año
-	plot(mesesCon, temperaturas, label="Temperatura promedio anual", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Temperatura Promedio Anual", linewidth=2)
+	# plot!(mesesCon, temperaturas, label="Temperatura promedio anual", xlabel="Meses", ylabel="Temperatura (°C)", title="Temperatura Anual", linewidth=2)
 
 	for i in 1:14
 		k=2007+i
 		Dat=Float64.(DatosP[i][:,[2]]) #temperatura
-		scatter!(1:12, Dat, label="Datos año $k", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+		# scatter!(1:12, Dat, label="Datos año $k", lw=4)
 	end
 
 	# linea en la que coloco algo largo para evitar que no podamos ver bien los datos, temporal:
 
-	x=[14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
+	#x=[14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
 
-	plot!(1:24, x, label="Datos", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+	# plot!(1:24, x, label="Datos", lw=4)
+
+	temperaturas
 	
 end
 
 # ╔═╡ 75c599db-97fa-40db-8fee-d682622f3d91
 parbas=[2., 8., 3., -0.05, 710]
-
-# ╔═╡ dd2c36b0-5214-48af-9098-4fa19a4bda9a
-function presion(x, parametros)
-		A, μ, σ, B, C = parametros
-	    #A = 2   # Amplitud de la distribución normal
-	    #μ = 8   # Mes con la mayor presión
-	    #σ = 3   # Controla el ancho de la campana de la distribución normal
-	    #B = -0.05 # Tendencia lineal (ligera caída hacia los meses finales)
-	    #C = 710  #     Presión base (aproximadamente en Bogotá)
-	
-	    # Componente normal (distribución gaussiana centrada en junio)
-	    normal_part = A * exp(-((x - μ)^2) / (2 * σ^2))
-	
-	    # Componente lineal (ligera caída de presión)
-	    linear_part = B * (x - 1)
-	
-	    # Presión total
-	    return normal_part + linear_part + C
-	end
 
 # ╔═╡ f9a5a95c-18a7-4346-b3ca-7c7987621aaf
 begin
@@ -374,7 +486,7 @@ begin
 	
 	    for i in 1:length(mesesDis2)
 	        # Evaluar la temperatura predicha para cada mes
-	        prediccion = presion(mesesDis2[i], params)
+	        prediccion = PDatos(mesesDis2[i], params)
 	        # Calcular el error cuadrado entre la predicción y el dato real
 	        errores += (prediccion - datos[i]).^2
 	    end
@@ -396,74 +508,44 @@ begin
 	parbas  # Valores iniciales (pueden ajustarse)
 	
 	# Ajustamos la función a los datos
-	resultadopres = optimize(p -> ajuste_presion(p, mesesDis2, datos_presion), parbas, NelderMead())
+	resultadopres = optimize(p -> ajuste_presion(p, mesesDis2, datos_presion), PParamSint, NelderMead())
 	
 	# Extraemos los parámetros ajustados
 	parbas_ajustados = resultadopres.minimizer
-	println("Parámetros ajustados: ", params_ajustados)
+	#println("Parámetros ajustados: ", params_ajustados)
 end
 
 # ╔═╡ 8135c146-d9d2-40ac-92aa-4637011de415
-presiones = [presion(m,parbas_ajustados) for m in mesesCon]
+presiones = [PDatos(m, parbas_ajustados) for m in mesesCon]
 
-# ╔═╡ bed63780-581d-4465-9b18-9b402f03d849
-function presion2(x)
-		x = 12 - x # Para que vaya creciendo
-        P0 = 737   # Presión base (aproximadamente en Bogotá)
-        A = 5      # Amplitud de las oscilaciones
-        k = 0.1    # Coeficiente de amortiguación (controla la disminución de la amplitud)
-        omega = π / 3  # Frecuencia angular (asegura que la onda se repita cada 6 meses)
-        phi = 0    # Fase inicial (ajusta el desfase de la oscilación)
-    
-        # Componente sinusoidal amortiguada
-        return (P0 + A * exp(-k * x) * sin(omega * x + phi))
-    end
+# ╔═╡ 1181acae-8208-4fb4-8ffa-5cca72bf58a9
+md"""
+##### Precipitación: 
 
-# ╔═╡ c0868390-75b8-4221-8f3a-ac4583d9069e
-presiones2 = [presion2(m) for m in mesesCon]
+La función que modela la precipitación utiliza una función coseno para representar la variabilidad de la precipitación a lo largo del año. Las epocas de lluvia se pueden situar alrededor de los meses de marzo/abril y hacia octubre, así que para representar un periodo de 6 meses se tomo abril ($4$) y octubre ($10$).
 
-# ╔═╡ 06521bf3-557a-4cce-99c7-1b6e4e212e29
-plot(mesesCon, presiones2, label="Datos año ", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
+La ecuación que describe esta relación es la siguiente:
 
-# ╔═╡ 69687b21-2ec0-4607-a718-e79c2bb67a37
-Prom=[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
+$$P(x) = A \cdot \cos\left( \frac{3 \cdot (x - \mu)}{\pi} \right) + B$$
 
-# ╔═╡ c019ba6f-b361-43e6-8ff4-718b541a5e75
-begin
-	plot(mesesCon, presiones, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
-	plot!(mesesCon, presiones2, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
+donde:
 
-	#Prom=Float64.(particiones[1][:,[1]])
+$$\begin{aligned}
+    A &= \frac{120}{2} \quad &\text{(Amplitud de la precipitación)} \\
+    \mu &= 4 \quad &\text{(Pico de la funcion coseno)} \\
+    B &= 80 \quad &\text{(Precipitación mínima)} 
+\end{aligned}$$
 
-	
-	for i in 1:14
-		k=2007+i
-		Dat=Float64.(DatosP[i][:,[1]]) #presion
-		scatter!(1:12, Dat, label="Datos año$k", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
-		Prom+=Dat
-	end
+La **amplitud** $A$ refleja las fluctuaciones entre la cantidad maxima y minima de precipitación. $\mu$ representa el primer mes de mayor lluvia. Mientras tanto, el valor de $B$ representa la precipitación base en los meses secos, garantizando que haya un valor mínimo de precipitación razonable durante el año.
 
-	for i in 1:12
-		Prom[i]/=14
-	end
+"""
 
-	plot!(1:12, Prom, label="Datos año ", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
-
-	x2=[710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25, 710.25].*1.02
-
-	plot!(1:24, x2, label="Datos", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
-
-	
-end
-
-# ╔═╡ 35eef558-529f-4bc4-95cc-2e423809fee8
-Prom
+# ╔═╡ 2bd9f305-072a-427c-8efa-61bc59bc2aa8
+RParamSint = [120/2, 4., 80.] # corresponde a A, μ, B 
 
 # ╔═╡ 56f8344b-12e8-4e35-a435-2ac2f1b9b6a8
-function precipitacion(x)
-	    A = 80   # Amplitud de la precipitación (mm)
-	    μ = 4    # Mes con mayor precipitación (abril)
-	    B = 100   # Precipitación mínima (seco)
+function RDatos(x, parametros)
+		A, μ, B = parametros
 	
 	    # Componente coseno para modelar la estacionalidad
 	    cos_part = A * cos(3 * (x - μ) / π)
@@ -472,16 +554,23 @@ function precipitacion(x)
 	    return cos_part + B 
 	end
 
+# ╔═╡ 5d06e720-3784-43cd-a4c3-0f57f437c2bc
+RSint = [RDatos(m, RParamSint) for m in mesesCon]
+
+# ╔═╡ 52b0b8f3-d3e4-468d-a19e-78847236003a
+begin
+	plot(mesesCon, RSint, label="Datos siteticos", lw=4, xlabel="Meses", yaxis="Precipitación (mm)", title="Datos sinteticos precipitación")
+	
+	plot!(1:12, RProm, label="Datos promedio por mes", lw=4)
+end
+
 # ╔═╡ a8c524d5-6153-49d2-b529-3f0f0964e0b2
 begin
 	
 	
 	# Graficar la precipitación a lo largo del año
-	precipitaciones = [precipitacion(m) for m in mesesCon]
-	
-	plot(mesesCon, precipitaciones, label="Precipitación", xlabel="Meses", ylabel="Precipitación (mm)", title="Modelo de Precipitación en Bogotá", linewidth=2)
 
-	dprom=[]
+	plot(mesesCon, RSint, label="Precipitación", xlabel="Meses", ylabel="Precipitación (mm)", title="Modelo de Precipitación en Bogotá", linewidth=2)
 
 	for i in 1:14
 		k=2007+i
@@ -489,7 +578,9 @@ begin
 		scatter!(1:12, Dat, label="Datos año $k", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Gráfica de datos")
 	end
 
-	plot!(mesesCon, precipitaciones, label="Precipitación", xlabel="Meses", ylabel="Precipitación (mm)", title="Modelo de Precipitación en Bogotá", linewidth=2)
+	plot!(mesesCon, RSint, linewidth=1)
+
+	
 
 	#x3=[150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150]
 
@@ -498,7 +589,7 @@ begin
 end
 
 # ╔═╡ d621245c-e24d-426b-a255-5b197f382b19
-datosD = hcat(presiones, temperaturas, precipitaciones) # Datos con nuestras funciones de ajuste ya dadas
+datosSint = hcat(PSint, TSint, RSint) # Datos con nuestras funciones de ajuste ya dadas
 
 # ╔═╡ 81953c25-7fdf-4ff4-865f-3c4993e319b1
 function lorenz(du, u, params, tiempo)
@@ -507,13 +598,14 @@ function lorenz(du, u, params, tiempo)
 	du[3] = params[4]*u[1]*u[2] - u[3];
 end
 
+# ╔═╡ 49d255bb-658a-4e34-8c89-7ea925011478
+V0 = [PSint[1], TSint[1] ,RSint[1]]
+
 # ╔═╡ 90588eb2-451a-4551-a4c5-14024c879a52
-function residuoLorenz(params, vDatos, tiempo)
+function residuoLorenz(params, vDatos, tiempo, V0)
     # Time domain for the ODE
     dominioTiempo = (0.0, 12.0)
-    
     # Initial conditions for the Lorenz system
-    V0 = [presiones[1], temperaturas[1] ,precipitaciones[1]]
     
     # Define and solve the ODE problem
     EDO = ODEProblem(lorenz, V0, dominioTiempo, params)
@@ -533,7 +625,7 @@ function residuoLorenz(params, vDatos, tiempo)
 end
 
 # ╔═╡ 1f28b44f-d496-489d-8992-300d7f5f5cb7
-rLorenz(params) = residuoLorenz(params, datosD , mesesCon)
+rLorenz(params) = residuoLorenz(params, datosSint , mesesCon, V0)
 
 # ╔═╡ 094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═╡ show_logs = false
@@ -555,13 +647,9 @@ oLorenzTupla = oLorenz.minimizer
 	##scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
 #end
 
-# ╔═╡ 5f5d22c1-5c5f-4bf3-812d-df5bf4c6bb67
-# ╠═╡ show_logs = false
-plotly()
-
 # ╔═╡ fa4400f9-de64-4af3-bce2-a3a4a1c457bc
 begin
-    l0 = [presiones[1], temperaturas[1], precipitaciones[1]]
+    l0 = [PSint[1], TSint[1], RSint[1]]
     dominioTiempoLorenz = (1.0, 12.0)
     
     # Definir el problema ODE
@@ -569,9 +657,11 @@ begin
     
     # Resolver el problema
     tablaLO1 = solve(lorenzOptima1, Tsit5(), saveat=0:0.001:12)
+
+	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
     
     # Graficar la solución en 3D
-    p = plot(tablaLO1, idxs = (1, 2, 3))
+    p = plot!(tablaLO1, idxs = (1, 2, 3))
     
     # Aquí puedes interactuar con la gráfica y moverla manualmente. El ángulo de vista 3D será interactivo.
 end
@@ -3399,34 +3489,45 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─5d9909c7-e2d6-431a-90eb-16ad64c77254
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
-# ╠═1bae8af4-b91f-4fa8-b2e0-226fefc2ec73
+# ╠═5f5d22c1-5c5f-4bf3-812d-df5bf4c6bb67
+# ╟─1bae8af4-b91f-4fa8-b2e0-226fefc2ec73
 # ╟─477613ea-5cd1-4ddd-b53b-4c600097ece7
-# ╟─b7134e0d-4224-4451-b532-326b90bcfa3e
-# ╠═5e3e7bc7-14e8-4f4c-b46e-4f9250f9eaee
-# ╠═f31f5718-9844-47c7-843a-2e2f80d63567
-# ╠═a5a3f1f9-7f80-4605-8688-22216307647d
-# ╠═fcc47638-8ae2-49a0-8dc0-32920b7528c0
-# ╠═cc3ccd77-e11a-4b36-91b4-954f0cde4de4
-# ╠═75c599db-97fa-40db-8fee-d682622f3d91
-# ╠═dd2c36b0-5214-48af-9098-4fa19a4bda9a
-# ╠═f9a5a95c-18a7-4346-b3ca-7c7987621aaf
-# ╠═8135c146-d9d2-40ac-92aa-4637011de415
-# ╠═bed63780-581d-4465-9b18-9b402f03d849
+# ╟─50db266f-d874-4de9-9bae-2df095426060
+# ╠═b7134e0d-4224-4451-b532-326b90bcfa3e
+# ╟─d4e2f3ac-9b40-412b-927b-390e85ffd828
+# ╟─5e3e7bc7-14e8-4f4c-b46e-4f9250f9eaee
+# ╟─cf3c13d0-dd38-4c92-a3cd-02e64d0ab5d4
+# ╠═c64d577e-2624-4271-8d11-99378fcf2b6f
+# ╠═f1d3eae1-2f62-4d86-b9c2-6d8da5536b66
+# ╠═83dcd14f-280b-445d-89de-b29f977b1748
 # ╠═06521bf3-557a-4cce-99c7-1b6e4e212e29
-# ╠═c0868390-75b8-4221-8f3a-ac4583d9069e
-# ╠═69687b21-2ec0-4607-a718-e79c2bb67a37
-# ╠═c019ba6f-b361-43e6-8ff4-718b541a5e75
-# ╠═35eef558-529f-4bc4-95cc-2e423809fee8
+# ╠═3952643b-bd97-4627-93e9-64c5529e7677
+# ╟─f9a5a95c-18a7-4346-b3ca-7c7987621aaf
+# ╟─8135c146-d9d2-40ac-92aa-4637011de415
+# ╟─c0868390-75b8-4221-8f3a-ac4583d9069e
+# ╟─c019ba6f-b361-43e6-8ff4-718b541a5e75
+# ╟─14e567bd-61a5-4f78-913f-1f4b308509f1
+# ╠═b4759fad-520a-42fb-a5f7-8da5c9b140be
+# ╟─a5a3f1f9-7f80-4605-8688-22216307647d
+# ╠═b2b89863-353b-4d87-8469-12fc6ec3938c
+# ╠═85144a50-2279-4722-a47b-c6795c7175b6
+# ╟─fcc47638-8ae2-49a0-8dc0-32920b7528c0
+# ╟─cc3ccd77-e11a-4b36-91b4-954f0cde4de4
+# ╠═75c599db-97fa-40db-8fee-d682622f3d91
+# ╠═1181acae-8208-4fb4-8ffa-5cca72bf58a9
+# ╠═2bd9f305-072a-427c-8efa-61bc59bc2aa8
 # ╠═56f8344b-12e8-4e35-a435-2ac2f1b9b6a8
+# ╠═5d06e720-3784-43cd-a4c3-0f57f437c2bc
+# ╠═52b0b8f3-d3e4-468d-a19e-78847236003a
 # ╠═a8c524d5-6153-49d2-b529-3f0f0964e0b2
 # ╠═d621245c-e24d-426b-a255-5b197f382b19
 # ╠═81953c25-7fdf-4ff4-865f-3c4993e319b1
+# ╠═49d255bb-658a-4e34-8c89-7ea925011478
 # ╠═90588eb2-451a-4551-a4c5-14024c879a52
 # ╠═1f28b44f-d496-489d-8992-300d7f5f5cb7
 # ╠═094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═909cd9ad-e16e-4038-9b94-bd31624f9572
 # ╟─0d1c2f64-7c49-4627-b607-dc76bdc15960
-# ╠═5f5d22c1-5c5f-4bf3-812d-df5bf4c6bb67
 # ╠═fa4400f9-de64-4af3-bce2-a3a4a1c457bc
 # ╠═133104e6-fcb9-4848-9afa-de6088858b1b
 # ╠═4236c331-7a85-41c1-81d9-1c65c2bb9765

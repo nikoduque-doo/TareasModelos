@@ -193,16 +193,11 @@ datosClima =
 	datosC = datosClima[:,[2,3,4]];
 end
 
-# ╔═╡ 11c888f6-a5fb-471f-a6a2-48cd1a8a018f
-years
-
 # ╔═╡ 8a6eca4a-3b89-4249-b567-0434310e3458
 begin
 	Datos1=Float64.(datosClima[:,[2]]) #presion
 	Datos2=Float64.(datosClima[:,[3]]) #temperatura
 	Datos3=Float64.(datosClima[:,[4]]) #precipitacion
-
-	
 end
 
 # ╔═╡ 32ac47f3-e51a-46b9-b1c0-93fb5c298cb7
@@ -296,7 +291,7 @@ begin
 	presiones = [presion(m) for m in meses]
 	
 	plot(meses, presiones, label="Presión Atmosférica", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2)
-	scatter!(1:12, Datos1x, label="Datos Y", lw=4, xlabel="Datos X", 	yaxis="Datos Y", title="Gráfica de datos")
+	scatter!(1:12, Datos1x, label="Datos Y", lw=4)
 
 end
 
@@ -3230,9 +3225,8 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╠═5d9909c7-e2d6-431a-90eb-16ad64c77254
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
-# ╠═477613ea-5cd1-4ddd-b53b-4c600097ece7
-# ╠═11c888f6-a5fb-471f-a6a2-48cd1a8a018f
-# ╠═8a6eca4a-3b89-4249-b567-0434310e3458
+# ╟─477613ea-5cd1-4ddd-b53b-4c600097ece7
+# ╟─8a6eca4a-3b89-4249-b567-0434310e3458
 # ╠═32ac47f3-e51a-46b9-b1c0-93fb5c298cb7
 # ╠═b7134e0d-4224-4451-b532-326b90bcfa3e
 # ╠═a6adcf66-c697-4524-b86f-592568109e67
