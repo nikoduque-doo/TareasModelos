@@ -5,7 +5,7 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 8778b6d8-70e1-4698-9f96-497b4408e4cd
-using Plots, Dates, LinearAlgebra, Optim, DifferentialEquations;
+using Plots, Dates, LinearAlgebra, Optim, DifferentialEquations, NLsolve;
 
 # ╔═╡ b6c26648-9b48-4f62-bba9-174171b7414c
 md"""
@@ -14,7 +14,7 @@ md"""
 
 # ╔═╡ 5d9909c7-e2d6-431a-90eb-16ad64c77254
 md"""
-Proyecto realizadao por Alan Acero, Johan López y Nicolás Duque para la clase Modelos Matemáticos I (2019082) del Semestre 2024-2 en la Universidad Nacional de Colombia.
+Proyecto realizado por Alan Acero, Johan López y Nicolás Duque para la clase Modelos Matemáticos I (2019082) del Semestre 2024-2 en la Universidad Nacional de Colombia.
 
 Las siguientes librerías fueron utilizadas para el desarrollo del proyecto:
 """
@@ -23,35 +23,328 @@ Las siguientes librerías fueron utilizadas para el desarrollo del proyecto:
 md"""
 ## 1. Introducción
 
-[WIP]
+El clima es uno de los factores más relevantes a considerar en diversos ámbitos: desde la construcción de ciudades y la planificación de viajes, hasta la decisión sobre la viabilidad de un cultivo o la capacidad de una ciudad para abastecer de agua a su población. Además, el cambio climático, un fenómeno global de creciente preocupación, nos ha llevado a modificar ciertas rutinas; sin embargo, estos cambios aún no son suficientes para prevenir o revertir sus efectos.
+
+Las ciudades en las que habitamos se han transformado en centros donde los impactos del cambio climático son cada vez más evidentes. Esto puede atribuirse a la concentración de personas que experimentan los mismos fenómenos, lo que facilita su identificación, o a eventos extremos que no podemos ignorar, como las inundaciones por lluvias en nuestra capital, períodos de sequía severa que afectan los ciclos de cultivo, incendios forestales como los registrados a nivel nacional en enero, o huracanes y temporales extremos como las inundaciones de la DANA en Valencia, España.
+
+En este contexto, el análisis del clima se convierte en una herramienta clave para prevenir desastres y optimizar la infraestructura frente a estos eventos. En particular, Colombia, como país tropical, se encuentra entre las naciones más vulnerables al cambio climático. Por ello, es crucial disponer de herramientas que permitan anticipar las dinámicas climáticas. Esto facilitará la implementación de políticas sociales y ambientales orientadas a gestionar información y prevenir fenómenos como inundaciones, deslizamientos, sequías e incendios.
+
+
 """
 
 # ╔═╡ 8e87310e-c44e-4092-87cb-73b113b4696d
 md"""
 ## 2. Objetivos
+El presente trabajo tiene como objetivos los siguientes:
 
-[WIP]
+● Estudiar el comportamiento del clima de las ciudades seleccionadas desde la
+perspectiva de los sistemas dinámicos caóticos.
+
+● Evaluar la precisión, confiabilidad y adaptabilidad del modelo propuesto para
+predecir el comportamiento climático.
+
+● Explorar y aplicar técnicas de análisis para resolver ecuaciones diferenciales no
+lineales.
 """
 
 # ╔═╡ ac3ee554-5ba2-48e9-8fa3-b57f53087ccd
 md"""
 ## 3. Metodología
 
-[WIP]
+Inicialmente, el proyecto se centró en analizar los datos históricos del clima de Bogotá y Medellín correspondientes al período 2009-2022, con el objetivo de predecir el comportamiento climático de estas ciudades para el año 2025. Sin embargo, durante el proceso de modelado, nos encontramos con que los datos presentaban un comportamiento inesperado y difícil de capturar con los modelos tradicionales. Esta complejidad nos llevó a explorar alternativas para refinar nuestro enfoque.
+
+Para superar estos desafíos, decidimos generar datos sintéticos que nos permitieran ajustar y mejorar nuestro modelo antes de aplicarlo nuevamente a los datos reales. Utilizamos modelos matemáticos basados en ecuaciones diferenciales, en particular una derivación de la ecuación de Lorenz, conocida por su capacidad para describir sistemas dinámicos complejos y caóticos. Este enfoque nos permitió adquirir una comprensión tanto cualitativa como cuantitativa del clima en el contexto nacional, proporcionando una base sólida para futuras predicciones y análisis.
+
+"""
+
+# ╔═╡ d8aa9c53-721a-4651-abe2-535d7f3c2506
+md"""
+## 4. Marco Teórico
+
+La modelación del clima ha sido uno de los trabajos más retadores dentro de la física entre los siglos XX y XXI, sin embargo, se han obtenido algunos resultados muy interesantes. Dentro de la literatura, encontramos el sistema de ecuaciones diferenciales de Lorentz, una aproximación y representación del comportamiento de la atmósfera como un fluido no newtoniano en un sistema de referencia en rotación, donde se producen intercambios de energía en distintos puntos.
+ 
+Su deducción nació como la simplificación de respuestas a otros problemas: 
+  
+En primer lugar, se tuve en cuenta el análisis del comportamiento de la convección térmica provocada por la transferencia vertical del calor absorbido sobre la superficie terrestre a lo largo de la troposfera. Este problema se resolvió con el modelo de Rayleigh-Bénard, donde si la densidad disminuye con la altura, el sistema se mantiene estable, pero si la densidad aumenta en capas superiores, ocurre una situación inestable, donde cualquier perturbación puede hacer que el fluido más denso se mueva hacia abajo.
+
+En segundo lugar, está el fenómeno de convección, los efectos invernadero y el deshielo. En 1962, Barry Salztamn dedujo un par de ecuaciones diferenciales que explican las proyecciones sobre concentración de gases, los cambios medios mundiales de la temperatura, el aumento del nivel del mar y la estabilización de los gases invernadero en dos dimensiones:
+
+$\begin{equation}
+\left\{ \begin{aligned} 
+  \dot{\eta} &= \theta - \eta\\
+  \dot{\theta}&= b\theta -a\eta
+\end{aligned} \right.
+\end{equation}$
+
+donde $\theta$ representa la desviación de la temperatura a un cierto nivel de referencia y $\eta$ representa la desviación de la latitud, y a, b son parámetros (que desconocemos).
+
+Finalmente, el sistema de Lorentz se redujo a tres ecuaciones diferenciales ordinarias acopladas que representan la convección de fluidos atmosféricos en tres dimensiones:
+
+$\begin{equation}
+\left\{ \begin{aligned} 
+  \dot{x}&= -\sigma x - \sigma y\\
+  \dot{y}&= -xz + \rho x - y\\
+  \dot{z}&= xy - \beta z\\
+\end{aligned} \right.
+\end{equation}$
+
+con parámetros: $\sigma$ (número de Prandtl) como la relación entre la viscosidad y la conductividad térmica, $\rho$ (número de Rayleigh) como la intensidad de la convección térmica  (si es mayor que un valor crítico, se generan células convectivas) y $\beta$ la relación con la estructura del flujo y la disipación térmica. Al igual, la función x(t) representa la velocidad y la dirección de circulación de fluido, y(t) la variación de temperatura entre las capas de la atmósfera, y z(t) la variación de energía térmica del sistema. 
+
+
 """
 
 # ╔═╡ 52833a85-f26d-47c8-a6fe-c6a990f345a4
 md"""
-## 4. Resultados
+## 5. Desarrollo del Modelo
 
-[WIP]
+### 5.1 Análisis Dimensional
+Obtener los datos específicos de una ciudad dado las variables anteriores es laborioso, ya que no es posible encontrarlas explícitamente. De esta manera, hicimos un cambio de variables y funciones a partir de la información que podíamos obtener, justificando su comportamiento en el modelo y reasignando un nuevo valor cualitativo y dimensional a cada parámetro. 
+
+Tomaremos x(t) como la presión atmosférica, y(t) como la temperatura y z(t) como la precipitación (por simplicidad P, T y R), teniendo el siguiente modelo: 
+
+$\begin{equation}
+\left\{ \begin{aligned} 
+  \dot{x}&= -\sigma x - \sigma y\\
+  \dot{y}&= \rho x - y -xz \\
+  \dot{z}&= xy - \beta z\\
+\end{aligned} \right.
+\end{equation}$
+
+En nuestra primera ecuación, se relaciona la presión atmosférica (x) con la temperatura (y), donde  será la rapidez con que cambia la presión (x) en respuesta a las variaciones en la temperatura (y).
+
+En la segunda ecuación, la temperatura (y) se ve influenciada por la presión (x) y la precipitación, donde si hay precipitaciones intensas (dadas por la precipitaciones y presión), la temperatura (y) disminuye debido a la absorción de calor por evaporación o enfriamiento. Aquí,  determina el nivel crítico de temperatura a partir del cual se generan precipitaciones (z) (a un alto valor de p implica que se requiere una temperatura elevada para generar lluvias).
+
+En nuestra tercer ecuación, la precipitación (z) aumenta cuando la presión (x) y la temperatura (y) interactúan, al igual  controla la disipación de las lluvias, es decir, es la velocidad con que desaparece la lluvia tras la formación de nubes. 
+
+### 5.2 Modificaciones al Modelo de Lorenz
+
+Pese a que la ecuación diferencial cuenta con un razonamiento cualitativo, no tiene sentido dimensional, por lo tanto, decidimos agregar más variables y analizar qué unidades deben tener. De esta manera, llegamos a que nuestra EDO quedaría de la siguiente forma:
+
+$\begin{equation}
+\left\{ \begin{aligned} 
+  \dot{x}&= \sigma (\lambda x - y)\\
+  \dot{y}&= \rho x -\sigma y - \mu xz \\
+  \dot{z}&= \nu xy - \sigma z\\
+\end{aligned} \right.
+\end{equation}$
+
+donde cada parámetro y función tiene la siguiente dimensión:
+
+$\begin{equation}
+\begin{aligned} 
+  	\left[ x \right] &= ML^{-1}T^{-2}\\
+  	\left[ y \right] &= \theta\\
+	\left[ z \right] &= L\\
+	\left[ t \right] &= T\\
+	\left[ \sigma \right] &= T^{-1}\\
+	\left[ \lambda \right] &= ML^{-1}T^{-2}\theta ^{-1}\\
+	\left[ \rho \right] &= L \theta T M^{-1}\\
+	\left[ \mu \right] &= \theta T M^{-1}\\
+	\left[ \nu \right] &= L^2 T \theta ^ {-1} M^{-1}\\
+\end{aligned}.
+\end{equation}$
+
+De esta forma, podemos analizar el valor cualitativo de cada variable:
+- El parámetro $\sigma$ es una frecuencia o tasa de cambio temporal del sistema
+- El parámetro $\lambda$ relaciona presión con temperatura. Por lo tanto, es un coeficiente que relación la conductividad térmica respecto a una porción de la atmósfera en función del tiempo.
+- El parámetro $\rho$ relaciona precipitaciones, temperatura y tiempo, respecto a la masa. Podría llega a ser un coeficiente que vincula la conductancia térmica específica (por unidad de masa)
+- El parámetro $\mu$ es la disipación térmica, ya que relaciona temperatura y tiempo, respecto a la masa
+- El parámetro $\nu$ es el coeficiente de difusividad térmica, esto es, cómo se transporta el calor en función del tiempo y el área.
+
+### 5.3 Adimencionalización del Modelo
+Ya conociendo los valores dimensionales de cada uno, se puede adimensionalizar nuestro sistema de EDOs.
+
+Para la primera ecuación se tiene que:
+
+$\begin{equation}
+\begin{aligned} 
+  	T &= \left[ \sigma \right]^a \left[ \lambda \right]^b \left[ x_0 \right]^c\\
+	\left[ t_c \right]&= \left[ \sigma \right]^a \left[ \lambda \right]^b \left[ x_0 \right]^c\\
+	&= T^{-a} M^b L^{-b} T^{-2b} \theta ^{-b} M^c L^{-c} T^{-2c}\\
+	&= T^{-a-2b-2c} M^{b + c} L^{-b-c} \theta ^{-b}\\
+\end{aligned}.
+\end{equation}$
+
+Por lo tanto, se tiene que:
+
+$\begin{equation}
+\begin{aligned} 
+	-a-2b-2c &= 1 \\
+	b+c &= 0 \\
+	-b-c &= 0 \\
+	-b &= 0
+\end{aligned}.
+\end{equation}$
+
+Así, $a=-1$ y $t_c = \sigma ^{-1}$.
+
+Para la segunda ecuación se tiene que:
+
+$\begin{equation}
+\begin{aligned} 
+  	T &= \left[ \rho \right]^a \left[ \sigma \right]^b \left[ \mu \right]^c \left[ 		y_0 \right]^d\\
+	\left[ t_c \right]&= \left[ \rho \right]^a \left[ \sigma \right]^b \left[ \mu \right]^c \left[ y_0 \right]^d\\
+	&= L^a \theta ^a T^a M^{-a} T^{-b} \theta ^ c T^c M^{-c} \theta ^d\\
+	&= T^{a-b+c} M^{a-c} L^a \theta^{a+c+d} \\
+\end{aligned}.
+\end{equation}$
+
+Por lo tanto, se tiene que:
+
+$\begin{equation}
+\begin{aligned} 
+	a-b+c &= 1 \\
+	-a-c &= 0 \\
+	a &= 0 \\
+	a+c+d &= 0
+\end{aligned}.
+\end{equation}$
+
+Así, $b=-1$ y $t_c = \sigma ^{-1}$.
+
+Para la tercera ecuación se tiene que:
+
+$\begin{equation}
+\begin{aligned} 
+  	T &= \left[ \nu \right]^a \left[ \sigma \right]^b \left[ z_0 \right]^c\\
+	\left[ t_c \right]&= \left[ \nu \right]^a \left[ \sigma \right]^b \left[ z_0 \right]^c\\
+	&= L^{2a} T^a M^{-a} \theta ^{-a} T^{-b} L^c\\
+	&= T^{a-b} M^{-a} L^{2a+c} \theta^{-a} \\
+\end{aligned}.
+\end{equation}$
+
+Por lo tanto, se tiene que:
+
+$\begin{equation}
+\begin{aligned} 
+	a-b &= 1 \\
+	-a &= 0 \\
+	2a+c &= 0 \\
+	a &= 0
+\end{aligned}.
+\end{equation}$
+
+Así, $b=-1$ y $t_c = \sigma ^{-1}$.
+
+Por lo tanto, el tiempo característico de las tres ecuaciones es $t_c = \sigma ^{-1}$. Ahora, analicemos las escalas características de $x_c$, $y_c$ y $z_c$:
+
+$\begin{equation}
+\begin{aligned} 
+  	\left[ x_c \right] &= \left[ \sigma \right]^a \left[ \lambda \right]^b \left[ x_0 \right]^c\\
+	ML^{-1}T^{-2} &= \left[ \sigma \right]^a \left[ \lambda \right]^b \left[ x_0 \right]^c\\
+	&= T^{-a}M^bL^{-b}T^{-2b}\theta ^{-b}M^cL^{-c}T^{-2c}\\
+	&= T^{-a-2b-2c}M^{b+c}L^{-b-c}\theta ^{-b}\\
+\end{aligned}.
+\end{equation}$
+
+Lo que implica que:
+
+$\begin{equation}
+\begin{aligned} 
+	a-2b-2c &= -2 \\
+	b+c &= 1 \\
+	-b-c &= 1 \\
+	-b &= 0
+\end{aligned}.
+\end{equation}$
+
+Así $c=1$ y $x_c = x_0$.
+
+$\begin{equation}
+\begin{aligned} 
+  	\left[ y_c \right] &= \left[ \rho \right]^a \left[ \sigma \right]^b \left[ \mu \right]^c \left[ 		y_0 \right]^d\\
+	\theta &= \left[ \rho \right]^a \left[ \sigma \right]^b \left[ \mu \right]^c \left[ y_0 \right]^d\\
+	&= L^a \theta ^a T^a M^{-a} T^{-b} \theta ^ c T^c M^{-c} \theta ^d\\
+	&= T^{a-b+c} M^{a-c} L^a \theta^{a+c+d} \\
+\end{aligned}.
+\end{equation}$
+
+Lo que implica que:
+
+$\begin{equation}
+\begin{aligned} 
+	a &= 0 \\
+	b &= 0 \\
+	c &= 0 \\
+	d &= 1
+\end{aligned}.
+\end{equation}$
+
+Así $y_c = y_0$.
+
+$\begin{equation}
+\begin{aligned} 
+  	\left[ z_c \right] &= \left[ \nu \right]^a \left[ \sigma \right]^b \left[ z_0 \right]^c\\
+	L &= \left[ \nu \right]^a \left[ \sigma \right]^b \left[ z_0 \right]^c\\
+	&= L^{2a} T^a M^{-a} \theta ^{-a} T^{-b} L^c\\
+	&= T^{a-b} M^{-a} L^{2a+c} \theta^{-a} \\
+\end{aligned}.
+\end{equation}$
+
+Por lo tanto, se tiene que:
+
+$\begin{equation}
+\begin{aligned} 
+	a-b &= 0 \\
+	-a &= 0 \\
+	2a+c &= 1 \\
+	a &= 0
+\end{aligned}.
+\end{equation}$
+
+Así, $c= 1$ y $z_c = z_0$.
+
+Finalmente, con la información anterior podemos definir las variables adimensionales de la siguiente forma:
+
+$\begin{equation}
+\begin{aligned} 
+	\overline{x}&=\frac{x}{x_c}=\frac{x}{x_0} \\
+	\overline{x}&=\frac{y}{y_c}=\frac{y}{y_0} \\
+	\overline{x}&=\frac{z}{z_c}=\frac{z}{z_0} \\
+	\overline{t}&=\frac{t}{t_c}=\sigma t
+\end{aligned}.
+\end{equation}$
+
+Derivando las anteriores expresiones, se tiene que:
+
+$\begin{equation}
+\begin{aligned} 
+	\frac{d\overline{x}}{d\overline{t}}&=\frac{1}{x_0}\frac{dx}{dt}\frac{dt}{d\overline{t}}=\frac{1}{x_0 \sigma} \frac{dx}{dt}\\
+	\frac{d\overline{y}}{d\overline{t}}&=\frac{1}{y_0}\frac{dy}{dt}\frac{dt}{d\overline{t}}=\frac{1}{y_0 \sigma} \frac{dy}{dt}\\
+	\frac{d\overline{z}}{d\overline{t}}&=\frac{1}{z_0}\frac{dz}{dt}\frac{dt}{d\overline{t}}=\frac{1}{z_0 \sigma} \frac{dz}{dt}\\
+\end{aligned}.
+\end{equation}$
+
+Finalmente, reemplazamos en estos resultados las ecuaciones originales para obtener el modelo adimensionalizado:
+
+$\begin{equation}
+\begin{aligned} 
+	\frac{d\overline{x}}{d\overline{t}}&= \frac{1}{x_0 \sigma} \sigma (\lambda x - y) = \frac{\lambda y_0}{x_0} \overline{y} - \overline{x}\\
+
+	\frac{d\overline{y}}{d\overline{t}}&= \frac{1}{y_0 \sigma} (\rho x -\sigma y - \mu xz) = \frac{\rho x_0}{y_0 \sigma} \overline{x} -\overline{y} - \frac{\mu z_0 x_0}{\sigma y_0} \overline{x}\overline{z}\\
+
+	\frac{d\overline{z}}{d\overline{t}}&= \frac{1}{z_0 \sigma} (\nu \overline{x} x_0 \overline{y} y_0 - \beta \overline{z} z_0) = \frac{\nu x_0 y_0}{z_0 \sigma} \overline{x} \overline{y} - \frac{\beta}{\sigma} \overline{z}
+\end{aligned}.
+\end{equation}$
+
+Finalmente, se obtiene el modelo adimensionalizado de la siguiente manera:
+
+$\begin{equation}
+\left\{ \begin{aligned} 
+  \dot{x}&= \tilde{\lambda} x - y\\
+  \dot{y}&= \tilde{\rho} x - y - \tilde{\mu} xz \\
+  \dot{z}&= \tilde{\nu} xy - z\\
+\end{aligned} \right.
+\end{equation}$
 """
 
 # ╔═╡ 648dc8fd-4ac1-42c7-83e2-caf5f6ac0710
 md"""
-## 5. Conclusiones
+## 6. Ajuste de Datos
 
-[WIP]
+### 6.1 Recolección de Datos
+
+Se realizó una sintetización de los datos disponibles en la página de Datos Abiertos del Gobierno de Colombia con el fin de obtener los valores promedio de presión (en Hpa), temperatura (C) y precipitación (mm) mensuales del año 2009 al 2022.
 """
 
 # ╔═╡ 477613ea-5cd1-4ddd-b53b-4c600097ece7
@@ -236,8 +529,10 @@ datosClima =
 	datosC = datosClima[:,[2,3,4]];
 end
 
-# ╔═╡ 56999c9b-31c5-4bb7-8842-0416e1562a2f
-years2
+# ╔═╡ 6b95fe60-b791-4c5e-950f-bca6b0f132ab
+md"""
+Tras ésto se definió la función que corresponde al modelo y a la minimización por mínimos cuadrados.
+"""
 
 # ╔═╡ 81953c25-7fdf-4ff4-865f-3c4993e319b1
 function lorenz(du, u, params, tiempo)
@@ -271,6 +566,13 @@ function residuoLorenz(params, vDatos, tiempo)
     return nRes
 end
 
+# ╔═╡ 6260c16a-7d99-42cc-b490-499ab9610871
+md"""
+### 6.2 Ajuste con los Datos Reales
+
+Tras ésto se realizó el ajuste con los datos obtenidos.
+"""
+
 # ╔═╡ 1f28b44f-d496-489d-8992-300d7f5f5cb7
 rLorenz(params) = residuoLorenz(params, datosC , years)
 
@@ -278,8 +580,34 @@ rLorenz(params) = residuoLorenz(params, datosC , years)
 # ╠═╡ show_logs = false
 oLorenz = Optim.optimize(rLorenz, [10.0, 28.0, 8/3, 0.5], SimulatedAnnealing(), Optim.Options(iterations = 10000))
 
+# ╔═╡ 07a1610a-e58e-4ba0-9581-3d921dd920a7
+md"""
+Debido a la complejidad del modelo y a su carácter caótico, no se logra satisfactoriamente encontrar un único valor para sus parámetros. Ésto resulta en que en ejecuciones continuas, los valores pueden ser distintos (si bien son cercanos).
+"""
+
 # ╔═╡ 909cd9ad-e16e-4038-9b94-bd31624f9572
 oLorenzTupla = oLorenz.minimizer
+
+# ╔═╡ f88fa2eb-8565-4d9b-a1fc-4e79b1e58bf3
+begin
+	a = oLorenzTupla[1]
+	b = oLorenzTupla[2]
+	c = oLorenzTupla[3]
+	d = oLorenzTupla[4]
+end;
+
+# ╔═╡ 9de2964f-47ae-4b55-9522-a0b5703006bc
+md"""
+La ecuación diferencial ordinaria es:
+
+x' = $a y - x
+
+y' = $b x - y - $c xz
+
+z' = $d xy - z
+
+Se puede ver representado gráficamente en la siguiente figura:
+"""
 
 # ╔═╡ ee37f04d-cfc4-450e-9aa7-47a894f903e3
 # ╠═╡ show_logs = false
@@ -291,9 +619,269 @@ begin
 	dominioTiempoLorenz = (1.0, 168.0)
 	lorenzOptima1=ODEProblem(lorenz, l0, dominioTiempoLorenz, oLorenzTupla)
 	tablaLO1=solve(lorenzOptima1, Tsit5(), saveat=0:0.001:168)
-	plot(tablaLO1, idxs = (1, 2, 3))
+	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
+	plot!(tablaLO1, idxs = (1, 2, 3))
 	##scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
 end
+
+# ╔═╡ 4660944d-74bc-4c96-9a9f-83608882a60a
+md"""
+## 7. Análisis del Modelo
+"""
+
+# ╔═╡ c1e65ffc-aa17-4390-8b8c-ccd2c6a69ae4
+md"""
+Analizaremos a continuación el comportamiento general del modelo. Sea nuestra Ecuación Diferencial Ordinaria
+
+$\begin{aligned}
+    x' &= 16.4875y - x \\
+    y' &= 28.9506x - y - 1.22764xz \\
+    z' &= 0.00148262xy - z
+\end{aligned}$
+
+Para visualizar los retratos de fase de la ecuación, primero hallemos la matriz asociada dada por el Jacobiano:
+
+$\begin{equation}
+ \begin{aligned} 
+  D&=\begin{pmatrix}
+	\frac{\partial(16.4875y-x)}{\partial x} & \frac{\partial(16.4875y-x)}{\partial y} & \frac{\partial(16.4875y-x)}{\partial z} \\
+	\frac{\partial(28.9506x-y-1.22764xz)}{\partial x} & \frac{\partial(28.9506x-y-1.22764xz)}{\partial y} & \frac{\partial(28.9506x-y-1.22764xz)}{\partial z}\\
+	\frac{\partial(0.00148262xy-z)}{\partial x} & \frac{\partial(0.00148262xy-z)}{\partial y} & \frac{\partial(0.00148262xy-z)}{\partial z}
+	\end{pmatrix} \\
+	&= \begin{pmatrix}
+	-1 & 16.4875 & 0 \\
+	28.9506-1.22764z & -1 & -1.22764x\\
+	0.00148262y & 0.00148262x & -1
+	\end{pmatrix}
+\end{aligned} 
+\end{equation}$
+
+Ahora encontremos los puntos de equilibrio resolviendo el siguiente sistema de ecuaciones:
+
+$\begin{aligned}
+    16.4875y - x &= 0 \\  
+    28.9506x - y - 1.22764xz &= 0 \\  
+    0.00148262xy - z &= 0  
+\end{aligned}$
+
+Por lo tanto, se tienen tres puntos fijos:
+
+$\begin{aligned}
+    p_1 &= (-511.5644, -31.0274, 23.5329) \\  
+    p_2 &= (0, 0, 0) \\  
+    p_3 &= (511.5644, 31.0274, 23.5329)  
+\end{aligned}$
+
+Veamos que comportamiento tiene cada punto:
+Para $p_1$ se tiene que:
+
+$D=
+\begin{pmatrix}
+-1 & 16.4875 & 0 \\
+0.0607 & -1 & 628.017\\
+-0.046 & -0.7585 & -1
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$\begin{aligned}
+\det \begin{pmatrix}
+-1 - \lambda & 16.4875 & 0 \\
+0.0607 & -1 - \lambda & 628.017 \\
+-0.046 & -0.7585 & -1 - \lambda
+\end{pmatrix} &= 0
+\end{aligned}$
+
+Así, $\lambda _{1} = -2$ y $\lambda_2 \approx-0.5\pm21.8191i$. Al igual, los vectores propios son los siguientes respectivamente:
+
+$\begin{aligned}
+\vec{a} &= \begin{pmatrix}
+-0.9888 + 0.1366i \\
+0.06 - 0.0083i \\
+4.81 \times 10^{-18} - 6.65 \times 10^{-19}i
+\end{pmatrix}\\
+\vec{b} &= \begin{pmatrix}
+0.0861 + 0.7499i \\
+0.9950 - 0.0912i \\
+-0.0024 - 0.0347i
+\end{pmatrix}\\
+\vec{c} &= \begin{pmatrix}
+-0.7328 - 0.1884i \\
+0.2271 - 0.9755i \\
+0.0341 + 0.0071i
+\end{pmatrix}
+\end{aligned}$
+
+Ahora como para todos los valores propios, $Re(\lambda)<0$, se tendrá en el punto un atractor estable en espiral. Las trayectorias convergen hacia este punto con oscilaciones amortiguadas.
+
+Para $p_2$ se tiene que:
+
+$D=
+\begin{pmatrix}
+-1 & 16.4875 & 0 \\
+28.9506 & -1 & 0\\
+0 & 0 & -1
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$\begin{aligned}
+\det \begin{pmatrix}
+-1 - \lambda & 16.4875 & 0 \\
+28.9506 & -1 - \lambda & 0 \\
+0 & 0 & -1 - \lambda
+\end{pmatrix} &= 0
+\end{aligned}$
+
+Así, $\lambda _1 = -22.8477$, $\lambda _2 = 20.8477$ y $\lambda _3 = -1$- Al igual, los vectores propios son los siguientes respectivamente:
+
+$\begin{aligned}
+\vec{a} &=
+\begin{pmatrix}
+0.6024 \\
+-0.7982 \\
+0
+\end{pmatrix}, \\[8pt]
+\vec{b} &=
+\begin{pmatrix}
+0.6264 \\
+0.83 \\
+0
+\end{pmatrix}, \\[8pt]
+\vec{c} &=
+\begin{pmatrix}
+0 \\
+0 \\
+1
+\end{pmatrix}
+\end{aligned}$
+
+Ahora como hay un valor propio positivo indica que hay una dirección en la que las soluciones divergen, mientras que los valores negativos indican que en otras direcciones las soluciones tienden a este punto. Esto sugiere que el punto es un silla inestable, con trayectorias que se alejan en algunas direcciones y se acercan en otras.
+
+Para $p_3$ se tiene que:
+
+$D=
+\begin{pmatrix}
+-1 & 16.4875 & 0 \\
+0.0607 & -1 & -628.017\\
+0.046 & 0.7585 & -1
+\end{pmatrix}$
+
+Ahora calculamos los valores propios de esta matriz:
+
+$\det\begin{pmatrix}
+-1-\lambda & 16.4875 & 0 \\
+0.0607 & -1-\lambda & -628.017 \\
+0.046 & 0.7585 & -1-\lambda
+\end{pmatrix}$ 
+
+Así, $\lambda_{1} = -2$ y $\lambda _2\approx-0.5\pm21.8191i$. Al igual, los vectores propios son los siguientes respectivamente:
+
+$\begin{align}
+\vec{a} &= 
+\begin{pmatrix}
+-0.9888+0.1366i\\
+0.06-0.0083i\\
+4.81\times 10^{-18}-6.65\times10^{-19}i
+\end{pmatrix} \\[10pt]
+\vec{b} &= 
+\begin{pmatrix}
+0.0861+0.7499i \\
+0.9950-0.0912i \\
+0.0024+0.0347i
+\end{pmatrix} \\[10pt]
+\vec{c} &= 
+\begin{pmatrix}
+0.7328+0.1884i \\
+-0.2271+0.9755i \\
+0.0341+0.0071i
+\end{pmatrix}
+\end{align}$
+
+Ahora como para todos los valores propios, $Re(\lambda)<0$, se tendrá en el punto un atractor estable en espiral. Las trayectorias convergen hacia este punto.
+
+En conclusión, se espera que el sistema tenga una dinámica bifurcada entre dos regiones de estabilidad y un punto inestable que separa estas regiones, lo que significa que el sistema dinámico presenta dos regiones donde las soluciones tienden a estabilizarse (atractores estables) y una región donde las soluciones son inestables (un punto silla).
+
+"""
+
+# ╔═╡ 597d3c9e-07c3-47db-8360-1f184d472545
+# ╠═╡ show_logs = false
+begin
+	# Definir el sistema de ecuaciones diferenciales
+    dx_dt(x, y, z) = 16.4875 * y - x
+    dy_dt(x, y, z) = 28.9506 * x - y - 1.22764 * x * z
+    dz_dt(x, y, z) = 0.00148262 * x * y - z
+
+    # Definir el sistema en forma de vector
+    f(x) = [dx_dt(x[1], x[2], x[3]), dy_dt(x[1], x[2], x[3]), dz_dt(x[1], x[2], x[3])]
+
+    # Resolver el sistema no lineal para encontrar los puntos de equilibrio
+    sol = nlsolve(x -> f(x), [1.0, 1.0, 1.0])
+    eq_points = sol.zero
+    println("Puntos de equilibrio: ", eq_points)
+
+    # Definir la matriz Jacobiana
+    function J(x, y, z)
+        return [
+            -1.0  16.4875   0.0;
+            28.9506  -1.0  -1.22764*z;
+            0.00148262*y  0.00148262*x  -1.0
+        ]
+    end
+
+    # Evaluar la matriz Jacobiana en el punto de equilibrio
+    jacobian_at_eq = J(eq_points...)  # Expande eq_points como argumentos
+    println("Matriz Jacobiana en el equilibrio:\n", jacobian_at_eq)
+
+    # Calcular autovalores (eigenvalues)
+    eigenvalues = eigvals(jacobian_at_eq)
+    println("Autovalores en el equilibrio: ", eigenvalues)
+
+    # Definir la función del sistema para la simulación
+    function dt!(du, u, p, t)
+        du[1] = dx_dt(u...)
+        du[2] = dy_dt(u...)
+        du[3] = dz_dt(u...)
+    end
+
+    # Simulación con condiciones iniciales
+    tspan = (0.0, 5.0)
+    initial_conditions = [[-500, -30, 20], [500, 30, 20], [10, 10, 10], [-10, -10, -10], [0, 0.1, 0.1]]
+    solutions = [solve(ODEProblem(dt!, u0, tspan), Tsit5()) for u0 in initial_conditions]    
+
+	# Graficar las trayectorias en 3D
+	plt = plot(title="Retrato de Fase del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
+
+	for sol in solutions
+	    plot!(plt, sol[1, :], sol[2, :], sol[3, :], label="")
+	end
+	
+	# Marcar el punto de equilibrio
+	scatter!(plt, [eq_points[1]], [eq_points[2]], [eq_points[3]], markersize=5, color=:red, label="Equilibrio")
+end
+
+# ╔═╡ 9206ac6a-a73e-45f8-a8b9-8219606aa502
+md"""
+## 8. Conclusiones
+"""
+
+# ╔═╡ 85432f81-d1bf-4844-a119-a4ee7b066155
+md"""
+# Referencias
+
+[1] P. E. Calderón Saavedra and V. H. Chaux M., ‘Descripción del Modelo de Lorenz con aplicaciones’, Nov. 2007, Accessed: Mar. 06, 2025. [Online]. Available: http://hdl.handle.net/10784/146
+
+[2] S. Represa, ‘Ecuaciones de Lorenz’, 2016, doi: 10.13140/RG.2.2.18508.82563.
+
+[3] R. H. Buitrago Puentes, ‘El sistema y el atractor geométrico de Lorenz’, 2010, Accessed: Mar. 06, 2025. [Online]. Available: https://repositorio.unal.edu.co/handle/unal/7557
+
+[4] ‘Precipitaciones Totales Mensuales | Datos Abiertos Colombia’. Accessed: Mar. 06, 2025. [Online]. Available: https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Precipitaciones-Totales-Mensuales/mb4n-6m2g/about_data
+
+[5] ‘Presión Atmosférica | Datos Abiertos Colombia’. Accessed: Mar. 06, 2025. [Online]. Available: https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Presi-n-Atmosf-rica/62tk-nxj5/data_preview
+
+[6] ‘Temperatura en Bogotá D.C. y su relación con ENOS - Temperaturas registradas en Bogotá D.C - Datos Abiertos Bogotá’. Accessed: Mar. 06, 2025. [Online]. Available: https://datosabiertos.bogota.gov.co/dataset/temperaturas-en-bogota-d-c/resource/c3867459-1aa7-4e16-8ae8-ca41693f7261
+
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -301,11 +889,13 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+NLsolve = "2774e3e8-f4cf-5e23-947b-6d7e65073b56"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
 [compat]
 DifferentialEquations = "~7.14.0"
+NLsolve = "~4.5.1"
 Optim = "~1.9.4"
 Plots = "~1.40.8"
 """
@@ -316,7 +906,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "094de53b6ebcf6c7db79521d19cda06ee5453a98"
+project_hash = "6011df769020a30e5df92ecde7f4ada7907638d2"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "eea5d80188827b35333801ef97a40c2ed653b081"
@@ -3029,22 +3619,32 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╠═b6c26648-9b48-4f62-bba9-174171b7414c
-# ╠═5d9909c7-e2d6-431a-90eb-16ad64c77254
+# ╟─b6c26648-9b48-4f62-bba9-174171b7414c
+# ╟─5d9909c7-e2d6-431a-90eb-16ad64c77254
 # ╠═8778b6d8-70e1-4698-9f96-497b4408e4cd
-# ╠═878817a2-18b1-456e-baf0-561c548aa796
-# ╠═8e87310e-c44e-4092-87cb-73b113b4696d
-# ╠═ac3ee554-5ba2-48e9-8fa3-b57f53087ccd
-# ╠═52833a85-f26d-47c8-a6fe-c6a990f345a4
-# ╠═648dc8fd-4ac1-42c7-83e2-caf5f6ac0710
-# ╠═477613ea-5cd1-4ddd-b53b-4c600097ece7
-# ╠═56999c9b-31c5-4bb7-8842-0416e1562a2f
+# ╟─878817a2-18b1-456e-baf0-561c548aa796
+# ╟─8e87310e-c44e-4092-87cb-73b113b4696d
+# ╟─ac3ee554-5ba2-48e9-8fa3-b57f53087ccd
+# ╟─d8aa9c53-721a-4651-abe2-535d7f3c2506
+# ╟─52833a85-f26d-47c8-a6fe-c6a990f345a4
+# ╟─648dc8fd-4ac1-42c7-83e2-caf5f6ac0710
+# ╟─477613ea-5cd1-4ddd-b53b-4c600097ece7
+# ╟─6b95fe60-b791-4c5e-950f-bca6b0f132ab
 # ╠═81953c25-7fdf-4ff4-865f-3c4993e319b1
 # ╠═90588eb2-451a-4551-a4c5-14024c879a52
+# ╟─6260c16a-7d99-42cc-b490-499ab9610871
 # ╠═1f28b44f-d496-489d-8992-300d7f5f5cb7
 # ╠═094240e9-ce59-437d-b94c-594588e22d3a
+# ╟─07a1610a-e58e-4ba0-9581-3d921dd920a7
 # ╠═909cd9ad-e16e-4038-9b94-bd31624f9572
+# ╟─f88fa2eb-8565-4d9b-a1fc-4e79b1e58bf3
+# ╟─9de2964f-47ae-4b55-9522-a0b5703006bc
 # ╟─ee37f04d-cfc4-450e-9aa7-47a894f903e3
-# ╠═0d1c2f64-7c49-4627-b607-dc76bdc15960
+# ╟─0d1c2f64-7c49-4627-b607-dc76bdc15960
+# ╟─4660944d-74bc-4c96-9a9f-83608882a60a
+# ╟─c1e65ffc-aa17-4390-8b8c-ccd2c6a69ae4
+# ╟─597d3c9e-07c3-47db-8360-1f184d472545
+# ╠═9206ac6a-a73e-45f8-a8b9-8219606aa502
+# ╟─85432f81-d1bf-4844-a119-a4ee7b066155
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
