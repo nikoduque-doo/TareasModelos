@@ -600,7 +600,7 @@ begin
 
 	mesesDis2 = repeat(1:12, 14) # Eje X para las temperaturas por año
 	mesesCon = 1:0.001:12
-end
+end;
 
 # ╔═╡ cdb69c71-3939-48f6-b24e-286a01bfdb83
 begin
@@ -639,7 +639,7 @@ begin
 	TProm/=14
 	RProm/=14
 
-end
+end;
 
 # ╔═╡ 6260c16a-7d99-42cc-b490-499ab9610871
 md"""
@@ -696,10 +696,6 @@ z' = $d xy - z
 Se puede ver representado gráficamente en la siguiente figura:
 """
 
-# ╔═╡ ee37f04d-cfc4-450e-9aa7-47a894f903e3
-# ╠═╡ show_logs = false
-plotly()
-
 # ╔═╡ 0d1c2f64-7c49-4627-b607-dc76bdc15960
 begin
 	l0Real = [738.47, 14.55, 75.80]
@@ -707,8 +703,7 @@ begin
 	lorenzOptima1=ODEProblem(lorenz, l0Real, dominioTiempoLorenzReal, oLorenzTuplaReal)
 	tablaLO1=solve(lorenzOptima1, Tsit5(), saveat=0:0.001:168)
 	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
-	plot!(tablaLO1, idxs = (1, 2, 3))
-	##scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
+	plot!(tablaLO1, idxs = (1, 2, 3), camera=(45, 30))
 end
 
 # ╔═╡ 01d1bde0-2cff-4d67-86bc-20f4ff91e57e
@@ -914,8 +909,7 @@ begin
 	lorenzOptima2=ODEProblem(lorenz, l0Sint, dominioTiempoLorenzSint, oLorenzTuplaSint)
 	tablaLO2=solve(lorenzOptima2, Tsit5(), saveat=0:0.001:12)
 	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
-	plot!(tablaLO2, idxs = (1, 2, 3))
-	##scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
+	plot!(tablaLO2, idxs = (1, 2, 3), camera=(70, 30))
 end
 
 # ╔═╡ f6f9f7f4-6f8e-44a0-90f5-36bcc78e6385
@@ -1047,7 +1041,7 @@ begin
 	TParamAjus = TOptim.minimizer
 	#println("Parámetros ajustados: ", params_ajustados)
 	TA, Tmu, Tsigma, TB, TC  = TParamAjus
-end
+end;
 
 # ╔═╡ 2e1ad853-84ab-4726-a49f-a5d30a9c8ef4
 TDatosAjus = [TDatos(m, TParamAjus) for m in mesesCon]
@@ -1447,38 +1441,17 @@ begin
 	
 end
 
-# ╔═╡ 1fa20f9d-df2a-4115-950b-6dd409bab591
-begin
-
-	for sol in solutions
-	    plot!(plt, sol[1, :], sol[2, :], sol[3, :], label="")
-	end
-	
-	# Marcar el punto de equilibrio
-	scatter!(plt, [eq_points[1]], [eq_points[2]], [eq_points[3]], markersize=5, color=:red)
-	plot!(tablaLO1, idxs = (1, 2, 3))
-	plot!(tablaLO2, idxs = (1, 2, 3))
-	plot!(tablaLO3, idxs = (1, 2, 3))
-
-	# Retratos de fase junto a respuestas que teniamos de antes con otros modelos (dan cosas similares) 
-end
-
 # ╔═╡ 9206ac6a-a73e-45f8-a8b9-8219606aa502
 md"""
 ## 8. Conclusiones.
 
-Temporales:
+Los datos pueden refinarse y ajustarse de manera más precisa para mejorar la calidad del análisis. Dado que el modelo es caótico, reiniciar el algoritmo genera resultados significativamente diferentes en cada ejecución. Los atractores de Lorenz presentan una estructura fascinante y visualmente impresionante. Aunque la selección de la función de ajuste pueda tener una justificación física inicial, no siempre se adapta correctamente a los datos, por lo que es necesario estar preparados para reconsiderarla.  
 
-1. Los datos pueden ser refinados, o ajustados de mejor manera
-2. el modelo es caotico y namas reiniciar el algoritmo ya nos da respuestas muy diferentes
-3. los atractores de lorenz se ven una chimba
-4. La seleccion de la funcion de ajuste, por mucho que tenga un sentido fisico al inicio puede ser que no concuerte y hay que estar listo para ello
-5. usando el hecho que el modelo nunca va a ser exacto pero puede que unos sean mas utiles que otros este desarrollo trajo: a) Una funcion de ajuste para lluvia MUY buena, b) una funcion de ajuste para temperatura buena pero mejorable, c) Los retratos de fase nos dan ciertos puntos de estabilidad hacia donde convergen respuestas y son puntos de estabilidad climatica, pero nos faltan coeficientes razonables
-6. En el desarrollo puede haber cosas pequeñas que alteren mucho como las vemos, por ejemplo, saltos de iteracion demasiado pequeños puede llevar a que este modelo ni siquiera mostrara los preciosos atractores de lorenz (quien gana, dos ceros, o nosotros (spoiler, los ceros))
+Partiendo de la premisa de que el modelo nunca será exacto, pero algunos enfoques pueden resultar más útiles que otros, este desarrollo ha logrado una función de ajuste para la precipitación con un desempeño excepcional, una función de ajuste para la temperatura que, aunque buena, aún tiene margen de mejora, y retratos de fase que revelan puntos de estabilidad hacia los cuales convergen las soluciones, lo que sugiere la existencia de estados climáticos estables. Sin embargo, aún faltan coeficientes adecuados para describirlos con precisión.  
 
-7. Como propuesta de ampliacion del proyecto puede ser, crear funciones mejores, buscar ajustes de datos probabilisticos/estocasticos, Buscar modos de mejorar nuestra funcion iterativa, comparar con otros modelos e ir buscando funciones comunes que cumplan y mejorar la visualizacion de los datos
+Pequeños detalles en la implementación pueden generar grandes diferencias en los resultados. Por ejemplo, si los saltos de iteración son demasiado pequeños, el modelo podría no ser capaz de mostrar los característicos atractores de Lorenz. En este caso, el problema no sería nuestro enfoque, sino la acumulación de ceros numéricos que distorsionan el comportamiento del sistema.  
 
-Hablando de visualizacion de datos, si no alcanzamos a hacer lo de los gifs (y yo ni se como colocarlo en un fucking pdf) colocar en las zonas donde se puede cambiar un pequeño muestreo grafico de como se hace
+Como posibles mejoras y ampliaciones del proyecto, se podrían desarrollar funciones de ajuste más precisas, incorporar enfoques probabilísticos o estocásticos para el tratamiento de datos, optimizar la función iterativa para mejorar su estabilidad y precisión, comparar con otros modelos climáticos para identificar patrones comunes y mejorar la visualización de los datos para facilitar la interpretación de los resultados.
 
 """
 
@@ -4245,13 +4218,13 @@ version = "1.4.1+1"
 # ╟─d8aa9c53-721a-4651-abe2-535d7f3c2506
 # ╟─52833a85-f26d-47c8-a6fe-c6a990f345a4
 # ╟─648dc8fd-4ac1-42c7-83e2-caf5f6ac0710
-# ╠═477613ea-5cd1-4ddd-b53b-4c600097ece7
+# ╟─477613ea-5cd1-4ddd-b53b-4c600097ece7
 # ╟─6b95fe60-b791-4c5e-950f-bca6b0f132ab
 # ╠═81953c25-7fdf-4ff4-865f-3c4993e319b1
 # ╠═90588eb2-451a-4551-a4c5-14024c879a52
 # ╟─8079c6a6-4f5e-4511-9a5b-4015d1c6c681
 # ╟─34cfce9b-c8a8-487e-a7a7-68c4c92dcace
-# ╠═cdb69c71-3939-48f6-b24e-286a01bfdb83
+# ╟─cdb69c71-3939-48f6-b24e-286a01bfdb83
 # ╟─6260c16a-7d99-42cc-b490-499ab9610871
 # ╟─cdea1ba2-b6a2-4d9f-b2bf-28bbc2bd3f70
 # ╟─3c4d182c-7121-41e5-8573-9b183e1bcb7e
@@ -4261,20 +4234,19 @@ version = "1.4.1+1"
 # ╠═909cd9ad-e16e-4038-9b94-bd31624f9572
 # ╟─f88fa2eb-8565-4d9b-a1fc-4e79b1e58bf3
 # ╟─9de2964f-47ae-4b55-9522-a0b5703006bc
-# ╟─ee37f04d-cfc4-450e-9aa7-47a894f903e3
-# ╠═0d1c2f64-7c49-4627-b607-dc76bdc15960
+# ╟─0d1c2f64-7c49-4627-b607-dc76bdc15960
 # ╟─01d1bde0-2cff-4d67-86bc-20f4ff91e57e
 # ╟─2c19049c-6956-449a-8d21-e237ce4674a9
 # ╠═42d5edd6-5108-4a79-8909-3df77c721bd4
 # ╠═37594ac5-547b-4b5b-a44a-81e35a51b319
 # ╠═7ef0b150-22e2-406c-b818-399f9d8079ca
-# ╠═e2e6b606-2de4-4793-b8cb-67bb0702953c
+# ╟─e2e6b606-2de4-4793-b8cb-67bb0702953c
 # ╟─dd5e86c9-1914-4d55-8fcd-52913d963f55
 # ╠═3da8ddcd-70aa-4822-b2d8-524822fd10bf
 # ╠═90df1355-3972-4ab3-ad5e-b0c18f2b02dd
 # ╠═485e9595-afb0-439e-b778-29a540009fbb
-# ╠═068d4943-d64c-4057-997e-06034e406bd2
-# ╠═1e9d920d-599f-42da-a187-502960509916
+# ╟─068d4943-d64c-4057-997e-06034e406bd2
+# ╟─1e9d920d-599f-42da-a187-502960509916
 # ╠═f3e15a75-cef2-45f3-b251-9571d77cac77
 # ╠═f8aed4a9-3cbf-487d-8240-d3459a88978c
 # ╠═03b83c1d-b131-479f-861a-8022bf74ffc7
@@ -4298,13 +4270,13 @@ version = "1.4.1+1"
 # ╟─4a8149d0-b4d2-43d9-bbc0-455f0567a9c8
 # ╠═60d99098-f972-446d-a279-3e771f9173ae
 # ╠═2e1ad853-84ab-4726-a49f-a5d30a9c8ef4
-# ╠═7a2145df-ed6d-42e2-a9ea-18e39776beb3
-# ╠═59d78d63-28f5-429a-b3d7-292c39e74a90
+# ╟─7a2145df-ed6d-42e2-a9ea-18e39776beb3
+# ╟─59d78d63-28f5-429a-b3d7-292c39e74a90
 # ╟─36303e3b-b101-41fb-a24c-af2ebb58bb83
 # ╟─c69e7e4d-521e-4208-9754-f80b746e3ba5
 # ╠═92a32bb1-bcf0-41eb-9d3b-e1c92427c5ac
 # ╠═7dbdca71-1ed7-408b-a8ea-1faf3621dd16
-# ╠═4d742757-996e-4c33-836d-6a0d0c285d61
+# ╟─4d742757-996e-4c33-836d-6a0d0c285d61
 # ╠═0f0bcca1-8fd0-4dbc-8cd2-4d46f2c821c6
 # ╠═8c426a45-4ce1-4282-acb5-c5cd2b801414
 # ╟─a4f60993-188f-40e2-88ad-ebf40cb2d737
@@ -4318,9 +4290,8 @@ version = "1.4.1+1"
 # ╠═59bdef18-be8f-46fa-99bd-a8080eb40f4c
 # ╟─4660944d-74bc-4c96-9a9f-83608882a60a
 # ╟─c1e65ffc-aa17-4390-8b8c-ccd2c6a69ae4
-# ╠═597d3c9e-07c3-47db-8360-1f184d472545
-# ╠═1fa20f9d-df2a-4115-950b-6dd409bab591
-# ╠═9206ac6a-a73e-45f8-a8b9-8219606aa502
+# ╟─597d3c9e-07c3-47db-8360-1f184d472545
+# ╟─9206ac6a-a73e-45f8-a8b9-8219606aa502
 # ╟─85432f81-d1bf-4844-a119-a4ee7b066155
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
