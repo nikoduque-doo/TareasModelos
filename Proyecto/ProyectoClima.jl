@@ -35,7 +35,7 @@ En este contexto, el análisis del clima se convierte en una herramienta clave p
 # ╔═╡ 8e87310e-c44e-4092-87cb-73b113b4696d
 md"""
 ## 2. Objetivos
-El presente trabajo tiene como objetivos los siguientes:
+El presente trabajo tuvo como fines los siguientes objetivos:
 
 ● Estudiar el comportamiento del clima de las ciudades seleccionadas desde la
 perspectiva de los sistemas dinámicos caóticos.
@@ -53,7 +53,7 @@ md"""
 
 Inicialmente, el proyecto se centró en analizar los datos históricos del clima de Bogotá y Medellín correspondientes al período $2009-2022$, con el objetivo de predecir el comportamiento climático de estas ciudades para el año $2025$. Sin embargo, durante el proceso de modelado, nos encontramos con que los datos presentaban un comportamiento inesperado y difícil de capturar con los modelos tradicionales. Esta complejidad nos llevó a explorar alternativas para refinar nuestro enfoque.
 
-Para superar estos desafíos, decidimos generar datos sintéticos que nos permitieran ajustar y mejorar nuestro modelo antes de aplicarlo nuevamente a los datos reales. Utilizamos modelos matemáticos basados en ecuaciones diferenciales, en particular una derivación de la ecuación de Lorenz, conocida por su capacidad para describir sistemas dinámicos complejos y caóticos. Este enfoque nos permitió adquirir una comprensión tanto cualitativa como cuantitativa del clima en el contexto nacional, proporcionando una base sólida para futuras predicciones y análisis.
+Para superar estos desafíos, decidimos generar datos sintéticos que nos permitieran ajustar y mejorar nuestro modelo antes de aplicarlo nuevamente a los datos reales. Utilizamos modelos matemáticos basados en ecuaciones diferenciales, en particular una derivación de la ecuación de Lorenz, conocida por su capacidad para describir sistemas dinámicos complejos y caóticos. Este enfoque nos permitió adquirir una comprensión tanto cualitativa como cuantitativa del clima en el contexto nacional, proporcionando una idea para futuras predicciones y análisis.
 
 """
 
@@ -100,7 +100,7 @@ md"""
 ### 5.1 Análisis Dimensional
 Obtener los datos específicos de una ciudad dado las variables anteriores es laborioso, ya que no es posible encontrarlas explícitamente. De esta manera, hicimos un cambio de variables y funciones a partir de la información que podíamos obtener, justificando su comportamiento en el modelo y reasignando un nuevo valor cualitativo y dimensional a cada parámetro. 
 
-Tomaremos $x(t)$ como la presión atmosférica, $y(t)$ como la temperatura y $z(t)$ como la precipitación (por simplicidad **P**, **T** y **R**), teniendo el siguiente modelo: 
+Tomaremos $x(t)$ como la presión atmosférica, $y(t)$ como la temperatura y $z(t)$ como la precipitación (por simplicidad **x**, **y** y **z**), teniendo el siguiente modelo: 
 
 $\begin{equation}
 \left\{ \begin{aligned} 
@@ -146,7 +146,7 @@ $\begin{equation}
 
 De esta forma, podemos analizar el valor cualitativo de cada variable:
 - El parámetro $\sigma$ es una frecuencia o tasa de cambio temporal del sistema
-- El parámetro $\lambda$ relaciona presión con temperatura. Por lo tanto, es un coeficiente que relación la conductividad térmica respecto a una porción de la atmósfera en función del tiempo.
+- El parámetro $\lambda$ relaciona presión con temperatura. Por lo tanto, es un coeficiente que relaciona la conductividad térmica respecto a una porción de la atmósfera en función del tiempo.
 - El parámetro $\rho$ relaciona precipitaciones, temperatura y tiempo, respecto a la masa. Podría llega a ser un coeficiente que vincula la conductancia térmica específica (por unidad de masa)
 - El parámetro $\mu$ es la disipación térmica, ya que relaciona temperatura y tiempo, respecto a la masa
 - El parámetro $\nu$ es el coeficiente de difusividad térmica, esto es, cómo se transporta el calor en función del tiempo y el área.
@@ -189,7 +189,7 @@ $\begin{equation}
 \end{aligned}.
 \end{equation}$
 
-Por lo tanto, se tiene que:
+Por lo tanto:
 
 $\begin{equation}
 \begin{aligned} 
@@ -213,7 +213,7 @@ $\begin{equation}
 \end{aligned}.
 \end{equation}$
 
-Por lo tanto, se tiene que:
+Por lo tanto:
 
 $\begin{equation}
 \begin{aligned} 
@@ -226,7 +226,7 @@ $\begin{equation}
 
 Así, $b=-1$ y $t_c = \sigma ^{-1}$.
 
-Por lo tanto, el tiempo característico de las tres ecuaciones es $t_c = \sigma ^{-1}$. Ahora, analicemos las escalas características de $x_c$, $y_c$ y $z_c$:
+De esta manera, el tiempo característico de las tres ecuaciones es $t_c = \sigma ^{-1}$. Ahora, analicemos las escalas características de $x_c$, $y_c$ y $z_c$:
 
 $\begin{equation}
 \begin{aligned} 
@@ -248,7 +248,7 @@ $\begin{equation}
 \end{aligned}.
 \end{equation}$
 
-Así $c=1$ y $x_c = x_0$.
+Así, $c=1$ y $x_c = x_0$.
 
 $\begin{equation}
 \begin{aligned} 
@@ -305,7 +305,7 @@ $\begin{equation}
 \end{aligned}.
 \end{equation}$
 
-Derivando las anteriores expresiones, se tiene que:
+Derivando las anteriores expresiones:
 
 $\begin{equation}
 \begin{aligned} 
@@ -315,7 +315,7 @@ $\begin{equation}
 \end{aligned}.
 \end{equation}$
 
-Finalmente, reemplazamos en estos resultados las ecuaciones originales para obtener el modelo adimensionalizado:
+Luego, reemplazamos en estos resultados las ecuaciones originales para obtener el modelo adimensionalizado:
 
 $\begin{equation}
 \begin{aligned} 
@@ -327,7 +327,7 @@ $\begin{equation}
 \end{aligned}.
 \end{equation}$
 
-Finalmente, se obtiene el modelo adimensionalizado de la siguiente manera:
+A partir de lo anterior, se obtiene el modelo adimensionalizado:
 
 $\begin{equation}
 \left\{ \begin{aligned} 
@@ -562,7 +562,7 @@ end
 
 # ╔═╡ 8079c6a6-4f5e-4511-9a5b-4015d1c6c681
 md"""
-Ademas de esto se usara una notacion particular para esta parte del codigo, con el fin de facilitar su entendimiento:
+Además de ésto, se usará una notación particular para esta parte del código, con el fin de facilitar su entendimiento:
 
 ##### Datos:
 
@@ -590,6 +590,8 @@ más adelante se definiran otros.
 """
 
 # ╔═╡ 34cfce9b-c8a8-487e-a7a7-68c4c92dcace
+# ╠═╡ skip_as_script = true
+#=╠═╡
 begin
 	years = collect(1:size(datosClima[:,1], 1));
 	datosC = Float64.(datosClima[:,[2,3,4]])
@@ -601,8 +603,11 @@ begin
 	mesesDis2 = repeat(1:12, 14) # Eje X para las temperaturas por año
 	mesesCon = 1:0.001:12
 end;
+  ╠═╡ =#
 
 # ╔═╡ cdb69c71-3939-48f6-b24e-286a01bfdb83
+# ╠═╡ skip_as_script = true
+#=╠═╡
 begin
 	num_filas = size(datosC, 1)	 # Cantidad de filas   
 	num_años = div(num_filas, 12) # Cantidad de años
@@ -640,12 +645,11 @@ begin
 	RProm/=14
 
 end;
+  ╠═╡ =#
 
 # ╔═╡ 6260c16a-7d99-42cc-b490-499ab9610871
 md"""
 ### 6.2 Ajuste con Datos
-
-Tras ésto se realizó el ajuste con los datos obtenidos.
 """
 
 # ╔═╡ cdea1ba2-b6a2-4d9f-b2bf-28bbc2bd3f70
@@ -657,15 +661,19 @@ Este primer ajuste se hizo con los datos reales:
 
 # ╔═╡ 3c4d182c-7121-41e5-8573-9b183e1bcb7e
 md"""
-El primer ajuste realizado se hizo con los datos obtenidos, por un error de codigo (en el cual parecia que el ajuste no convergia de una manera apropiada), entonces se busco avanzar con datos sinteticos, y con un ajuste intermedio de funciones. Para las funciones aqui vistas se utilizara el sufijo **Real**:
+El primer ajuste realizado se hizo con los datos obtenidos, por un error de código (en el cual parecia que el ajuste no convergía de una manera apropiada), entonces se buscó avanzar con datos sintéticos, y con un ajuste intermedio de funciones. Para las funciones aquí vistas se utilizara el sufijo **Real**:
 """
 
 # ╔═╡ 1f28b44f-d496-489d-8992-300d7f5f5cb7
+#=╠═╡
 rLorenz(parametros) = residuoLorenz(parametros, datosC , years)
+  ╠═╡ =#
 
 # ╔═╡ 094240e9-ce59-437d-b94c-594588e22d3a
 # ╠═╡ show_logs = false
+#=╠═╡
 oLorenzReal = Optim.optimize(rLorenz, [10.0, 28.0, 8/3, 0.5], SimulatedAnnealing(), Optim.Options(iterations = 10000))
+  ╠═╡ =#
 
 # ╔═╡ 07a1610a-e58e-4ba0-9581-3d921dd920a7
 md"""
@@ -673,17 +681,23 @@ Debido a la complejidad del modelo y a su carácter caótico, no se logra satisf
 """
 
 # ╔═╡ 909cd9ad-e16e-4038-9b94-bd31624f9572
+#=╠═╡
 oLorenzTuplaReal = oLorenzReal.minimizer
+  ╠═╡ =#
 
 # ╔═╡ f88fa2eb-8565-4d9b-a1fc-4e79b1e58bf3
+# ╠═╡ skip_as_script = true
+#=╠═╡
 begin
 	a = oLorenzTuplaReal[1]
 	b = oLorenzTuplaReal[2]
 	c = oLorenzTuplaReal[3]
 	d = oLorenzTuplaReal[4]
 end;
+  ╠═╡ =#
 
 # ╔═╡ 9de2964f-47ae-4b55-9522-a0b5703006bc
+#=╠═╡
 md"""
 La ecuación diferencial ordinaria es:
 
@@ -695,24 +709,27 @@ z' = $d xy - z
 
 Se puede ver representado gráficamente en la siguiente figura:
 """
+  ╠═╡ =#
 
 # ╔═╡ 0d1c2f64-7c49-4627-b607-dc76bdc15960
+#=╠═╡
 begin
 	l0Real = [738.47, 14.55, 75.80]
 	dominioTiempoLorenzReal = (1.0, 168.0)
 	lorenzOptima1=ODEProblem(lorenz, l0Real, dominioTiempoLorenzReal, oLorenzTuplaReal)
 	tablaLO1=solve(lorenzOptima1, Tsit5(), saveat=0:0.001:168)
 	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
-	plot!(tablaLO1, idxs = (1, 2, 3), camera=(45, 30))
+	plot!(tablaLO1, idxs = (1, 2, 3), camera=(45, 30), label="Datos Reales")
 end
+  ╠═╡ =#
 
 # ╔═╡ 01d1bde0-2cff-4d67-86bc-20f4ff91e57e
 md"""
-#### 6.2.2 Ajuste con Datos Sinteticos:
+#### 6.2.2 Ajuste con Datos Sinteticos 1:
 
-Debido a ciertos errores de codigo que llevaron a que el metodo anterior *pareciera* no funcionar, tuvimos otro acercamiento intermedio: con los datos sinteticos.
+Debido a ciertos errores de código que llevaron a que el metodo anterior *pareciera* no funcionar, tuvimos otro acercamiento intermedio: con los datos sintéticos.
 
-Cuando hablamos de datos sinteticos para presion, temperatura y precipitacion es un acercamiento a través de ciertas funciones. que nuestra hipótesis sera que modelan el comportamiento de los parametros y compararemos con los datos promedio por mes. Estas funciones mantendar cierto sentido fisico a lo largo de un año, para ello le consultamos a algunos fisicos y meteorologos para desarrollar una mejor intuacion sobre el tipo adecuado de funciones. Para estas funciones sinteticas se usara el sufijo **Sint**:
+Cuando hablamos de datos sintéticos para presión, temperatura y precipitación es un acercamiento a través de ciertas funciones, que nuestra hipótesis será que modelan el comportamiento de los parámetros y compararemos con los datos promedio por mes. Estas funciones mantendrán cierto sentido físico a lo largo de un año, para ello le consultamos a algunos físicos y meteórologos para desarrollar una mejor intuición sobre el tipo adecuado de funciones. Para estas funciones sintéticas se usará el sufijo **Sint**:
 
 """
 
@@ -751,20 +768,24 @@ function PDatos(x, parametros) # función de Presión
 end	
 
 # ╔═╡ 7ef0b150-22e2-406c-b818-399f9d8079ca
+#=╠═╡
 PSint = [PDatos(m, PParamSint) for m in mesesCon]
+  ╠═╡ =#
 
 # ╔═╡ e2e6b606-2de4-4793-b8cb-67bb0702953c
+#=╠═╡
 begin
-	plot(mesesCon, PSint, label="Datos siteticos", lw=4, xlabel="Datos X", yaxis="Datos Y", title="Datos sinteticos presión")
+	plot(mesesCon, PSint, label="Datos sitéticos", lw=4, xlabel="Datos X", yaxis="hPa", title="Datos sintéticos presión")
 	
 	plot!(1:12, PProm, label="Datos promedio por mes", lw=4)
 end
+  ╠═╡ =#
 
 # ╔═╡ dd5e86c9-1914-4d55-8fcd-52913d963f55
 md"""
 ##### Temperatura: 
 
-La función que usaremos para modelar la temperatura sera una suma entre una distribución normal y un componente lineal adicional. Se decidio la distribución normal puesto que la temperatura suele seguir un patron estacional, incluzo en zonas cercanas del la linea del ecuador, en particular las temperaturas suelen ser más altas durante los meses cercanos a la mitad del año. 
+La función que usaremos para modelar la temperatura será una suma entre una distribución normal y un componente lineal adicional. Se decidió la distribución normal puesto que la temperatura suele seguir un patrón estacional, incluso en zonas cercanas del la linea del Ecuador, en particular, las temperaturas suelen ser más altas durante los meses cercanos a la mitad del año. 
 
 Nuestra distribución normal se utiliza para modelar estas fluctuaciones suaves en torno al valor central (en este caso, el mes de mayor temperatura), mientras que el componente lineal se agrega para el incremento gradual de temperatura a lo largo de los años por el cambio climatico (que se divide entre $12$ para asegurar que todos los meses vaya aumentando).
 
@@ -782,7 +803,7 @@ $$\begin{aligned}
     C &= 14 &\text{ (temperatura base en diciembre)}
 \end{aligned}$$
 
-Donde la amplitud refleja las fluctuaciones de temperatura entre valor maximo y minimo y la desviación estándar refleja cuán amplias o estrechas son las fluctuaciones de temperatura respecto al mes central, o en otras palabras, que tan drastico es el cambio de temperatura de un mes a otro.
+Donde la amplitud refleja las fluctuaciones de temperatura entre valor máximo y mínimo, y la desviación estándar refleja cuán amplias o estrechas son las fluctuaciones de temperatura respecto al mes central, o en otras palabras, qué tan drástico es el cambio de temperatura de un mes a otro.
 
 """
 
@@ -804,20 +825,24 @@ function TDatos(x, parametros)
 end
 
 # ╔═╡ 485e9595-afb0-439e-b778-29a540009fbb
+#=╠═╡
 TSint = [TDatos(m, TParamSint) for m in mesesCon]
+  ╠═╡ =#
 
 # ╔═╡ 068d4943-d64c-4057-997e-06034e406bd2
+#=╠═╡
 begin
-	plot(mesesCon, TSint, label="Datos siteticos", lw=4, xlabel="Meses", yaxis="Datos Y", title="Datos sinteticos temperatura")
+	plot(mesesCon, TSint, label="Datos sitéticos", lw=4, xlabel="Meses", yaxis="Grados Celsius", title="Datos sintéticos temperatura")
 	
 	plot!(1:12, TProm, label="Datos promedio por mes", lw=4)
 end
+  ╠═╡ =#
 
 # ╔═╡ 1e9d920d-599f-42da-a187-502960509916
 md"""
 ##### Precipitación: 
 
-La función que modela la precipitación utiliza una función coseno para representar la variabilidad de la precipitación a lo largo del año. Las epocas de lluvia se pueden situar alrededor de los meses de marzo/abril y hacia octubre, así que para representar un periodo de $6$ meses se tomo abril ($4$) y octubre ($10$).
+La función que modela la precipitación utiliza una función coseno para representar la variabilidad de la precipitación a lo largo del año. Las épocas de lluvia se pueden situar alrededor de los meses de marzo/abril y hacia octubre, así que para representar un periodo de $6$ meses se tomó abril ($4$) y octubre ($10$).
 
 La ecuación que describe esta relación es la siguiente:
 
@@ -831,7 +856,7 @@ $$\begin{aligned}
     B &= 80 \quad &\text{(Precipitación mínima)} 
 \end{aligned}$$
 
-La **amplitud** $A$ refleja las fluctuaciones entre la cantidad maxima y minima de precipitación. $\mu$ representa el primer mes de mayor lluvia. Mientras tanto, el valor de $B$ representa la precipitación base en los meses secos, garantizando que haya un valor mínimo de precipitación razonable durante el año.
+La **amplitud** $A$ refleja las fluctuaciones entre la cantidad máxima y mínima de precipitación, $\mu$ representa el primer mes de mayor lluvia. Mientras tanto, el valor de $B$ representa la precipitación base en los meses secos, garantizando que haya un valor mínimo de precipitación razonable durante el año.
 
 """
 
@@ -850,20 +875,28 @@ function RDatos(x, parametros)
 	end
 
 # ╔═╡ 03b83c1d-b131-479f-861a-8022bf74ffc7
+#=╠═╡
 RSint = [RDatos(m, RParamSint) for m in mesesCon]
+  ╠═╡ =#
 
 # ╔═╡ bc014ad3-0083-42d3-b5d1-ea09442e8bba
+#=╠═╡
 begin
 	plot(mesesCon, RSint, label="Datos siteticos", lw=4, xlabel="Meses", yaxis="Precipitación (mm)", title="Datos sinteticos precipitación")
 	
 	plot!(1:12, RProm, label="Datos promedio por mes", lw=4)
 end
+  ╠═╡ =#
 
 # ╔═╡ 9813a836-78db-4526-9538-fcd6febe1eff
+#=╠═╡
 datosSint = hcat(PSint, TSint, RSint) # Datos con nuestras funciones sinteticasa lo largo de mesesCont
+  ╠═╡ =#
 
 # ╔═╡ 38b7fc3f-3b77-48ab-ab00-f3385dc6186f
+#=╠═╡
 V0Sint = [PSint[1], TSint[1] ,RSint[1]] #Condiciones iniciales para el sistema de Lorenz
+  ╠═╡ =#
 
 # ╔═╡ 054c38cf-18b1-44b4-a8ce-a8f62a2f36b2
 md"""
@@ -893,40 +926,40 @@ function residuoLorenz2(params, vDatos, tiempo, V0)
 end
 
 # ╔═╡ ca0a6986-5baf-463a-b2c4-a0dd7f20feca
+#=╠═╡
 rLorenz2(params) = residuoLorenz2(params, datosSint , mesesCon, V0Sint)
+  ╠═╡ =#
 
 # ╔═╡ db7d9459-7cd2-463e-b1b4-63ae05a56244
 # ╠═╡ show_logs = false
+#=╠═╡
 oLorenzSint = Optim.optimize(rLorenz2, [10.0, 28.0, 8/3, 0.5], SimulatedAnnealing(),Optim.Options(iterations = 1000)) 
+  ╠═╡ =#
 
 # ╔═╡ 641b1bd5-112d-4144-9639-7171a5e7b91f
+#=╠═╡
 oLorenzTuplaSint = oLorenzSint.minimizer
+  ╠═╡ =#
 
 # ╔═╡ 48fe1bbf-6972-4fb7-bdfe-e419dfa37fd7
+#=╠═╡
 begin
     l0Sint = [PSint[1], TSint[1], RSint[1]]
 	dominioTiempoLorenzSint = (1.0, 12.0)
 	lorenzOptima2=ODEProblem(lorenz, l0Sint, dominioTiempoLorenzSint, oLorenzTuplaSint)
 	tablaLO2=solve(lorenzOptima2, Tsit5(), saveat=0:0.001:12)
 	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
-	plot!(tablaLO2, idxs = (1, 2, 3), camera=(70, 30))
+	plot!(tablaLO2, idxs = (1, 2, 3), camera=(70, 30), label="Datos Sintéticos 1")
 end
-
-# ╔═╡ f6f9f7f4-6f8e-44a0-90f5-36bcc78e6385
-begin
-	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
-	plot!(tablaLO1, idxs = (1, 2, 3))
-	plot!(tablaLO2, idxs = (1, 2, 3))
-	
-end
+  ╠═╡ =#
 
 # ╔═╡ f91a2d1f-196f-4fae-b04f-ec5be42e04b9
 md"""
-#### 6.2.3 Ajuste con Ajuste de Datos Sinteticos:
+#### 6.2.3 Ajuste con Datos Sintéticos 2:
 
-Dado que tenemos ya unas funciones que aproximan, con cierto sentido fisico a nuestros datos reales, vamos a realizar un ajuste de datos con estas funciones, de tal manera que se acerquen más a nuestros datos originales, lo que realizaremos a continuación y compararemos con nuestros datos reales, antes y despues del promedio.
+Dado que tenemos ya unas funciones que aproximan, con cierto sentido físico a nuestros datos reales, vamos a realizar un ajuste de datos con estas funciones, de tal manera que se acerquen más a nuestros datos originales, lo que realizaremos a continuación y compararemos con nuestros datos reales, antes y despues del promedio.
 
-Ademas, como en nuestras funciones sinteticas cada una de las variables tenia un razonamiento fisico, para nuestro ajuste lo interpretaremos acorde a esos mismos criterios.
+Además, como en nuestras funciones sintéticas cada una de las variables tenía un razonamiento físico, para nuestro ajuste lo interpretaremos acorde a esos mismos criterios.
 
 Para estas funciones de ajuste se usara el sufijo **Ajus**, y su valor inicial para la función de optimización seran los valores que dentro de las hipótesis son óptimos:
 
@@ -934,10 +967,11 @@ Para estas funciones de ajuste se usara el sufijo **Ajus**, y su valor inicial p
 
 # ╔═╡ 6b1a1e1f-5ab3-4031-924a-b19d8903ca9c
 md"""
-##### Presion:
+##### Presión:
 """
 
 # ╔═╡ 7bca8a7c-83a0-4746-8cf2-a0f866de5651
+#=╠═╡
 begin
 	# Función objetivo para ajuste
 	function residuoP(params, mesesDis2, datos) # residuo de la presion
@@ -967,16 +1001,20 @@ begin
 
 	PP0, PA, Pk, Pomega, Pphi = PParamAjus
 end
+  ╠═╡ =#
 
 # ╔═╡ df81ed4a-c4cf-43f7-af43-3a64d324b0b4
+#=╠═╡
 PDatosAjus = [PDatos(m, PParamAjus) for m in mesesCon]
+  ╠═╡ =#
 
 # ╔═╡ de1ec58a-11ae-4e7f-9638-4461776e3879
+#=╠═╡
 begin
 	plot(mesesCon, PSint, label="Datos Sinteticos", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2,  xlims=(0, 17))
 	
 	for i in 1:14
-		k=2007+i
+		k=2008+i
 		Dat=DatosPart[i][:,[1]] #presion
 		scatter!(1:12, Dat, label="Datos año $k", lw=4)
 	end
@@ -985,8 +1023,10 @@ begin
 
 	
 end
+  ╠═╡ =#
 
 # ╔═╡ a7dc9a73-31fa-43da-99e2-3f2679e3c81a
+#=╠═╡
 begin
 	plot(mesesCon, PSint, label="Datos siteticos", lw=4, ylims=(733.5, 745))
 	
@@ -994,21 +1034,24 @@ begin
 
 	plot!(mesesCon, PDatosAjus, label="Datos Ajustados", xlabel="Meses", ylabel="Presión (hPa)", title="Datos presión", lw=4)
 end
+  ╠═╡ =#
 
 # ╔═╡ 519130c6-1a51-4d9a-a1f1-594d8d88fb73
+#=╠═╡
 md"""
 
 Dado entonces nuestro ajuste tenemos los siguientes valores:
-- Presion base: P0 = $PP0.
+- Presión base: P0 = $PP0.
 - Amplitud de las oscilaciones: A = $PA
 - coeficiente de amortiguación: k = $Pk
 - frecuencia de repeticion: omega = $Pomega
 - Fase inicial: phi = $Pphi
 
-Dentro de este ajuste, podemos resaltar principalmente la amplitud de las oscilaciones, y la frecuencia de repetición, que cambiaron drasticamente, ya que la amplitud de las oscilaciones subio drasticamente, mientras que la freciencia de repeticion, disminuyo drasticamente. Pero estos son factores que se multiplicán, así un mejor acercamiento posible seria evitar la aparición de la función sinusoidal en este caso.
+Dentro de este ajuste, podemos resaltar principalmente la amplitud de las oscilaciones, y la frecuencia de repetición, que cambiaron drásticamente, ya que la amplitud de las oscilaciones subió, mientras que la frecuencia de repetición, disminuyó bruscamente. Sin embargo, estos son factores que se multiplican, así un mejor acercamiento posible sería evitar la aparición de la función sinusoidal en este caso.
 
-Además viendo los datos individuales, los ajustes que tenemos en esta variable en particular no deben ser tan fiables, puesto que hay una gran brecha entre $720$ y $740$ mPa donde no hay casi ningun dato original. 
+Además viendo los datos individuales, los ajustes que tenemos en esta variable en particular no deben ser tan fiables, puesto que hay una gran brecha entre $720$ y $740$ mPa donde no hay casi ningún dato original. 
 """
+  ╠═╡ =#
 
 # ╔═╡ 4a8149d0-b4d2-43d9-bbc0-455f0567a9c8
 md"""
@@ -1016,6 +1059,7 @@ md"""
 """
 
 # ╔═╡ 60d99098-f972-446d-a279-3e771f9173ae
+#=╠═╡
 begin
 	# Función objetivo para ajuste
 	function residuoT(params, mesesDis2, datos)
@@ -1042,16 +1086,20 @@ begin
 	#println("Parámetros ajustados: ", params_ajustados)
 	TA, Tmu, Tsigma, TB, TC  = TParamAjus
 end;
+  ╠═╡ =#
 
 # ╔═╡ 2e1ad853-84ab-4726-a49f-a5d30a9c8ef4
+#=╠═╡
 TDatosAjus = [TDatos(m, TParamAjus) for m in mesesCon]
+  ╠═╡ =#
 
 # ╔═╡ 7a2145df-ed6d-42e2-a9ea-18e39776beb3
+#=╠═╡
 begin
 	plot(mesesCon, TSint, label="Datos Sinteticos", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Temperatura en Bogotá", linewidth=2,  xlims=(0, 17))
 	
 	for i in 1:14
-		k=2007+i
+		k=2008+i
 		Dat=DatosPart[i][:,[2]] #temperatura
 		scatter!(1:12, Dat, label="Datos año $k", lw=4)
 	end
@@ -1059,8 +1107,10 @@ begin
 	plot!(mesesCon, TDatosAjus, label="Datos ajustados", linewidth=2)
 	
 end
+  ╠═╡ =#
 
 # ╔═╡ 59d78d63-28f5-429a-b3d7-292c39e74a90
+#=╠═╡
 begin
 	plot(mesesCon, TSint, label="Datos siteticos", lw=4)#, ylims=(14, 15.8))
 	
@@ -1068,8 +1118,10 @@ begin
 
 	plot!(mesesCon, TDatosAjus, label="Datos Ajustados", xlabel="Meses", ylabel="Temperatura (°C)", title="Datos temperatura", linewidth=2)
 end
+  ╠═╡ =#
 
 # ╔═╡ 36303e3b-b101-41fb-a24c-af2ebb58bb83
+#=╠═╡
 md"""
 
 Con el ajuste en la temperatura tenemos los siguientes coeficientes:
@@ -1079,17 +1131,19 @@ Con el ajuste en la temperatura tenemos los siguientes coeficientes:
 - Aumento de temperatura por año: B = $TB
 - Temperatura base en diciembre: C = $TC
 
-Para la temperatura, las fluctuaciones, la desviacion estandar y la temperatura base se mantuvieron igual. Lo que cambio respecto a nuestras hipotesis fue: Que tanto esta aumentando la temperatura cada año (se estimo en $1.0$ y termino siendo alrededor de $0.75$) y aún más importante, cual es el mes mas calido del año (El cual resulto siendo marzo)
+Para la temperatura, las fluctuaciones, la desviación estándar y la temperatura base se mantuvieron igual. Lo que cambió respecto a nuestras hipótesis fue: qué tanto está aumentando la temperatura cada año (se estimo en $1.0$ y terminó siendo alrededor de $0.75$) y aún más importante, cuál es el mes mas cálido del año (El cual resultó siendo marzo)
 
-Al mirar la grafica podemos ver que, por una parte pese a haber una gran variación de datos la función parece estar encajada en medio de ellos. Pero aún mas importante, que es una buena aproximación a los datos promedio por mes, a diferencia de nuestra función sintetica original.
+Al mirar la grafica podemos ver que pese a haber una gran variación de datos la función parece estar encajada en medio de ellos. Pero aún mas importante, que es una buena aproximación a los datos promedio por mes, a diferencia de nuestra función sintética original.
 """
+  ╠═╡ =#
 
 # ╔═╡ c69e7e4d-521e-4208-9754-f80b746e3ba5
 md"""
-##### Precipitacion:
+##### Precipitación:
 """
 
 # ╔═╡ 92a32bb1-bcf0-41eb-9d3b-e1c92427c5ac
+#=╠═╡
 begin
 	# Función objetivo para ajuste
 	function residuoR(params, mesesDis2, datos)
@@ -1115,16 +1169,20 @@ begin
 	RParamAjus = ROptim.minimizer
 	#println("Parámetros ajustados: ", params_ajustados)
 end
+  ╠═╡ =#
 
 # ╔═╡ 7dbdca71-1ed7-408b-a8ea-1faf3621dd16
+#=╠═╡
 RDatosAjus = [RDatos(m, RParamAjus) for m in mesesCon]
+  ╠═╡ =#
 
 # ╔═╡ 4d742757-996e-4c33-836d-6a0d0c285d61
+#=╠═╡
 begin
-	plot(mesesCon, RSint, label="Datos Sinteticos", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Presión en Bogotá", linewidth=2,  xlims=(0, 17))
+	plot(mesesCon, RSint, label="Datos Sinteticos", xlabel="Meses", ylabel="Precipitación (mm)", title="Modelo de Precipitación en Bogotá", linewidth=2,  xlims=(0, 17))
 	
 	for i in 1:14
-		k=2007+i
+		k=2008+i
 		Dat=DatosPart[i][:,[3]] #temperatura
 		scatter!(1:12, Dat, label="Datos año $k", lw=4)
 	end
@@ -1132,20 +1190,26 @@ begin
 	plot!(mesesCon, RDatosAjus, label="Datos ajustados", linewidth=2)
 	
 end
+  ╠═╡ =#
 
 # ╔═╡ 0f0bcca1-8fd0-4dbc-8cd2-4d46f2c821c6
+#=╠═╡
 begin
-	plot(mesesCon, RSint, label="Datos siteticos", lw=4)#, ylims=(14, 15.8))
+	plot(mesesCon, RSint, label="Datos sintéticos", lw=4)#, ylims=(14, 15.8))
 	
 	plot!(1:12, RProm, label="Datos promedio por mes", lw=4)
 
-	plot!(mesesCon, RDatosAjus, label="Datos Ajustados", xlabel="Meses", ylabel="Temperatura (°C)", title="Datos temperatura", linewidth=2)
+	plot!(mesesCon, RDatosAjus, label="Datos Ajustados", xlabel="Meses", ylabel="Precipitación (mm)", title="Datos Precipitación en Bogotá", linewidth=2)
 end
+  ╠═╡ =#
 
 # ╔═╡ 8c426a45-4ce1-4282-acb5-c5cd2b801414
+#=╠═╡
 RA, Rmu, RB  = RParamAjus
+  ╠═╡ =#
 
 # ╔═╡ a4f60993-188f-40e2-88ad-ebf40cb2d737
+#=╠═╡
 md"""
 
 Dentro del ajuste de las precipitaciones tenemos los siguientes datos:
@@ -1155,10 +1219,11 @@ Dentro del ajuste de las precipitaciones tenemos los siguientes datos:
 
 Al ver las graficas (y nuestras hipótesis iniciales) podemos llegar a dos conclusiones principales. 
 
-La primera es que nuestras hipótesis no estaban tan alejadas de nuestros valores más cercanos, donde teniamos una precipitación menos drastica por meses de lo que supusimos al comienzo, los meses de lluvia tienden hacia mitad de abril y octubre, y la precipitación minima es algo menor de lo que supusimos.
+La primera es que nuestras hipótesis no estaban tan alejadas de nuestros valores más cercanos, donde teniamos una precipitación menos drástica por meses de lo que supusimos al comienzo, los meses de lluvia tienden hacia mitad de abril y octubre, y la precipitación mínima es algo menor de lo que supusimos.
 
-La segunda conclusión es que la función sintetica planteada ajusta los datos de una manera muy cercana, esto se puede apreciar sobre todo viendo como se comporta con el promedio de los datos.
+La segunda conclusión es que la función sintética planteada ajusta los datos de una manera muy cercana, esto se puede apreciar sobre todo viendo como se comporta con el promedio de los datos.
 """
+  ╠═╡ =#
 
 # ╔═╡ 1f48cdd9-50d6-40fd-9789-e5aa25145cfd
 md"""
@@ -1168,40 +1233,59 @@ Dadas nuestras funciones de aproximación, vamos a analizar el desarrollo de la 
 """
 
 # ╔═╡ 57c5184a-86d8-4425-a843-13a760dac9c8
+#=╠═╡
 datosAjus = hcat(PDatosAjus, TDatosAjus, RDatosAjus) # Datos con nuestras funciones Ajustadas lo largo de mesesCont
+  ╠═╡ =#
 
 # ╔═╡ f5904070-2512-4ae6-8150-c277efd3fb58
+#=╠═╡
 V0Ajus = [PDatosAjus[1], TDatosAjus[1] ,RDatosAjus[1]] #Condiciones iniciales para el sistema de Lorenz
+  ╠═╡ =#
 
 # ╔═╡ 5344754f-98ce-4726-aa1c-647fd17d2b90
+#=╠═╡
 rLorenz3(params) = residuoLorenz2(params, datosAjus , mesesCon, V0Ajus)
+  ╠═╡ =#
 
 # ╔═╡ 6ec4241d-a1cc-4330-9f23-6f34da9265b4
 # ╠═╡ show_logs = false
+#=╠═╡
 oLorenzAjus = Optim.optimize(rLorenz3, [10.0, 28.0, 8/3, 0.5], SimulatedAnnealing(),Optim.Options(iterations = 1000))
+  ╠═╡ =#
 
 # ╔═╡ 7280fa09-0429-4807-8e5c-4b85044e4831
+#=╠═╡
 oLorenzTuplaAjus = oLorenzAjus.minimizer
+  ╠═╡ =#
 
 # ╔═╡ e7e80f4b-85d0-4110-92be-d492119a6e28
+#=╠═╡
 begin
     l0Ajus = [PDatosAjus[1], TDatosAjus[1], RDatosAjus[1]]
 	dominioTiempoLorenzAjus = (1.0, 12.0)
 	lorenzOptima3=ODEProblem(lorenz, l0Ajus, dominioTiempoLorenzAjus, oLorenzTuplaAjus)
 	tablaLO3=solve(lorenzOptima3, Tsit5(), saveat=0:0.001:12)
 	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
-	plot!(tablaLO3, idxs = (1, 2, 3))
+	plot!(tablaLO3, idxs = (1, 2, 3), label="Datos Sintéticos 2")
 	##scatter!(fechas,camas,ls=:dash,label="Camas UCI Covid-19",lw=4, xlabel = "Fecha",yaxis="Camas UCI Covid-19",legend=:bottomright, title="Modelo de Crecimiento Logístico óptimo")
 end
+  ╠═╡ =#
+
+# ╔═╡ ae396be1-19d0-405a-b543-847f8cae537b
+md"""
+Finalmente, podemos observar todas las trayectorias resultantes en la siguiente figura:
+"""
 
 # ╔═╡ 59bdef18-be8f-46fa-99bd-a8080eb40f4c
+#=╠═╡
 begin
-	plot(title="Trayectoria del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
-	plot!(tablaLO1, idxs = (1, 2, 3))
-	plot!(tablaLO2, idxs = (1, 2, 3))
-	plot!(tablaLO3, idxs = (1, 2, 3))
+	plot(title="Trayectorias del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
+	plot!(tablaLO1, idxs = (1, 2, 3), label="Datos Reales")
+	plot!(tablaLO2, idxs = (1, 2, 3), label="Datos Sintéticos 1")
+	plot!(tablaLO3, idxs = (1, 2, 3), label="Datos Sintéticos 2")
 	
 end
+  ╠═╡ =#
 
 # ╔═╡ 4660944d-74bc-4c96-9a9f-83608882a60a
 md"""
@@ -1210,7 +1294,7 @@ md"""
 
 # ╔═╡ c1e65ffc-aa17-4390-8b8c-ccd2c6a69ae4
 md"""
-Analizaremos a continuación el comportamiento general del modelo. Sea nuestra Ecuación Diferencial Ordinaria
+Analizaremos a continuación el comportamiento general del modelo a partir de uno de los ajustes obtenidos previamente (es decir no necesariamente el de la presente ejecución). Sea nuestra Ecuación Diferencial Ordinaria
 
 $\begin{aligned}
     x' &= 16.4875y - x \\
@@ -1441,6 +1525,29 @@ begin
 	
 end
 
+# ╔═╡ a74985d7-8795-4ec4-8a26-5f61cae4722e
+md"""
+### 7.1 Interpretación cualitativa de los parámetros en el sistema de ecuaciones dado por aproximación de datos reales
+
+Valores de los parámetros en el sistema de ecuaciones:
+
+λ = 16.4875:
+
+Un valor alto indica que la presión tiene una gran influencia en la temperatura. En Bogotá, la presión atmosférica varía debido a la altitud y los cambios climáticos frecuentes, lo que sugiere que estos cambios afectan fuertemente la temperatura.
+
+ρ = 28.9506:
+
+Su valor elevado indica que la temperatura responde fuertemente a los cambios en la presión. Esto es coherente con Bogotá, donde la temperatura puede variar bruscamente según la presión atmosférica y la humedad presente.
+
+μ = 1.22764:
+
+Su valor mayor a 1 indica que la disipación de calor es significativa y ocurre a una tasa apreciable. Esto se alinea con el clima de Bogotá, donde las lluvias tienden a reducir rápidamente la temperatura. 
+
+ν = 0.00148262:
+
+Su valor muy pequeño sugiere que el transporte de calor en la atmósfera de Bogotá es lento. Esto es esperable en una ciudad con una atmósfera estable y sin grandes corrientes de convección masivas como en zonas costeras.
+"""
+
 # ╔═╡ 9206ac6a-a73e-45f8-a8b9-8219606aa502
 md"""
 ## 8. Conclusiones.
@@ -1450,14 +1557,9 @@ Los datos pueden refinarse y ajustarse de manera más precisa para mejorar la ca
 Partiendo de la premisa de que el modelo nunca será exacto, pero algunos enfoques pueden resultar más útiles que otros, este desarrollo ha logrado una función de ajuste para la precipitación con un desempeño excepcional, una función de ajuste para la temperatura que, aunque buena, aún tiene margen de mejora, y retratos de fase que revelan puntos de estabilidad hacia los cuales convergen las soluciones, lo que sugiere la existencia de estados climáticos estables. Sin embargo, aún faltan coeficientes adecuados para describirlos con precisión.  
 
 Pequeños detalles en la implementación pueden generar grandes diferencias en los resultados. Por ejemplo, si los saltos de iteración son demasiado pequeños, el modelo podría no ser capaz de mostrar los característicos atractores de Lorenz. En este caso, el problema no sería nuestro enfoque, sino la acumulación de ceros numéricos que distorsionan el comportamiento del sistema.  
-
 Como posibles mejoras y ampliaciones del proyecto, se podrían desarrollar funciones de ajuste más precisas, incorporar enfoques probabilísticos o estocásticos para el tratamiento de datos, optimizar la función iterativa para mejorar su estabilidad y precisión, comparar con otros modelos climáticos para identificar patrones comunes y mejorar la visualización de los datos para facilitar la interpretación de los resultados.
 
-"""
-
-# ╔═╡ 85432f81-d1bf-4844-a119-a4ee7b066155
-md"""
-# Referencias
+## Referencias
 
 [1] P. E. Calderón Saavedra and V. H. Chaux M., ‘Descripción del Modelo de Lorenz con aplicaciones’, Nov. 2007, Accessed: Mar. 06, 2025. [Online]. Available: http://hdl.handle.net/10784/146
 
@@ -4258,14 +4360,13 @@ version = "1.4.1+1"
 # ╠═ca0a6986-5baf-463a-b2c4-a0dd7f20feca
 # ╠═db7d9459-7cd2-463e-b1b4-63ae05a56244
 # ╠═641b1bd5-112d-4144-9639-7171a5e7b91f
-# ╠═48fe1bbf-6972-4fb7-bdfe-e419dfa37fd7
-# ╠═f6f9f7f4-6f8e-44a0-90f5-36bcc78e6385
+# ╟─48fe1bbf-6972-4fb7-bdfe-e419dfa37fd7
 # ╟─f91a2d1f-196f-4fae-b04f-ec5be42e04b9
 # ╟─6b1a1e1f-5ab3-4031-924a-b19d8903ca9c
 # ╠═7bca8a7c-83a0-4746-8cf2-a0f866de5651
 # ╠═df81ed4a-c4cf-43f7-af43-3a64d324b0b4
-# ╠═de1ec58a-11ae-4e7f-9638-4461776e3879
-# ╠═a7dc9a73-31fa-43da-99e2-3f2679e3c81a
+# ╟─de1ec58a-11ae-4e7f-9638-4461776e3879
+# ╟─a7dc9a73-31fa-43da-99e2-3f2679e3c81a
 # ╟─519130c6-1a51-4d9a-a1f1-594d8d88fb73
 # ╟─4a8149d0-b4d2-43d9-bbc0-455f0567a9c8
 # ╠═60d99098-f972-446d-a279-3e771f9173ae
@@ -4277,21 +4378,22 @@ version = "1.4.1+1"
 # ╠═92a32bb1-bcf0-41eb-9d3b-e1c92427c5ac
 # ╠═7dbdca71-1ed7-408b-a8ea-1faf3621dd16
 # ╟─4d742757-996e-4c33-836d-6a0d0c285d61
-# ╠═0f0bcca1-8fd0-4dbc-8cd2-4d46f2c821c6
+# ╟─0f0bcca1-8fd0-4dbc-8cd2-4d46f2c821c6
 # ╠═8c426a45-4ce1-4282-acb5-c5cd2b801414
 # ╟─a4f60993-188f-40e2-88ad-ebf40cb2d737
 # ╟─1f48cdd9-50d6-40fd-9789-e5aa25145cfd
-# ╠═57c5184a-86d8-4425-a843-13a760dac9c8
+# ╟─57c5184a-86d8-4425-a843-13a760dac9c8
 # ╠═f5904070-2512-4ae6-8150-c277efd3fb58
 # ╠═5344754f-98ce-4726-aa1c-647fd17d2b90
 # ╠═6ec4241d-a1cc-4330-9f23-6f34da9265b4
 # ╠═7280fa09-0429-4807-8e5c-4b85044e4831
-# ╠═e7e80f4b-85d0-4110-92be-d492119a6e28
-# ╠═59bdef18-be8f-46fa-99bd-a8080eb40f4c
+# ╟─e7e80f4b-85d0-4110-92be-d492119a6e28
+# ╟─ae396be1-19d0-405a-b543-847f8cae537b
+# ╟─59bdef18-be8f-46fa-99bd-a8080eb40f4c
 # ╟─4660944d-74bc-4c96-9a9f-83608882a60a
 # ╟─c1e65ffc-aa17-4390-8b8c-ccd2c6a69ae4
 # ╟─597d3c9e-07c3-47db-8360-1f184d472545
+# ╟─a74985d7-8795-4ec4-8a26-5f61cae4722e
 # ╟─9206ac6a-a73e-45f8-a8b9-8219606aa502
-# ╟─85432f81-d1bf-4844-a119-a4ee7b066155
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
