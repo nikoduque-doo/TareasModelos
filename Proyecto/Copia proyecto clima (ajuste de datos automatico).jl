@@ -387,7 +387,7 @@ $$\begin{aligned}
     C &= 14 &\text{ (temperatura base en diciembre)}
 \end{aligned}$$
 
-Donde la amplitud refleja las fluctuaciones de temperatura y la desviación estándar refleja cuán amplias o estrechas son las fluctuaciones de temperatura respecto al mes central
+Donde la amplitud refleja las fluctuaciones de temperatura entre valor maximo y minimo y la desviación estándar refleja cuán amplias o estrechas son las fluctuaciones de temperatura respecto al mes central, o en otras palabras, que tan drastico es el cambio de temperatura de un mes a otro.
 
 """
 
@@ -522,17 +522,17 @@ presiones = [PDatos(m, parbas_ajustados) for m in mesesCon]
 md"""
 ##### Precipitación: 
 
-La función que modela la precipitación utiliza una función coseno para representar la variabilidad de la precipitación a lo largo del año. Las epocas de lluvia se pueden situar alrededor de los meses de marzo/abril y hacia octubre, así que para representar un periodo de 6 meses se tomo abril ($4$) y octubre ($10$).
+La función que modela la precipitación utiliza una función coseno para representar la variabilidad de la precipitación a lo largo del año. Las epocas de lluvia se pueden situar alrededor de los meses de marzo/abril y hacia octubre, así que para representar un periodo de $6$ meses se tomo abril ($4$) y octubre ($10$).
 
 La ecuación que describe esta relación es la siguiente:
 
-$$P(x) = A \cdot \cos\left( \frac{3 \cdot (x - \mu)}{\pi} \right) + B$$
+$$P(x) = \frac{A}{2} \cdot \cos\left( \frac{3 \cdot (x - \mu)}{\pi} \right) + B$$
 
 donde:
 
 $$\begin{aligned}
-    A &= \frac{120}{2} \quad &\text{(Amplitud de la precipitación)} \\
-    \mu &= 4 \quad &\text{(Pico de la funcion coseno)} \\
+    A &= 160 \quad &\text{(Rango base de la precipitación)} \\
+    \mu &= 4 \quad &\text{(ubicación del pico de la funcion coseno)} \\
     B &= 80 \quad &\text{(Precipitación mínima)} 
 \end{aligned}$$
 
@@ -3496,7 +3496,7 @@ version = "1.4.1+1"
 # ╠═b7134e0d-4224-4451-b532-326b90bcfa3e
 # ╟─d4e2f3ac-9b40-412b-927b-390e85ffd828
 # ╟─5e3e7bc7-14e8-4f4c-b46e-4f9250f9eaee
-# ╟─cf3c13d0-dd38-4c92-a3cd-02e64d0ab5d4
+# ╠═cf3c13d0-dd38-4c92-a3cd-02e64d0ab5d4
 # ╠═c64d577e-2624-4271-8d11-99378fcf2b6f
 # ╠═f1d3eae1-2f62-4d86-b9c2-6d8da5536b66
 # ╠═83dcd14f-280b-445d-89de-b29f977b1748
@@ -3506,7 +3506,7 @@ version = "1.4.1+1"
 # ╠═8135c146-d9d2-40ac-92aa-4637011de415
 # ╠═c0868390-75b8-4221-8f3a-ac4583d9069e
 # ╠═c019ba6f-b361-43e6-8ff4-718b541a5e75
-# ╟─14e567bd-61a5-4f78-913f-1f4b308509f1
+# ╠═14e567bd-61a5-4f78-913f-1f4b308509f1
 # ╠═b4759fad-520a-42fb-a5f7-8da5c9b140be
 # ╟─a5a3f1f9-7f80-4605-8688-22216307647d
 # ╠═b2b89863-353b-4d87-8469-12fc6ec3938c
