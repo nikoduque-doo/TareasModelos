@@ -580,7 +580,7 @@ Ademas de esto se usara una notacion particular para esta parte del codigo, con 
 
 - **meses**: prefijo correspondiente a el eje x de muchas de nuestras funciónes, donde se toma el intervalo de $0$ a $12$ de manera continua o discreta (caso particular **mesesDis2** es la repeticion de tomar datos cada $1$ unidad, y repetirlo iteradamente para poder mapearlos repetidamente)
 
-- **DatosP**: **DatosC** pero particionado por años, así en cada coordenada del vector se guardara una matriz $12 \times 3$ con los datos de ese año.
+- **DatosPart**: **DatosC** pero particionado por años, así en cada coordenada del vector se guardara una matriz $12 \times 3$ con los datos de ese año.
 
 - **Param**: se usa para representar en un vector los parametros de ciertas funciones particulares.
 
@@ -608,28 +608,28 @@ begin
 	num_años = div(num_filas, 12) # Cantidad de años
 	
 	function dividir_por_año(datos)
-	    DatosP = [] # Particionar los datos de tal manera que queden por años
+	    DatosPart = [] # Particionar los datos de tal manera que queden por años
 	    
 	    # Dividir los datos en bloques de 12 meses (por año)
 	    for i in 1:num_años
 	        inicio = (i - 1) * 12 + 1
 	        fin = i * 12
-	        push!(DatosP, datos[inicio:fin, :])
+	        push!(DatosPart, datos[inicio:fin, :])
 	    end
 	    
-	    return DatosP
+	    return DatosPart
 	end
 	
-	DatosP = dividir_por_año(datosC)
+	DatosPart = dividir_por_año(datosC)
 
 	PProm=[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]
 	TProm=PProm
 	RProm=PProm
 
 	for i in 1:14
-		PDat=DatosP[i][:,[1]] #presion
-		TDat=DatosP[i][:,[2]]
-		RDat=DatosP[i][:,[3]]
+		PDat=DatosPart[i][:,[1]] #presion
+		TDat=DatosPart[i][:,[2]]
+		RDat=DatosPart[i][:,[3]]
 		global PProm+=PDat
 		global TProm+=TDat
 		global RProm+=RDat
@@ -735,12 +735,11 @@ $$\begin{aligned}
 """
 
 # ╔═╡ 42d5edd6-5108-4a79-8909-3df77c721bd4
-PParamSint = [737., 5., .1 , 0.] # P0, A, k, omega, phi ,dado omega = π / 3
+PParamSint = [737., 5., .1 , π / 3 ,  0.] # P0, A, k, omega, phi
 
 # ╔═╡ 37594ac5-547b-4b5b-a44a-81e35a51b319
 function PDatos(x, parametros) # función de Presión
-	P0, A, k, phi = parametros
-	omega = π / 3
+	P0, A, k, omega, phi = parametros
 	
     return (P0 + A * exp(-k * (12-x)) * sin(omega * (12-x) + phi*x))
 end	
@@ -821,7 +820,7 @@ $$P(x) = A \cdot \cos\left( \frac{3 \cdot (x - \mu)}{\pi} \right) + B$$
 donde:
 
 $$\begin{aligned}
-    A &= \frac{120}{2} \quad &\text{(Amplitud de la precipitación)} \\
+    A &= \frac{160}{2} \quad &\text{(Amplitud de la precipitación)} \\
     \mu &= 4 \quad &\text{(Pico de la funcion coseno)} \\
     B &= 80 \quad &\text{(Precipitación mínima)} 
 \end{aligned}$$
@@ -831,7 +830,7 @@ La **amplitud** $A$ refleja las fluctuaciones entre la cantidad maxima y minima 
 """
 
 # ╔═╡ f3e15a75-cef2-45f3-b251-9571d77cac77
-RParamSint = [120/2, 4., 80.] # corresponde a A, μ, B 
+RParamSint = [160/2, 4., 80.] # corresponde a A, μ, B 
 
 # ╔═╡ f8aed4a9-3cbf-487d-8240-d3459a88978c
 function RDatos(x, parametros)
@@ -934,6 +933,190 @@ md"""
 Dado que tenemos ya unas funciones que aproximan, con cierto sentido fisico a nuestros datos reales, vamos a realizar un ajuste de datos con estas funciones, de tal manera que se acerquen más a nuestros datos originales, lo que realizaremos a continuación y compararemos con nuestros datos reales, antes y despues del promedio:
 
 Para estas funciones de ajuste se usara el sufijo **Ajus**:
+
+"""
+
+# ╔═╡ 6b1a1e1f-5ab3-4031-924a-b19d8903ca9c
+md"""
+##### Presion:
+"""
+
+# ╔═╡ 7bca8a7c-83a0-4746-8cf2-a0f866de5651
+begin
+	# Función objetivo para ajuste
+	function residuoP(params, mesesDis2, datos) # residuo de la presion
+	    errores = 0.0
+	
+	    for i in 1:length(mesesDis2)
+	        # Evaluar la temperatura predicha para cada mes
+	        prediccion = PDatos(mesesDis2[i], params)
+	        # Calcular el error cuadrado entre la predicción y el dato real
+	        errores += (prediccion - datos[i]).^2
+	    end
+	
+	    return errores
+	end
+
+	function rP(parametros)
+		return residuoP(parametros, mesesDis2, PPorAños)
+	end 
+	
+	
+	# Ajustamos la función a los datos
+	POptim = optimize(rP, PParamSint, NelderMead())
+	
+	# Extraemos los parámetros ajustados
+	PParamAjus = POptim.minimizer
+	#println("Parámetros ajustados: ", params_ajustados)
+end
+
+# ╔═╡ df81ed4a-c4cf-43f7-af43-3a64d324b0b4
+PDatosAjus = [PDatos(m, PParamAjus) for m in mesesCon]
+
+# ╔═╡ de1ec58a-11ae-4e7f-9638-4461776e3879
+begin
+	plot(mesesCon, PSint, label="Datos Sinteticos", xlabel="Meses", ylabel="Presión (hPa)", title="Modelo de Presión en Bogotá", linewidth=2,  xlims=(0, 17))
+	
+	for i in 1:14
+		k=2007+i
+		Dat=DatosPart[i][:,[1]] #presion
+		scatter!(1:12, Dat, label="Datos año $k", lw=4)
+	end
+
+	plot!(mesesCon, PDatosAjus, label="Datos ajustados", linewidth=2)
+
+	
+end
+
+# ╔═╡ a7dc9a73-31fa-43da-99e2-3f2679e3c81a
+begin
+	plot(mesesCon, PSint, label="Datos siteticos", lw=4, ylims=(733.5, 745))
+	
+	plot!(1:12, PProm, label="Datos promedio por mes", lw=4)
+
+	plot!(mesesCon, PDatosAjus, label="Datos Ajustados", xlabel="Meses", ylabel="Presión (hPa)", title="Datos presión", linewidth=2)
+end
+
+# ╔═╡ 4a8149d0-b4d2-43d9-bbc0-455f0567a9c8
+md"""
+##### Temperatura:
+"""
+
+# ╔═╡ 60d99098-f972-446d-a279-3e771f9173ae
+begin
+	# Función objetivo para ajuste
+	function residuoT(params, mesesDis2, datos)
+	    error = 0.0
+	
+	    for i in 1:length(mesesDis2)
+	        # Evaluar la temperatura predicha para cada mes
+	        prediccion = TDatos(mesesDis2[i], params)
+	        # Calcular el error cuadrado entre la predicción y el dato real
+	        error += (prediccion - datos[i]).^2
+	    end
+	
+	    return error
+	end
+
+	function rT(parametros)
+		return residuoT(parametros, mesesDis2, TPorAños)
+	end
+
+	TOptim = optimize(rT, TParamSint, NelderMead())
+		
+	# Extraemos los parámetros ajustados
+	TParamAjus = TOptim.minimizer
+	#println("Parámetros ajustados: ", params_ajustados)
+end
+
+# ╔═╡ 2e1ad853-84ab-4726-a49f-a5d30a9c8ef4
+TDatosAjus = [TDatos(m, TParamAjus) for m in mesesCon]
+
+# ╔═╡ 7a2145df-ed6d-42e2-a9ea-18e39776beb3
+begin
+	plot(mesesCon, TSint, label="Datos Sinteticos", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Temperatura en Bogotá", linewidth=2,  xlims=(0, 17))
+	
+	for i in 1:14
+		k=2007+i
+		Dat=DatosPart[i][:,[2]] #temperatura
+		scatter!(1:12, Dat, label="Datos año $k", lw=4)
+	end
+
+	plot!(mesesCon, TDatosAjus, label="Datos ajustados", linewidth=2)
+	
+end
+
+# ╔═╡ 59d78d63-28f5-429a-b3d7-292c39e74a90
+begin
+	plot(mesesCon, TSint, label="Datos siteticos", lw=4)#, ylims=(14, 15.8))
+	
+	plot!(1:12, TProm, label="Datos promedio por mes", lw=4)
+
+	plot!(mesesCon, TDatosAjus, label="Datos Ajustados", xlabel="Meses", ylabel="Temperatura (°C)", title="Datos temperatura", linewidth=2)
+end
+
+# ╔═╡ c69e7e4d-521e-4208-9754-f80b746e3ba5
+md"""
+##### Precipitacion:
+"""
+
+# ╔═╡ 92a32bb1-bcf0-41eb-9d3b-e1c92427c5ac
+begin
+	# Función objetivo para ajuste
+	function residuoR(params, mesesDis2, datos)
+	    error = 0.0
+	
+	    for i in 1:length(mesesDis2)
+	        # Evaluar la temperatura predicha para cada mes
+	        prediccion = RDatos(mesesDis2[i], params)
+	        # Calcular el error cuadrado entre la predicción y el dato real
+	        error += (prediccion - datos[i]).^2
+	    end
+	
+	    return error
+	end
+
+	function rR(parametros)
+		return residuoR(parametros, mesesDis2, RPorAños)
+	end
+
+	ROptim = optimize(rR, RParamSint, NelderMead())
+		
+	# Extraemos los parámetros ajustados
+	RParamAjus = ROptim.minimizer
+	#println("Parámetros ajustados: ", params_ajustados)
+end
+
+# ╔═╡ 7dbdca71-1ed7-408b-a8ea-1faf3621dd16
+RDatosAjus = [RDatos(m, RParamAjus) for m in mesesCon]
+
+# ╔═╡ 4d742757-996e-4c33-836d-6a0d0c285d61
+begin
+	plot(mesesCon, RSint, label="Datos Sinteticos", xlabel="Meses", ylabel="Temperatura (°C)", title="Modelo de Presión en Bogotá", linewidth=2,  xlims=(0, 17))
+	
+	for i in 1:14
+		k=2007+i
+		Dat=DatosPart[i][:,[3]] #temperatura
+		scatter!(1:12, Dat, label="Datos año $k", lw=4)
+	end
+
+	plot!(mesesCon, RDatosAjus, label="Datos ajustados", linewidth=2)
+	
+end
+
+# ╔═╡ 0f0bcca1-8fd0-4dbc-8cd2-4d46f2c821c6
+begin
+	plot(mesesCon, RSint, label="Datos siteticos", lw=4)#, ylims=(14, 15.8))
+	
+	plot!(1:12, RProm, label="Datos promedio por mes", lw=4)
+
+	plot!(mesesCon, RDatosAjus, label="Datos Ajustados", xlabel="Meses", ylabel="Temperatura (°C)", title="Datos temperatura", linewidth=2)
+end
+
+# ╔═╡ 62cf9867-f2a2-4a37-9b64-b5ba27c3fbba
+md"""
+Dados nuestros ajustes de funciones, como las funciones sinteticas a cada una de las variables les asignamos un significado, podemos interpretarlo para nuestras funciones ajustadas.
+
 
 """
 
@@ -1160,7 +1343,7 @@ begin
     # Simulación con condiciones iniciales
     tspan = (0.0, 5.0)
     initial_conditions = [[-500, -30, 20], [500, 30, 20], [10, 10, 10], [-10, -10, -10], [0, 0.1, 0.1]]
-    solutions = [solve(ODEProblem(dt!, u0, tspan), Tsit5()) for u0 in initial_conditions]    
+    solutions = [solve(ODEProblem(dt!, u0, tspan), Tsit5(), saveat=0:0.001:12) for u0 in initial_conditions]   
 
 	# Graficar las trayectorias en 3D
 	plt = plot(title="Retrato de Fase del Sistema", xlabel="Presión", ylabel="Temperatura", zlabel="Precipitación")
@@ -3946,8 +4129,8 @@ version = "1.4.1+1"
 # ╠═81953c25-7fdf-4ff4-865f-3c4993e319b1
 # ╠═90588eb2-451a-4551-a4c5-14024c879a52
 # ╟─8079c6a6-4f5e-4511-9a5b-4015d1c6c681
-# ╠═34cfce9b-c8a8-487e-a7a7-68c4c92dcace
-# ╟─cdb69c71-3939-48f6-b24e-286a01bfdb83
+# ╟─34cfce9b-c8a8-487e-a7a7-68c4c92dcace
+# ╠═cdb69c71-3939-48f6-b24e-286a01bfdb83
 # ╟─6260c16a-7d99-42cc-b490-499ab9610871
 # ╟─cdea1ba2-b6a2-4d9f-b2bf-28bbc2bd3f70
 # ╟─3c4d182c-7121-41e5-8573-9b183e1bcb7e
@@ -3985,9 +4168,25 @@ version = "1.4.1+1"
 # ╠═48fe1bbf-6972-4fb7-bdfe-e419dfa37fd7
 # ╠═f6f9f7f4-6f8e-44a0-90f5-36bcc78e6385
 # ╟─f91a2d1f-196f-4fae-b04f-ec5be42e04b9
+# ╟─6b1a1e1f-5ab3-4031-924a-b19d8903ca9c
+# ╠═7bca8a7c-83a0-4746-8cf2-a0f866de5651
+# ╠═df81ed4a-c4cf-43f7-af43-3a64d324b0b4
+# ╠═de1ec58a-11ae-4e7f-9638-4461776e3879
+# ╠═a7dc9a73-31fa-43da-99e2-3f2679e3c81a
+# ╟─4a8149d0-b4d2-43d9-bbc0-455f0567a9c8
+# ╠═60d99098-f972-446d-a279-3e771f9173ae
+# ╠═2e1ad853-84ab-4726-a49f-a5d30a9c8ef4
+# ╠═7a2145df-ed6d-42e2-a9ea-18e39776beb3
+# ╠═59d78d63-28f5-429a-b3d7-292c39e74a90
+# ╠═c69e7e4d-521e-4208-9754-f80b746e3ba5
+# ╠═92a32bb1-bcf0-41eb-9d3b-e1c92427c5ac
+# ╠═7dbdca71-1ed7-408b-a8ea-1faf3621dd16
+# ╠═4d742757-996e-4c33-836d-6a0d0c285d61
+# ╠═0f0bcca1-8fd0-4dbc-8cd2-4d46f2c821c6
+# ╠═62cf9867-f2a2-4a37-9b64-b5ba27c3fbba
 # ╟─4660944d-74bc-4c96-9a9f-83608882a60a
-# ╠═c1e65ffc-aa17-4390-8b8c-ccd2c6a69ae4
-# ╟─597d3c9e-07c3-47db-8360-1f184d472545
+# ╟─c1e65ffc-aa17-4390-8b8c-ccd2c6a69ae4
+# ╠═597d3c9e-07c3-47db-8360-1f184d472545
 # ╠═9206ac6a-a73e-45f8-a8b9-8219606aa502
 # ╟─85432f81-d1bf-4844-a119-a4ee7b066155
 # ╟─00000000-0000-0000-0000-000000000001
